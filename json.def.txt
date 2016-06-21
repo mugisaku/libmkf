@@ -1,0 +1,110 @@
+json = ?*element;
+
+
+
+element = null|true|false|string|number|object|array;
+
+
+null  = "null";
+true  = "true";
+false = "false";
+
+
+object = '{':?object_content:'}';
+
+object_content = *?object_member,object_last_member;
+
+object_member      = string:':':element:',';
+object_last_member = string:':':element    ;
+
+array = '[':?array_content:']';
+
+array_content = *?array_element:array_last_element;
+
+array_element      = element:',';
+array_last_element = element    ;
+
+
+number = fp_number|integer;
+
+integer = positive_integer|
+          negative_integer;
+
+
+      positive_integer = '0'|natural_number;
+solid negative_integer = '-':natural_number;
+
+
+fp_number = fp_number_form0|fp_number_form1;
+
+solid fp_number_form0 = integer:exponent;
+solid fp_number_form1 = integer:'.':*CTYPE_digit:?exponent;
+
+
+solid exponent = exponent_character:?sign_character:*CTYPE_digit;
+
+    sign_character = '+'|'-';
+exponent_character = 'e'|'E';
+
+
+solid natural_number = one_to_nine:*?CTYPE_digit;
+one_to_nine = '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9';
+
+
+solid string = '\"':?*string_element:'\"';
+
+string_element =
+  CTYPE_alnum|
+   CTYPE_utf8|
+          '!'|
+          '#'|
+          '$'|
+          '%'|
+          '&'|
+          '('|
+          ')'|
+          '='|
+          '~'|
+          '^'|
+          '|'|
+          '@'|
+          '['|
+          ']'|
+          '{'|
+          '}'|
+          ':'|
+          ';'|
+          '*'|
+          '+'|
+          '-'|
+          '`'|
+          '<'|
+          '>'|
+          '?'|
+          '_'|
+          ','|
+          '.'|
+          ' '|
+                 null_character|
+                  tab_character|
+              newline_character|
+               return_character|
+                slash_character|
+            backslash_character|
+         single_quote_character|
+         double_quote_character;
+
+
+null_character         = '\\':'0';
+newline_character      = '\\':'n';
+return_character       = '\\':'r';
+tab_character          = '\\':'t';
+slash_character        = '\\':'/';
+backslash_character    = '\\':'\\';
+single_quote_character = '\\':'\'';
+double_quote_character = '\\':'\"';
+
+
+
+
+

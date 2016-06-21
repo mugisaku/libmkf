@@ -1,0 +1,85 @@
+definition =  ?specifier : identifier : '=' : ?*entry : last_entry ;
+
+
+     entry = ?*mark : element :  separator ;
+last_entry = ?*mark : element : terminator ;
+
+
+specifier = "solid";
+
+
+mark = omittable_mark|repeat_mark;
+
+omittable_mark = '?';
+repeat_mark    = '*';
+
+
+separator = ',' | ':' | '|';
+terminator = ';';
+
+
+element = identifier | character_literal | string_literal;
+
+
+
+solid identifier = *identifier_element;
+solid identifier_element = '_' |CTYPE_alnum;
+
+
+
+solid character_literal = '\'':string_element:'\'';
+
+
+solid string_literal = '\"':?*string_element:'\"';
+
+solid string_element =
+  CTYPE_alnum|
+   CTYPE_utf8|
+          '!'|
+          '#'|
+          '$'|
+          '%'|
+          '&'|
+          '('|
+          ')'|
+          '='|
+          '~'|
+          '|'|
+          '@'|
+          '['|
+          ']'|
+          '{'|
+          '}'|
+          ':'|
+          ';'|
+          '*'|
+          '+'|
+          '-'|
+          '`'|
+          '<'|
+          '>'|
+          '?'|
+          '_'|
+          ','|
+          '.'|
+          '/'|
+          ' '|
+         null_character|
+         tab_character|
+         newline_character|
+         backslash_character|
+         single_quote_character|
+         double_quote_character;
+
+
+
+null_character         = '\\':'0';
+newline_character      = '\\':'n';
+tab_character          = '\\':'t';
+backslash_character    = '\\':'\\';
+single_quote_character = '\\':'\'';
+double_quote_character = '\\':'\"';
+
+
+
+
