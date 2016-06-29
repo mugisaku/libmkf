@@ -24,8 +24,11 @@ CType
 };
 
 
+const char*  get_ctype_name(CType  type);
+
 CType  get_ctype(const char*  name);
-bool   test_ctype_code(int  c, CType  type);
+
+bool  test_ctype_code(int  c, CType  type);
 
 
 }

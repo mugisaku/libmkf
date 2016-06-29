@@ -125,9 +125,9 @@ read_object(const mkf::Node&  base)
     {
       auto&  nd = cur.get();
 
-        if(nd == "object_content")
+        if(nd == "object_member")
         {
-          read_object_content(nd,*obj);
+          obj->members.emplace_back(read_object_member(nd));
         }
 
 
@@ -136,27 +136,6 @@ read_object(const mkf::Node&  base)
 
 
   return obj;
-}
-
-
-void
-read_object_content(const mkf::Node&  base, Object&  obj)
-{
-  mkf::Cursor  cur(base);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if((nd == "object_member") ||
-           (nd == "object_last_member"))
-        {
-          obj.members.emplace_back(read_object_member(nd));
-        }
-
-
-      cur.advance();
-    }
 }
 
 
@@ -202,9 +181,9 @@ read_array(const mkf::Node&  base)
     {
       auto&  nd = cur.get();
 
-        if(nd == "array_content")
+        if(nd == "element")
         {
-          read_array_content(nd,*arr);
+          arr->elements.emplace_back(read_element(nd));
         }
 
 
@@ -213,32 +192,6 @@ read_array(const mkf::Node&  base)
 
 
   return arr;
-}
-
-
-void
-read_array_content(const mkf::Node&  base, Array&  arr)
-{
-  mkf::Cursor  cur(base);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "array_element")
-        {
-          arr.elements.emplace_back(read_json(nd));
-        }
-
-      else
-        if(nd == "element")
-        {
-          arr.elements.emplace_back(read_element(nd));
-        }
-
-
-      cur.advance();
-    }
 }
 
 

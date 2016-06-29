@@ -1,4 +1,5 @@
 #include"mkf_node.hpp"
+#include<cstring>
 
 
 
@@ -7,33 +8,24 @@ namespace mkf{
 
 
 Node::
-Node(const char*  defname_, int  c):
-parent(nullptr),
-depth(0),
+Node(const char*  defname_, int  character_):
 defname(defname_),
-character(c)
+character(character_)
 {
 }
 
 
 Node::
-Node(Node&&  rhs):
-parent(rhs.parent),
-depth(rhs.depth),
-defname(rhs.defname),
-character(rhs.character),
-children(std::move(rhs.children))
+Node(Node&&  rhs)
 {
+  *this = std::move(rhs);
 }
 
 
 Node::
 ~Node()
 {
-    for(auto&  nd: children)
-    {
-      delete nd;
-    }
+  clear();
 }
 
 
@@ -47,36 +39,46 @@ operator==(const char*  name) const
 }
 
 
+Node&
+Node::
+operator=(Node&&  rhs)
+{
+  clear();
+
+  defname = rhs.defname;
+
+  character = rhs.character;
+
+  children = std::move(rhs.children);
+}
+
+
+void
+Node::
+clear()
+{
+  defname = "";
+
+  character = 0;
+
+    for(auto&  nd: children)
+    {
+      delete nd;
+    }
+
+
+  children.clear();
+}
+
+
 void
 Node::
 append(Node*  child)
 {
     if(child)
     {
-      child->depth = depth+1;
-
-      child->parent = this;
-
-      children.emplace_back(child);
+      children.push(child);
     }
-}
-
-
-Node*
-Node::
-release_unique_child()
-{
-  Node*  child = nullptr;
-
-    if(children.size() == 1)
-    {
-      child = children.front();
-
-      children.clear();
-    }
-
-
-  return child;
 }
 
 
@@ -115,13 +117,7 @@ print(Printer&  pr) const
 {
     if(children.empty())
     {
-      pr.printf("%s = \'%c\'",defname,character);
-    }
-
-  else
-    if((children.size() == 1) && children.front()->children.empty())
-    {
-      pr.printf("%s = \'%c\'",defname,children.front()->character);
+      pr.printf("%s = \'%c\'",defname? defname:"<UNKNOWN>",character);
     }
 
   else

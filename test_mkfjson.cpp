@@ -2,11 +2,79 @@
 #include"mkf_node.hpp"
 #include"mkf_cursor.hpp"
 #include"mkf_file.hpp"
+#include"mkf_parsecontext.hpp"
 #include"json.hpp"
 #include<cstdio>
 
 
 using namespace mkf;
+
+
+Node*
+get_tree(const Book&  book, int  n, bool  check=false)
+{
+  auto  j = json::create_random_object(n);
+
+  auto  f = tmpfile();
+
+    if(f)
+    {
+      j.print(true,0,f);
+
+      rewind(f);
+
+      auto  s = to_string(f);
+
+      fclose(f);
+
+
+      ParseContext  ctx(book);
+
+      auto  tree = ctx(s);
+
+        if(tree)
+        {
+            if(check)
+            {
+              printf("check\n");
+
+//              tree->print();
+//              printf("\n");
+
+              mkf::Cursor  cur(*tree);
+
+                while(!cur.test_ended())
+                {
+                  auto&  nd = cur.get();
+
+                    if(nd == "json")
+                    {
+                      auto  e = json::read_json(nd);
+
+                      bool  res = (e == j);
+j.print();
+e.print();
+                      printf("checktest: %s\n",res? "OK":"NG");
+
+
+                      break;
+                    }
+
+
+                  cur.advance();
+                }
+            }
+        }
+
+
+      return ctx.release_root();
+    }
+
+
+  return nullptr;
+}
+
+
 
 
 int
@@ -18,39 +86,23 @@ main(int  argc, char**  argv)
 
   book.make(def);
 
-  constexpr int  n = 256;
+  constexpr int  n = 6;
 
   int  count = 0;
 
     for(int  i = 0;  i < n;  ++i)
     {
-      auto  j = json::Element::create_random_object(8);
+      auto  tree = get_tree(book,6,false);
 
-      auto  f = tmpfile();
-
-      printf("[%4d/%4d] ",i,n);
-
-        if(f)
+        if(tree)
         {
-          j.print(true,0,f);
+          ++count;
 
-          rewind(f);
+          printf("OK\n");
 
-          auto  s = to_string(f);
+          delete tree;
 
-          fclose(f);
-
-
-          auto  tree = book.parse(s);
-
-            if(tree)
-            {
-              ++count;
-
-              printf("OK\n");
-
-              continue;
-            }
+          continue;
         }
 
 
@@ -59,6 +111,8 @@ main(int  argc, char**  argv)
 
 
   printf("%4d/%4d passed.\n",count,n);
+
+  delete get_tree(book,4,true);
 
   return 0;
 }

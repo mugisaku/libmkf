@@ -31,6 +31,41 @@ operator=(Element&&  rhs)
 
   kind = rhs.kind                    ;
          rhs.kind = ElementKind::null;
+
+  return *this;
+}
+
+
+bool
+Element::
+operator==(const Element&  rhs) const
+{
+    if(kind == rhs.kind)
+    {
+        switch(kind)
+        {
+          case(ElementKind::null):
+            return true;
+          case(ElementKind::integer):
+            return(data.i == rhs.data.i);
+          case(ElementKind::boolean):
+            return(data.b == rhs.data.b);
+          case(ElementKind::fp_number):
+            return true;
+//            return(data.f == rhs.data.f);
+          case(ElementKind::object):
+            return(*data.obj == *rhs.data.obj);
+          case(ElementKind::string):
+            return(*data.str == *rhs.data.str);
+          case(ElementKind::array):
+            return(*data.arr == *rhs.data.arr);
+          default:
+            report;
+        }
+    }
+
+
+  return false;
 }
 
 

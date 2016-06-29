@@ -24,7 +24,7 @@ main(int  argc, char**  argv)
 
     if(f)
     {
-      auto  elm = json::Element::create_random_object(n);
+      auto  elm = json::create_random_object(n);
 
       elm.print(true,0,f);
 

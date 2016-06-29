@@ -58,28 +58,31 @@ endif
 
 OBJ +=                   \
   mkf_file.o             \
+  mkf_charptr.o          \
+  mkf_discontinue.o      \
   mkf_print.o            \
   mkf_element.o          \
+  mkf_element_compare.o  \
+  mkf_group.o            \
+  mkf_group_scan.o       \
+  mkf_group_compare.o    \
   mkf_definition.o       \
-  mkf_definition_scan.o  \
   mkf_node.o             \
   mkf_cursor.o           \
-  mkf_ascii.o            \
   mkf_ctype.o            \
   mkf_unicode.o          \
   mkf_book.o             \
-  mkf_book_compare.o     \
-  mkf_book_read.o        \
+  mkf_parsecontext.o     \
   json.o                 \
   json_random.o          \
+  json_read.o            \
 
 
-all: objects test_mkf$(EXE_EXT) print_mkf$(EXE_EXT) randjson$(EXE_EXT) test_mkfjson$(EXE_EXT)
+all: objects test_mkf$(EXE_EXT) randjson$(EXE_EXT) test_mkfjson$(EXE_EXT)
 
 
 clean:
 	rm -f $(OBJ) test_mkf$(EXE_EXT)         test_mkf.o  \
-              print_mkf$(EXE_EXT)       print_mkf.o  \
               randjson$(EXE_EXT)         randjson.o  \
               test_mkfjson$(EXE_EXT) test_mkfjson.o  \
 
@@ -89,9 +92,6 @@ objects: $(OBJ)
 
 test_mkf$(EXE_EXT): $(OBJ) test_mkf.o
 	$(CXX) -o $@ $(OBJ) test_mkf.o $(LDFLAGS)
-
-print_mkf$(EXE_EXT): $(OBJ) print_mkf.o
-	$(CXX) -o $@ $(OBJ) print_mkf.o $(LDFLAGS)
 
 randjson$(EXE_EXT): $(OBJ) randjson.o
 	$(CXX) -o $@ $(OBJ) randjson.o $(LDFLAGS)

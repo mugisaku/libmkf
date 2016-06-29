@@ -1,5 +1,6 @@
 #include"mkf_ctype.hpp"
 #include"mkf_unicode.hpp"
+#include"mkf_node.hpp"
 #include<cstring>
 #include<cctype>
 
@@ -7,6 +8,28 @@
 
 
 namespace mkf{
+
+
+const char*
+get_ctype_name(CType  type)
+{
+    switch(type)
+    {
+      case(CType::digit ): return "digit";
+      case(CType::xdigit): return "xdigit";
+      case(CType::lower ): return "lower";
+      case(CType::upper ): return "upper";
+      case(CType::punct ): return "punct";
+      case(CType::space ): return "space";
+      case(CType::alpha ): return "alpha";
+      case(CType::alnum ): return "alnum";
+      case(CType::utf8  ): return "utf8";
+      default:;
+    }
+
+
+  return "unknown";
+}
 
 
 CType
@@ -52,6 +75,8 @@ test_ctype_code(int  c, CType  type)
 
   return false;
 }
+
+
 
 
 }

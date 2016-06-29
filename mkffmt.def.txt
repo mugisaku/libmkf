@@ -1,84 +1,70 @@
-definition =  ?specifier : identifier : '=' : ?*entry : last_entry ;
+definition = identifier:"=":element:{separator:element}:";";
 
 
-     entry = ?*mark : element :  separator ;
-last_entry = ?*mark : element : terminator ;
+separator =
+  ","|
+  ":"|
+  "|";
 
 
-specifier = "solid";
+element =
+             group|
+  repetition_group|
+      option_group|
+            string|
+        identifier;
 
 
-mark = omittable_mark|repeat_mark;
-
-omittable_mark = '?';
-repeat_mark    = '*';
-
-
-separator = ',' | ':' | '|';
-terminator = ';';
+group            = "(":element:{separator:element}:")";
+repetition_group = "{":element:{separator:element}:"}";
+option_group     = "[":element:{separator:element}:"]";
 
 
-element = identifier | character_literal | string_literal;
+identifier = ("_" |CTYPE_alnum):{"_" |CTYPE_alnum};
 
 
+string = "\"":string_element:{string_element}:"\"";
 
-solid identifier = *identifier_element;
-solid identifier_element = '_' |CTYPE_alnum;
-
-
-
-solid character_literal = '\'':string_element:'\'';
-
-
-solid string_literal = '\"':?*string_element:'\"';
-
-solid string_element =
+string_element =
   CTYPE_alnum|
    CTYPE_utf8|
-          '!'|
-          '#'|
-          '$'|
-          '%'|
-          '&'|
-          '('|
-          ')'|
-          '='|
-          '~'|
-          '|'|
-          '@'|
-          '['|
-          ']'|
-          '{'|
-          '}'|
-          ':'|
-          ';'|
-          '*'|
-          '+'|
-          '-'|
-          '`'|
-          '<'|
-          '>'|
-          '?'|
-          '_'|
-          ','|
-          '.'|
-          '/'|
-          ' '|
-         null_character|
-         tab_character|
-         newline_character|
+          "!"|
+          "#"|
+          "$"|
+          "%"|
+          "&"|
+          "("|
+          ")"|
+          "="|
+          "~"|
+          "|"|
+          "@"|
+          "["|
+          "]"|
+          "{"|
+          "}"|
+          ":"|
+          ";"|
+          "*"|
+          "+"|
+          "-"|
+          "`"|
+          "<"|
+          ">"|
+          "?"|
+          "_"|
+          ","|
+          "."|
+          "/"|
+          " "|
          backslash_character|
          single_quote_character|
          double_quote_character;
 
 
-
-null_character         = '\\':'0';
-newline_character      = '\\':'n';
-tab_character          = '\\':'t';
-backslash_character    = '\\':'\\';
-single_quote_character = '\\':'\'';
-double_quote_character = '\\':'\"';
+backslash_character    = "\\":"\\";
+single_quote_character = "\\":"\'";
+double_quote_character = "\\":"\"";
 
 
 

@@ -11,6 +11,8 @@
 #include<vector>
 #include<list>
 #include<initializer_list>
+#include"mkf_node.hpp"
+#include"mkf_charptr.hpp"
 
 
 #ifndef report
@@ -22,48 +24,24 @@ namespace mkf{
 
 
 enum class
-ElementKind: uint8_t
+ElementKind: uint16_t
 {
   null,
-  character,
   string,
   identifier,
+  group,
+  option_group,
+  repetition_group,
 
 };
-
-
-namespace ElementFlag
-{
-constexpr int  omittable = 1;
-constexpr int     repeat = 2;
-}
 
 
 struct Element;
+struct Group;
 struct Book;
 struct Definition;
+struct ParseContext;
 struct Printer;
-
-
-inline
-void
-skip_space(const char*&  p)
-{
-    while(isspace(*p))
-    {
-      ++p;
-    }
-}
-
-
-struct
-String
-{
-  const char*  ptr;
-
-  constexpr String(const char*  p): ptr(p){}
-
-};
 
 
 struct
@@ -71,45 +49,74 @@ Identifier
 {
   const char*  ptr;
 
-  constexpr Identifier(const char*  p): ptr(p){}
+  constexpr explicit Identifier(const char*  p): ptr(p){}
 
 };
+
+
+struct
+OptionGroup
+{
+  Group*  ptr;
+
+  constexpr explicit OptionGroup(Group*  p): ptr(p){}
+
+};
+
+
+struct
+RepetitionGroup
+{
+  Group*  ptr;
+
+  constexpr explicit RepetitionGroup(Group*  p): ptr(p){}
+
+};
+
+
+constexpr int      option_flag = 1;
+constexpr int  repetition_flag = 2;
 
 
 class
 Element
 {
-  ElementKind  kind;
+  static constexpr auto  ptr_size = sizeof(char*);
 
-  uint8_t  flags;
+  ElementKind  kind;
 
   uint16_t  length;
 
   union{
-    char  chr;
-
     char*  ptr;
 
-    char  buf[4];
-  };
+    char  buf[ptr_size];
+
+    Group*  grp;
+
+  } data;
 
 
   void  copy(const char*  s);
 
 public:
-  Element(int  flags_=0);
-  Element(int  flags_, int  chr_);
-  Element(int  flags_, const String&     str);
-  Element(int  flags_, const Identifier&  id);
+  Element();
+  Element(const char*       str);
+  Element(const Identifier&  id);
+  Element(Group*  grp);
+  Element(const OptionGroup&      grp);
+  Element(const RepetitionGroup&  grp);
   Element(Element&&  rhs);
  ~Element();
 
 
   Element&  operator=(Element&&  rhs);
 
-  void  reset(int  flags_, int  chr_);
-  void  reset(int  flags_, const String&  str);
-  void  reset(int  flags_, const Identifier&  id);
+  void  reset(const char*  str);
+  void  reset(const Identifier&  id);
+  void  reset(Group*  grp);
+  void  reset(const OptionGroup&      grp);
+  void  reset(const RepetitionGroup&  grp);
 
   void  clear();
 
@@ -118,17 +125,16 @@ public:
   size_t  get_length() const;
 
   const char*  get_string() const;
-  int       get_character() const;
-
-  bool  test_omittable() const;
-  bool  test_repeat() const;
+  Group*       get_group() const;
 
   void  print(Printer&  pr) const;
+
+  bool  compare(ParseContext&  parser, charptr&  p, Node&  node) const;
 
 };
 
 
-using ElementList = std::list<Element>;
+using ElementList = List<Element>;
 
 
 }

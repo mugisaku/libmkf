@@ -10,6 +10,10 @@ namespace mkf{
 
 
 
+const Definition&          Book::get_main_definition() const{return main_definition;}
+const DefinitionList&  Book::get_sub_definition_list() const{return sub_definitions;}
+
+
 void
 Book::
 change_main_definition(Definition&&  def)
@@ -26,44 +30,52 @@ append_sub_definition(Definition&&  def)
 }
 
 
-void
+bool
 Book::
 make(const std::string&  s)
 {
-  auto  p = s.data();
-
-  const char*  last = nullptr;
+  charptr  p(s);
 
   bool  lost_first = false;
 
-    while(*p)
+    try
     {
-      auto  last = p;
-
-        if(lost_first)
+        while(p)
         {
-          sub_definitions.emplace_back();
+          const char*  last = p;
 
-          sub_definitions.back().reset(p);
-        }
+            if(lost_first)
+            {
+              sub_definitions.emplace_back();
 
-      else
-        {
-          main_definition.reset(p);
+              sub_definitions.back().reset(p);
+            }
 
-          lost_first = true;
-        }
+          else
+            {
+              main_definition.reset(p);
+
+              lost_first = true;
+            }
 
 
-      skip_space(p);
+          p.skip_space();
 
-        if(p == last)
-        {
-          report;
-          printf("**loop**%s\n",p);
-          break;
+            if(p.get_raw_pointer() == last)
+            {
+              discontinue(ErrorKind::null,p,"");
+            }
         }
     }
+
+
+    catch(ErrorKind  k)
+    {
+      return false;
+    }
+
+
+  return true;
 }
 
 
@@ -89,97 +101,6 @@ find(const std::string&  id) const
 
 
   return nullptr;
-}
-
-
-Node*
-Book::
-parse(const std::string&  s) const
-{
-  auto  root = new Node;
-
-  auto        p0 =    s.data();
-  auto  const p1 = p0+s.size();
-
-    while(*p0 && (p0 < p1))
-    {
-      auto  child = new Node(main_definition.get_identifier().data());
-
-      auto  p = p0;
-
-        if(!main_definition.test_solid_flag())
-        {
-          skip_space(p);
-        }
-
-
-      CompareContext  ctx(p,p1,child);
-
-      auto  res = compare(ctx,main_definition);
-
-        if(!res)
-        {
-          printf("定義に一致しない文字列が現れました。\n");
-          printf("ここまでで、%3d個の一致がありました。以下は失敗のノード\n",root->children.size());
-
-          Printer  pr;
-
-          child->print(pr);
-
-          delete child;
-
-          printf("失敗のノード終わり\n");
-          printf("以下は残りのテキスト\n");
-          printf("%s\n",p);
-          printf("残りのテキスト終わり\n");
-/*
-          printf("続いて、副定義による解釈\n");
-
-          auto  nd = subparse(p);
-
-          nd.print();
-
-          printf("\n");
-*/
-          delete root          ;
-                 root = nullptr;
-
-          break;
-        }
-
-
-        if(!main_definition.test_solid_flag())
-        {
-          skip_space(p);
-        }
-        
-
-        if(p0 == p)
-        {
-          report;
-          printf("ループしました。\n以下残りのテキスト\n%s\n",p0);
-
-          printf("\n残りのテキスト　終わり\n");
-          printf("続いて最終ノード\n");
-
-          child->print();
-
-          printf("\n最終ノード　終わり\n");
-
-          delete root          ;
-                 root = nullptr;
-          break;
-        }
-
-
-      p0 = p;
-
-
-      root->append(child);
-    }
-
-
-  return root;
 }
 
 

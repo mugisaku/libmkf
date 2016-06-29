@@ -23,8 +23,8 @@ get_random_string()
 {
   auto  engine = get_engine();
 
-  std::uniform_int_distribution<>  len(0,8);
-  std::uniform_int_distribution<>  chr('A','Z');
+  std::uniform_int_distribution<>  len(1,24);
+  std::uniform_int_distribution<>  chr(' ','~');
 
   std::string  s;
 
@@ -34,7 +34,30 @@ get_random_string()
     {
       auto  c = chr(engine);
 
-      s.push_back(c);
+        switch(c)
+        {
+          case'\t':
+            s.append("\\t");
+            break;
+          case'\r':
+            s.append("\\r");
+            break;
+          case'\n':
+            s.append("\\n");
+            break;
+          case'\f':
+            s.append("\\f");
+            break;
+          case'\b':
+            s.append("\\b");
+            break;
+          case'\\':
+          case'/':
+          case'\"':
+            s.push_back('\\');
+          default:
+            s.push_back(c);
+        }
     }
 
 
@@ -48,7 +71,6 @@ get_random_string()
 
 
 Element
-Element::
 create_random_element(int  n)
 {
   auto  engine = get_engine();
@@ -89,7 +111,6 @@ create_random_element(int  n)
 
 
 Element
-Element::
 create_random_boolean()
 {
   auto  engine = get_engine();
@@ -101,7 +122,6 @@ create_random_boolean()
 
 
 Element
-Element::
 create_random_object(int  n)
 {
   auto  engine = get_engine();
@@ -123,7 +143,6 @@ create_random_object(int  n)
 
 
 Element
-Element::
 create_random_array(int  n)
 {
   auto  engine = get_engine();
@@ -145,7 +164,6 @@ create_random_array(int  n)
 
 
 Element
-Element::
 create_random_integer()
 {
   auto  engine = get_engine();
@@ -157,7 +175,6 @@ create_random_integer()
 
 
 Element
-Element::
 create_random_fp_number()
 {
   auto  engine = get_engine();
@@ -169,7 +186,6 @@ create_random_fp_number()
 
 
 Element
-Element::
 create_random_string()
 {
   return Element(new std::string(get_random_string()));

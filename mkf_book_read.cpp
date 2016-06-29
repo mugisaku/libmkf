@@ -8,7 +8,7 @@
 namespace mkf{
 
 
-void
+bool
 Book::
 make(const Node&  src)
 {
@@ -36,6 +36,9 @@ make(const Node&  src)
 
       sub_definitions.pop_front();
     }
+
+
+  return true;
 }
 
 

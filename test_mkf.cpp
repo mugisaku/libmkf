@@ -2,6 +2,7 @@
 #include"mkf_node.hpp"
 #include"mkf_cursor.hpp"
 #include"mkf_file.hpp"
+#include"mkf_parsecontext.hpp"
 #include<cstdio>
 
 
@@ -13,50 +14,41 @@ main(int  argc, char**  argv)
 {
   Book  book;
 
-  auto  a = tmpfile();
-  auto  b = tmpfile();
-
-
-  auto  def = load_file("mkffmt.def.txt");
-
-  book.make(def);
-
-  book.print();
-
-  printf("\n\n");
-
-
-  auto  tree = book.parse(def);
-
-    if(tree)
+    if(argc >= 2)
     {
-      tree->print();
-      tree->print(a);
+      auto  def = load_file(argv[1]);
 
-
-      printf("\n\n\n\n構文木からブックを作成します\n");
-
-      Book  second_book;
-
-      second_book.make(*tree);
-
-      second_book.print();
-
-      printf("\n\n\n\nブックを使って新しい構文木を作成します\n");
-
-      auto  second_tree = second_book.parse(def);
-
-        if(second_tree)
+        if(!book.make(def))
         {
-          second_tree->print();
-          second_tree->print(b);
-
-
-          rewind(a);
-          rewind(b);
-
-          printf("%s\n",compare_file(a,b)? "OK":"NG");
+          return -1;
         }
+
+
+      book.print();
+
+      printf("\n\n");
+
+        if(argc >= 3)
+        {
+          auto  txt = load_file(argv[2]);
+
+          ParseContext  ctx(book);
+
+          auto  tree = ctx(txt);
+
+            if(tree)
+            {
+              tree->print();
+            }
+
+
+          printf("\n\n");
+        }
+    }
+
+  else
+    {
+      printf("使い方:\nprint_mkf 定義ファイルパス 解析対象ファイルパス\n");
     }
 
 

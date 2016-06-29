@@ -12,9 +12,7 @@ namespace mkf{
 class
 Cursor
 {
-  const Node*  node;
-
-  int  child_index;
+  NodeList::Iterator  iter;
 
 public:
   Cursor(const Node&  start);

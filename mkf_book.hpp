@@ -2,10 +2,9 @@
 #define MKF_BOOK_HPP_INCLUDED
 
 
+#include"mkf_definition.hpp"
 #include"mkf_node.hpp"
 #include"mkf_cursor.hpp"
-#include"mkf_ascii.hpp"
-#include"mkf_ctype.hpp"
 
 
 namespace mkf{
@@ -14,42 +13,12 @@ namespace mkf{
 using DefinitionList = std::list<Definition>;
 
 
-struct Block;
-
-
-struct
-CompareContext
-{
-  const char*&       p0;
-  const char*  const p1;
-
-  Node*  nd;
-
-  CompareContext(const char*&  p0_, const char*  p1_, Node*  nd_=nullptr):
-  p0(p0_),
-  p1(p1_),
-  nd(nd_){}
-
-};
-
-
 class
 Book
 {
   Definition  main_definition;
 
   DefinitionList  sub_definitions;
-
-
-  bool  compare_definition_reference(CompareContext&  ctx, const Definition&  def) const;
-
-  bool  compare_for_any(CompareContext&  ctx, const Definition&  def) const;
-  bool  compare_for_all(CompareContext&  ctx, const Definition&  def) const;
-
-  bool  compare0(CompareContext&  ctx, const Element&  elm, bool solid_flag) const;
-  bool  compare1(CompareContext&  ctx, const Element&  elm) const;
-
-  bool  compare(CompareContext&  ctx, const Definition&  def) const;
 
 
   Definition  read_definition(const Node&  base);
@@ -66,21 +35,20 @@ Book
 
 
 public:
-
+  const Definition&          get_main_definition() const;
+  const DefinitionList&  get_sub_definition_list() const;
 
   void  change_main_definition(Definition&&  def);
 
   void  append_sub_definition(Definition&&  def);
 
-  void  make(const std::string&  s);
-  void  make(const Node&  src);
+  bool  make(const std::string&  s);
+  bool  make(const Node&  src);
 
 
   void  clear();
 
   const Definition*  find(const std::string&  id) const;
-
-  Node*  parse(const std::string&  s) const;
 
   void  print(FILE*  f=stdout) const;
   void  print(Printer&  pr) const;

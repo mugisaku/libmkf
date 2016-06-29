@@ -3,6 +3,7 @@
 
 
 #include<string>
+#include"mkf_charptr.hpp"
 
 
 namespace mkf{

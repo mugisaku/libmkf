@@ -1,44 +1,57 @@
 #include"mkf_element.hpp"
+#include"mkf_group.hpp"
 #include"mkf_print.hpp"
 #include<cstdlib>
 
 
 
 
-constexpr int  ptr_size = sizeof(char*);
-
-
 namespace mkf{
 
 
-Element::Element(int  flags_):
-kind(ElementKind::null),
-flags(flags_)
+Element::Element():
+kind(ElementKind::null)
 {
 }
 
 
 Element::
-Element(int  flags, int  chr_):
+Element(const char*  str):
 kind(ElementKind::null)
 {
-  reset(flags,chr_);
+  reset(str);
 }
 
 
 Element::
-Element(int  flags, const String&  str):
+Element(const Identifier&  id):
 kind(ElementKind::null)
 {
-  reset(flags,str);
+  reset(id);
 }
 
 
 Element::
-Element(int  flags, const Identifier&  id):
+Element(Group*  grp):
 kind(ElementKind::null)
 {
-  reset(flags,id);
+  reset(grp);
+}
+
+
+Element::
+Element(const OptionGroup&  grp):
+kind(ElementKind::null)
+{
+  reset(grp);
+}
+
+
+Element::
+Element(const RepetitionGroup&  grp):
+kind(ElementKind::null)
+{
+  reset(grp);
 }
 
 
@@ -65,12 +78,9 @@ operator=(Element&&  rhs)
   kind = rhs.kind                    ;
          rhs.kind = ElementKind::null;
 
-  flags = rhs.flags;
-
   length = rhs.length;
 
-  ptr = rhs.ptr          ;
-        rhs.ptr = nullptr;
+  data = rhs.data;
 
   return *this;
 }
@@ -84,14 +94,14 @@ copy(const char*  s)
 
     if(length >= ptr_size)
     {
-      ptr = static_cast<char*>(malloc(length+1));
+      data.ptr = static_cast<char*>(malloc(length+1));
 
-      std::strcpy(ptr,s);
+      std::strcpy(data.ptr,s);
     }
 
   else
     {
-      char*  dst = buf;
+      char*  dst = data.buf;
 
         while(*s)
         {
@@ -106,44 +116,61 @@ copy(const char*  s)
 
 void
 Element::
-reset(int  flags_, int  chr_)
-{
-  clear();
-
-  kind  = ElementKind::character;
-  flags = flags_;
-
-  chr = chr_;
-}
-
-
-void
-Element::
-reset(int  flags_, const String&  str)
+reset(const char*  str)
 {
   clear();
 
   kind = ElementKind::string;
 
-  flags = flags_;
-  
-
-  copy(str.ptr);
+  copy(str);
 }
 
 
 void
 Element::
-reset(int  flags_, const Identifier&  id)
+reset(const Identifier&  id)
 {
   clear();
 
   kind = ElementKind::identifier;
 
-  flags = flags_;
-
-
   copy(id.ptr);
+}
+
+
+void
+Element::
+reset(Group*  grp)
+{
+  clear();
+
+  kind = ElementKind::group;
+
+  data.grp = grp;
+}
+
+
+void
+Element::
+reset(const OptionGroup&  grp)
+{
+  clear();
+
+  kind = ElementKind::option_group;
+
+  data.grp = grp.ptr;
+}
+
+
+void
+Element::
+reset(const RepetitionGroup&  grp)
+{
+  clear();
+
+  kind = ElementKind::repetition_group;
+
+  data.grp = grp.ptr;
 }
 
 
@@ -154,21 +181,25 @@ clear()
     switch(get_kind())
     {
       case(ElementKind::null):
-      case(ElementKind::character):
         break;
       case(ElementKind::string):
       case(ElementKind::identifier):
           if(length >= ptr_size)
           {
-            free(ptr);
+            free(data.ptr);
           }
+        break;
+      case(ElementKind::group):
+      case(ElementKind::option_group):
+      case(ElementKind::repetition_group):
+        delete data.grp;
         break;
       default:
         printf("Element clear error");
     }
 
 
-  kind   = ElementKind::null;
+  kind = ElementKind::null;
   length = 0;
 }
 
@@ -177,43 +208,40 @@ ElementKind  Element::get_kind() const{return kind;}
 
 size_t  Element::get_length() const{return length;}
 
-const char*  Element::get_string() const{return((length >= ptr_size)? ptr:buf);}
+const char*  Element::get_string() const{return((length >= ptr_size)? data.ptr:data.buf);}
 
-int Element::get_character() const{return chr;}
-
-bool  Element::test_omittable() const{return(flags&ElementFlag::omittable);}
-bool  Element::test_repeat() const{return(flags&ElementFlag::repeat);}
+Group*  Element::get_group() const{return data.grp;}
 
 
 void
 Element::
 print(Printer&  pr) const
 {
-    if(test_omittable())
-    {
-      pr.putc('?',true);
-    }
-
-
-    if(test_repeat())
-    {
-      pr.putc('*',true);
-    }
-
-
     switch(get_kind())
     {
       case(ElementKind::null):
         pr.puts("(null)");
-        break;
-      case(ElementKind::character):
-        pr.printf("\'%c\'",chr);
         break;
       case(ElementKind::string):
         pr.printf("\"%s\"",get_string());
         break;
       case(ElementKind::identifier):
         pr.puts(get_string());
+        break;
+      case(ElementKind::group):
+        pr.puts("(");
+        data.grp->print(pr);
+        pr.puts(")");
+        break;
+      case(ElementKind::repetition_group):
+        pr.putc('{');
+        data.grp->print(pr);
+        pr.putc('}');
+        break;
+      case(ElementKind::option_group):
+        pr.putc('[');
+        data.grp->print(pr);
+        pr.putc(']');
         break;
       default:
         pr.puts("(unknown)");

@@ -8,8 +8,8 @@ namespace mkf{
 
 Cursor::
 Cursor(const Node&  start):
-node(&start),
-child_index(0){}
+iter(start.children.begin())
+{}
 
 
 
@@ -18,7 +18,7 @@ bool
 Cursor::
 test_ended() const
 {
-  return child_index >= node->children.size();
+  return !static_cast<bool>(iter);
 }
 
 
@@ -26,7 +26,7 @@ const Node&
 Cursor::
 operator*() const
 {
-  return *node;
+  return **iter;
 }
 
 
@@ -34,15 +34,13 @@ bool
 Cursor::
 advance()
 {
-  const auto&  n = node->children.size();
-
-    if(child_index < n)
+    if(iter)
     {
-      ++child_index;
+      ++iter;
     }
 
 
-  return(child_index < n);
+  return !static_cast<bool>(iter);
 }
 
 
@@ -50,7 +48,7 @@ const Node&
 Cursor::
 get() const
 {
-  return *node->children[child_index];
+  return **iter;
 }
 
 

@@ -1,5 +1,4 @@
 #include"mkf_definition.hpp"
-#include"mkf_ascii.hpp"
 #include"mkf_ctype.hpp"
 
 
@@ -12,8 +11,6 @@ namespace mkf{
 
 Definition::
 Definition(const char*  id):
-solid_flag(0),
-separator(0),
 identifier(id)
 {
 }
@@ -32,10 +29,9 @@ Definition&
 Definition::
 operator=(Definition&&  rhs)
 {
+  static_cast<Group&>(*this) = std::move(rhs);
+
   identifier = std::move(rhs.identifier);
-  elements   = std::move(rhs.elements  );
-  solid_flag = rhs.solid_flag;
-  separator  = rhs.separator;
 
   return *this;
 }
@@ -43,7 +39,17 @@ operator=(Definition&&  rhs)
 
 void
 Definition::
-reset(const char*&  p)
+clear()
+{
+  Group::clear();
+
+  identifier.clear();
+}
+
+
+void
+Definition::
+reset(charptr&  p)
 {
   clear();
 
@@ -51,15 +57,7 @@ reset(const char*&  p)
 
   int  n = 0;
 
-  skip_space(p);
-
-    if(std::strncmp(p,"solid ",6) == 0)
-    {
-      p += 6;
-
-      solid_flag = 1;
-    }
-
+  p.skip_space();
 
     if(sscanf(p," %256[0-9a-zA-Z_] = %n",buf,&n) == 1)
     {
@@ -67,7 +65,7 @@ reset(const char*&  p)
 
       p += n;
 
-      scan(p);
+      scan(p,';');
     }
 
   else
@@ -75,35 +73,6 @@ reset(const char*&  p)
       report;
     }
 }
-
-
-void
-Definition::
-clear()
-{
-  elements.clear();
-
-  solid_flag = 0;
-  separator  = 0;
-}
-
-
-void
-Definition::
-append_element(Element&&  el)
-{
-  elements.emplace_back(std::move(el));
-}
-
-
-const ElementList&
-Definition::
-get_list() const
-{
-  return elements;
-}
-
-
 
 
 void
@@ -122,90 +91,15 @@ get_identifier() const
 }
 
 
-bool
-Definition::
-test_solid_flag() const
-{
-  return solid_flag;
-}
-
-
-bool
-Definition::
-test_selective() const
-{
-  return(separator == '|');
-}
-
-
-void
-Definition::
-set_solid_flag()
-{
-  solid_flag = 1;
-}
-
-
-void
-Definition::
-set_separator(int  c)
-{
-    if((c != ',') &&
-       (c != ';') &&
-       (c != ':') &&
-       (c != '|'))
-    {
-      report;
-      printf("%c  使えないセパレーターです\n",c);
-    }
-
-
-    if(!separator)
-    {
-      separator = c;
-    }
-
-  else
-    if(separator != c)
-    {
-      report;
-      printf("%c = %c  違うセパレーターが混在しています\n",separator,c);
-    }
-}
-
-
 
 
 void
 Definition::
 print(Printer&  pr) const
 {
-  int  sep = (!separator? ':':separator);
+  printf("[%s] = ",identifier.data());
 
-
-  pr.printf("%s[%s] = ",solid_flag? "SOLID":"",identifier.data());
-
-    if(elements.size())
-    {
-      auto   it = elements.cbegin();
-      auto  end = elements.cend();
-
-        for(;;)
-        {
-          it->print(pr);
-
-            if(++it != end)
-            {
-              pr.putc(sep,true);
-            }
-
-           else
-            {
-              break;
-            }
-        }
-    }
-
+  Group::print(pr);
 
   pr.putc(';',true);
 }
