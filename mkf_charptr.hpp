@@ -31,6 +31,7 @@ public:
   operator const char*() const;
 
   bool  operator==(const charptr&  rhs) const;
+  bool  operator!=(const charptr&  rhs) const;
   bool  operator< (const charptr&  rhs) const;
 
   charptr&  operator=(const charptr&  rhs);

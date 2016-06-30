@@ -178,6 +178,28 @@ public:
     return Iterator(nullptr);
   }
 
+
+  Iterator  erase_after(const Iterator&  it)
+  {
+    auto  target = it.ptr->next               ;
+                   it.ptr->next = target->next;
+
+      if(last == target)
+      {
+        last = target->next;
+
+          if(last == nullptr)
+          {
+            first = nullptr;
+          }
+      }
+
+
+    delete target;
+
+    return Iterator(it.ptr->next);
+  }
+
 };
 
 

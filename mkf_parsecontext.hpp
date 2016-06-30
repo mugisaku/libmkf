@@ -36,8 +36,7 @@ public:
 
   void  push_error(const charptr&  p);
 
-  void  push(const Definition*  def);
-  void  pop();
+  bool  enter(const char*  defname, charptr&  p, Node&  node);
 
   void  print() const;
 

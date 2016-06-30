@@ -37,26 +37,54 @@ push_error(const charptr&  p)
 }
 
 
-void
+bool
 ParseContext::
-push(const Definition*  def)
+enter(const char*  defname, charptr&  p, Node&  node)
 {
-  defchain.emplace_back(def);
-}
+  auto  ctype = get_ctype(defname);
 
-
-void
-ParseContext::
-pop()
-{
-    if(defchain.empty())
+    if(ctype != CType::null)
     {
-      report;
-      return;
+      return p.compare_ctype(ctype,node);
     }
 
 
+  auto  def = book.find(defname);
+
+    if(!def)
+    {
+      discontinue(ErrorKind::null,p,"definition [%s] is not found.",defname);
+    }
+
+
+    if(defchain.size() >= 256)
+    {
+      discontinue(ErrorKind::null,p,"再帰深度が深すぎます。循環定義の恐れがあります");
+    }
+
+
+  defchain.emplace_back(def);
+
+  auto  child = new Node(defname);
+
+  auto  res = def->compare(*this,p,*child,0);
+
   defchain.pop_back();
+
+    if(res)
+    {
+      node.append(child);
+    }
+
+  else
+    {
+      delete child;
+
+      return false;
+    }
+
+
+  return true;
 }
 
 
@@ -123,7 +151,15 @@ operator()(const std::string&  s)
 
             if(p == tmp)
             {
-              discontinue(ErrorKind::null,error_p,"ループしました");
+              p.skip_space();
+
+                if(!p)
+                {
+                  break;
+                }
+
+
+              discontinue(ErrorKind::null,error_p,"[%s %s] ループしました",__FILE__,__func__);
             }
 
 

@@ -39,6 +39,7 @@ charptr::operator const char*() const{return p0;}
 
 
 bool  charptr::operator==(const charptr&  rhs) const{return(p0 == rhs.p0);}
+bool  charptr::operator!=(const charptr&  rhs) const{return(p0 != rhs.p0);}
 bool  charptr::operator< (const charptr&  rhs) const{return(p0 <  rhs.p0);}
 
 

@@ -27,49 +27,7 @@ compare(ParseContext&  parser, charptr&  p, Node&  node) const
         return p.compare_string(get_string(),get_length(),node);
         break;
       case(ElementKind::identifier):
-        {
-          auto  defname = get_string();
-
-          auto  ctype = get_ctype(defname);
-
-            if(ctype != CType::null)
-            {
-              return p.compare_ctype(ctype,node);
-            }
-
-          else
-            {
-              auto  def = parser.book.find(defname);
-
-                if(def)
-                {
-                  auto  child = new Node(defname);
-
-                  parser.push(def);
-
-                  auto  res = def->compare(parser,p,*child,0);
-
-                  parser.pop();
-
-                    if(res)
-                    {
-                      node.append(child);
-
-                      return true;
-                    }
-
-                  else
-                    {
-                      delete child;
-                    }
-                }
-
-              else
-                {
-                  discontinue(ErrorKind::null,p,"definition [%s] is not found.",defname);
-                }
-            }
-        }
+        return parser.enter(get_string(),p,node);
         break;
 
       case(ElementKind::group           ): return data.grp->compare(parser,p,node,0                          );break;
