@@ -149,7 +149,7 @@ compare_string(const char*  string, size_t  length, Node&  node)
     {
         for(int  i = 0;  i < length;  ++i)
         {
-          node.append(new Node("<STRING>",p0[i]));
+          node.append(new Node(string,p0[i]));
         }
 
 

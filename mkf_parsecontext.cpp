@@ -101,15 +101,11 @@ release_root()
 
 const Node*
 ParseContext::
-operator()(const std::string&  s)
+get(const Definition&  def, const std::string&  s)
 {
-  delete root;
-         root = new Node;
-
+  root = new Node;
 
   charptr  p(s);
-
-  auto&  def = book.get_main_definition();
 
     try
     {
@@ -184,6 +180,42 @@ operator()(const std::string&  s)
 
 
   return root;
+}
+
+
+const Node*
+ParseContext::
+operator()(const std::string&  s)
+{
+  delete root          ;
+         root = nullptr;
+
+
+  return get(book.get_main_definition(),s);
+}
+
+
+
+
+const Node*
+ParseContext::
+operator()(const char*  defname, const std::string&  s)
+{
+  delete root          ;
+         root = nullptr;
+
+
+  auto  def = book.find(defname);
+
+    if(!def)
+    {
+      printf("定義%sが見つかりません\n",defname);
+
+      return nullptr;
+    }
+
+
+  return get(*def,s);
 }
 
 
