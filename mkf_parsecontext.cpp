@@ -123,7 +123,7 @@ get(const Definition&  def, const std::string&  s)
             {
               p.skip_space();
 
-                if(!p)
+                if(!p || !*p)
                 {
                   break;
                 }

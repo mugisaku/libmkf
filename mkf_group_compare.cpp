@@ -47,12 +47,6 @@ compare_for_anyone(ParseContext&  parser, charptr&  p, Node&  node) const
 {
     for(auto&  elm: *this)
     {
-        if(!p)
-        {
-          return false;
-        }
-
-
         if(compare_element(parser,p,node,elm))
         {
           return true;
@@ -70,12 +64,6 @@ compare_for_all(ParseContext&  parser, charptr&  p, Node&  node) const
 {
     for(auto&  elm: *this)
     {
-        if(!p)
-        {
-          return false;
-        }
-
-
         if(!compare_element(parser,p,node,elm))
         {
           return false;
