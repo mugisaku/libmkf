@@ -16,9 +16,7 @@ using DefinitionList = std::list<Definition>;
 class
 Book
 {
-  Definition  main_definition;
-
-  DefinitionList  sub_definitions;
+  DefinitionList  definitions;
 
 
   Definition  read_definition(const Node&  base);
@@ -35,12 +33,9 @@ Book
 
 
 public:
-  const Definition&          get_main_definition() const;
-  const DefinitionList&  get_sub_definition_list() const;
+  const DefinitionList&  get_definition_list() const;
 
-  void  change_main_definition(Definition&&  def);
-
-  void  append_sub_definition(Definition&&  def);
+  void  append_definition(Definition&&  def);
 
   bool  make(const std::string&  s);
   bool  make(const Node&  src);

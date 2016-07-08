@@ -191,7 +191,7 @@ operator()(const std::string&  s)
          root = nullptr;
 
 
-  return get(book.get_main_definition(),s);
+  return get(book.get_definition_list().front(),s);
 }
 
 
