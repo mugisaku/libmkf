@@ -32,7 +32,7 @@ Group(charptr&  p, int  close)
 
 
 Group::
-Group(Group&&  rhs)
+Group(Group&&  rhs) noexcept
 {
   *this = std::move(rhs);
 }

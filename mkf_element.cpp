@@ -56,7 +56,7 @@ kind(ElementKind::null)
 
 
 Element::
-Element(Element&&  rhs)
+Element(Element&&  rhs) noexcept
 {
   *this = std::move(rhs);
 }

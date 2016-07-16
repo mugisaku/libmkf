@@ -66,7 +66,8 @@ Element
    Element(Object*       obj_);
    Element(std::string*  str_);
    Element(Array*        arr_);
-   Element(Element&&  rhs);
+   Element(const Element&)=delete;
+   Element(Element&&  rhs) noexcept;
   ~Element();
 
 

@@ -17,7 +17,7 @@ identifier(id)
 
 
 Definition::
-Definition(Definition&&  rhs)
+Definition(Definition&&  rhs) noexcept
 {
   *this = std::move(rhs);
 }

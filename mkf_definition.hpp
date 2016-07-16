@@ -19,7 +19,8 @@ Definition: public Group
 
 public:
   Definition(const char*  id="");
-  Definition(Definition&&  rhs);
+  Definition(const Definition&)=delete;
+  Definition(Definition&&  rhs) noexcept;
 
 
   Definition&  operator=(Definition&&  rhs);

@@ -106,7 +106,8 @@ public:
   Element(Group*  grp);
   Element(const OptionGroup&      grp);
   Element(const RepetitionGroup&  grp);
-  Element(Element&&  rhs);
+  Element(const Element&)=delete;
+  Element(Element&&  rhs) noexcept;
  ~Element();
 
 

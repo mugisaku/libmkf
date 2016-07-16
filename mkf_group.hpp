@@ -22,7 +22,8 @@ public:
    Group();
    Group(int  separator_, List<Element>&&  element_list_);
    Group(charptr&  p, int  close);
-   Group(Group&&  rhs);
+   Group(const Group&)=delete;
+   Group(Group&&  rhs) noexcept;
   ~Group();
 
 

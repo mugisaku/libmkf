@@ -27,7 +27,8 @@ Node
   NodeList  children;
 
    Node(const char*  defname_="", int  character_=0);
-   Node(Node&&  rhs);
+   Node(const Node&)=delete;
+   Node(Node&&  rhs) noexcept;
   ~Node();
 
 

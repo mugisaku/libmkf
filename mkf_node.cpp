@@ -16,7 +16,7 @@ character(character_)
 
 
 Node::
-Node(Node&&  rhs)
+Node(Node&&  rhs) noexcept
 {
   *this = std::move(rhs);
 }

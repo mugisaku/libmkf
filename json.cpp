@@ -15,7 +15,7 @@ Element::Element(double          f_): kind(ElementKind::null){reset(f_);}
 Element::Element(Object*       obj_): kind(ElementKind::null){reset(obj_);}
 Element::Element(std::string*  str_): kind(ElementKind::null){reset(str_);}
 Element::Element(Array*        arr_): kind(ElementKind::null){reset(arr_);}
-Element::Element(Element&&  rhs): kind(ElementKind::null){*this = std::move(rhs);}
+Element::Element(Element&&  rhs) noexcept: kind(ElementKind::null){*this = std::move(rhs);}
 Element::~Element(){clear();}
 
 
