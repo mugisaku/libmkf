@@ -15,6 +15,9 @@ get_ctype_name(CType  type)
 {
     switch(type)
     {
+      case(CType::print ): return "print";
+      case(CType::graph ): return "graph";
+      case(CType::blank ): return "blank";
       case(CType::digit ): return "digit";
       case(CType::xdigit): return "xdigit";
       case(CType::lower ): return "lower";
@@ -40,6 +43,9 @@ get_ctype(const char*  name)
       name += 6;
 
            if(std::strcmp(name,"digit")  == 0){return CType::digit;}
+      else if(std::strcmp(name,"graph")  == 0){return CType::graph;}
+      else if(std::strcmp(name,"print")  == 0){return CType::print;}
+      else if(std::strcmp(name,"blank")  == 0){return CType::blank;}
       else if(std::strcmp(name,"xdigit") == 0){return CType::xdigit;}
       else if(std::strcmp(name,"lower")  == 0){return CType::lower;}
       else if(std::strcmp(name,"upper")  == 0){return CType::upper;}
@@ -60,6 +66,9 @@ test_ctype_code(int  c, CType  type)
 {
     switch(type)
     {
+      case(CType::print ): return isprint(c);
+      case(CType::graph ): return isgraph(c);
+      case(CType::blank ): return isblank(c);
       case(CType::digit ): return isdigit(c);
       case(CType::xdigit): return isxdigit(c);
       case(CType::lower ): return islower(c);

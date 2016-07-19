@@ -86,6 +86,8 @@ main(int  argc, char**  argv)
 
   book.make(def);
 
+//  book.print();
+
   constexpr int  n = 6;
 
   int  count = 0;

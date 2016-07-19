@@ -11,6 +11,9 @@ enum class
 CType
 {
   null,
+  print,
+  graph,
+  blank,
   digit,
   xdigit,
   lower,

@@ -23,21 +23,97 @@ compare_element(ParseContext&  parser, charptr&  p, Node&  node, const Element& 
 
       p.skip_space();
 
-//        if(p)
+        if(!elm.compare(parser,p,node))
         {
-            if(!elm.compare(parser,p,node))
-            {
-              parser.push_error(p);
+          parser.push_error(p);
 
-              p = start;
+          p = start;
 
-              return false;
-            }
+          return false;
         }
     }
 
 
   return true;
+}
+
+
+namespace{
+bool
+compare_exclusion(Group::Iterator  it,
+                  Group::Iterator  end,
+                  ParseContext&  parser,
+                  const charptr&  start_p,
+                  const charptr&    end_p,
+                        charptr&        p,
+                  Node&  parent, Node&  node)
+{
+  Node  tmpnode;
+
+    while(++it != end)
+    {
+      p = start_p;
+
+        if(it->compare(parser,p,tmpnode))
+        {
+          parser.push_error(start_p);
+
+          p = start_p;
+
+          return false;
+        }
+    }
+
+
+  p = end_p;
+
+  
+
+  parent.append(node.children.front());
+
+  node.children.front() = nullptr;
+
+  return true;
+}
+}
+
+
+bool
+Group::
+compare_with_exclusion(ParseContext&  parser, charptr&  p, Node&  node) const
+{
+  auto  it = begin();
+  auto   e =   end();
+
+  auto  start_p = p;
+
+  Node  tmpnode;
+
+    if(it->compare(parser,p,tmpnode))
+    {
+      auto  end_p = p;
+
+      return compare_exclusion(it,e,parser,start_p,end_p,p,node,tmpnode);
+    }
+
+  else
+    {
+      p = start_p;
+
+      p.skip_space();
+
+      start_p = p;
+
+        if(it->compare(parser,p,tmpnode))
+        {
+          auto  end_p = p;
+
+          return compare_exclusion(it,e,parser,start_p,end_p,p,node,tmpnode);
+        }
+    }
+
+
+  return false;
 }
 
 
@@ -79,8 +155,9 @@ bool
 Group::
 compare(ParseContext&  parser, charptr&  p, Node&  node) const
 {
-    if(test_alternation()){return compare_for_anyone(parser,p,node);}
-  else                    {return compare_for_all(   parser,p,node);}
+    if(test_alternation()){return compare_for_anyone(    parser,p,node);}
+    if(test_exclusion()  ){return compare_with_exclusion(parser,p,node);}
+  else                    {return compare_for_all(       parser,p,node);}
 
 
   return false;

@@ -4,6 +4,7 @@ definition = identifier:"=":element:{separator:element}:";";
 separator =
   ","|
   ":"|
+  "-"|
   "|";
 
 

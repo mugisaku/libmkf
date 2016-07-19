@@ -24,7 +24,7 @@ namespace mkf{
 
 
 enum class
-ElementKind: uint16_t
+ElementKind: uint8_t
 {
   null,
   string,

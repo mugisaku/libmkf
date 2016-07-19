@@ -65,6 +65,14 @@ test_alternation() const
 }
 
 
+bool
+Group::
+test_exclusion() const
+{
+  return(separator == '-');
+}
+
+
 void
 Group::
 print(Printer&  pr) const

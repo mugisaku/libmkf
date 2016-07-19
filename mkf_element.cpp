@@ -56,7 +56,8 @@ kind(ElementKind::null)
 
 
 Element::
-Element(Element&&  rhs) noexcept
+Element(Element&&  rhs) noexcept:
+kind(ElementKind::null)
 {
   *this = std::move(rhs);
 }
@@ -200,6 +201,7 @@ clear()
 
 
   kind = ElementKind::null;
+
   length = 0;
 }
 
