@@ -53,25 +53,37 @@ reset(charptr&  p)
 {
   clear();
 
-  char  buf[256];
+  p.skip_space();
 
-  int  n = 0;
+    for(;;)
+    {
+      auto  c = p->unicode;
+
+        if(isalnum(c) || (c == '_'))
+        {
+          identifier.push_back(c);
+
+          ++p;
+        }
+
+      else
+        {
+          break;
+        }
+    }
+
 
   p.skip_space();
 
-    if(sscanf(p," %256[0-9a-zA-Z_] = %n",buf,&n) == 1)
+    if(p->unicode == '=')
     {
-      identifier = buf;
-
-      p += n;
-
-      scan(p,';');
+      ++p;
     }
 
-  else
-    {
-      report;
-    }
+
+  p.skip_space();
+
+  scan(p,';');
 }
 
 
@@ -97,7 +109,15 @@ void
 Definition::
 print(Printer&  pr) const
 {
-  printf("[%s] = ",identifier.data());
+  printf("[");
+
+    for(auto  c: identifier)
+    {
+      printf("%c",c);
+    }
+
+
+  printf("] = ");
 
   Group::print(pr);
 

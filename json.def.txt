@@ -49,7 +49,7 @@ string = "\"":{string_element}:"\"";
 string_element =
                      " "|
              CTYPE_alnum|
-              CTYPE_utf8|
+           CTYPE_unicode|
                      "!"|
                      "#"|
                      "$"|

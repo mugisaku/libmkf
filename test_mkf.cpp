@@ -16,7 +16,11 @@ main(int  argc, char**  argv)
 
     if(argc >= 2)
     {
-      auto  def = load_file(argv[1]);
+      minpp::Stream  s;
+
+      s.reset(minpp::FilePath(argv[1]));
+
+      minpp::String  def(s);
 
         if(!book.make(def))
         {
@@ -30,7 +34,9 @@ main(int  argc, char**  argv)
 
         if(argc >= 3)
         {
-          auto  txt = load_file(argv[2]);
+          s.reset(minpp::FilePath(argv[2]));
+
+          minpp::String  txt(s);
 
           ParseContext  ctx(book);
 

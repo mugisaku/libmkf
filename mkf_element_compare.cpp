@@ -24,10 +24,10 @@ compare(ParseContext&  parser, charptr&  p, Node&  node) const
       case(ElementKind::null):
         break;
       case(ElementKind::string):
-        return p.compare_string(get_string(),get_length(),node);
+        return p.compare_string(*get_string(),node);
         break;
       case(ElementKind::identifier):
-        return parser.enter(get_string(),p,node);
+        return parser.enter(get_string()->data(),p,node);
         break;
 
       case(ElementKind::group           ): return data.grp->compare(parser,p,node,0                          );break;

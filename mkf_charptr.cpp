@@ -1,5 +1,4 @@
 #include"mkf_charptr.hpp"
-#include<cstring>
 
 
 
@@ -11,31 +10,27 @@ constexpr int  start_number = 1;
 
 
 charptr::
-charptr(const char*  p0_, const char*  p1_):
-p0(p0_),
-p1(p1_),
-column_number(start_number),
-line_number(start_number)
+charptr():
+p0(nullptr),
+p1(nullptr)
 {
 }
 
 
 charptr::
-charptr(const std::string&  s):
+charptr(const minpp::String&  s):
 p0(s.data()         ),
-p1(s.data()+s.size()),
-column_number(start_number),
-line_number(start_number)
+p1(s.data()+s.size())
 {
 }
 
 
 
 
-const char&  charptr::operator*() const{return *p0;}
+const minpp::Character&  charptr::operator*() const{return *p0;}
+const minpp::Character*  charptr::operator->() const{return p0;}
 
 charptr::operator bool() const{return(p0 < p1);}
-charptr::operator const char*() const{return p0;}
 
 
 bool  charptr::operator==(const charptr&  rhs) const{return(p0 == rhs.p0);}
@@ -48,9 +43,7 @@ charptr::
 operator=(const charptr&  rhs)
 {
   p0 = rhs.p0;
-
-  column_number = rhs.column_number;
-  line_number   =   rhs.line_number;
+  p1 = rhs.p1;
 
   return *this;
 }
@@ -74,17 +67,7 @@ charptr&
 charptr::
 operator++()
 {
-    if(*p0++ == '\n')
-    {
-      column_number  = start_number;
-        line_number += 1;
-    }
-
-  else
-    {
-      column_number += 1;
-    }
-
+  ++p0;
 
   return *this;
 }
@@ -106,28 +89,20 @@ void
 charptr::
 skip_space()
 {
-    while(isspace(*p0))
+    while(isspace(p0->unicode))
     {
       ++(*this);
     }
 }
 
 
-const char*  charptr::get_raw_pointer() const{return p0;}
-
-int  charptr::get_column_number() const{return column_number;}
-int    charptr::get_line_number() const{return   line_number;}
-
-
-
-
 size_t
 charptr::
 compare_ctype(CType  type, Node&  node)
 {
-  auto  c = *p0;
+  auto&  c = *p0;
 
-    if(test_ctype_code(c,type))
+    if(test_ctype_code(c.unicode,type))
     {
       node.append(new Node(get_ctype_name(type),c));
 
@@ -141,52 +116,50 @@ compare_ctype(CType  type, Node&  node)
 }
 
 
+bool
+charptr::
+test(const std::string&  s) const
+{
+  auto  a = p0;
+  auto  b = s.data();
+  auto  n = s.size();
+
+    while(n--)
+    {
+      auto  byte_number = minpp::get_utf8_byte_number(b);
+
+      auto  c = minpp::to_char16(b,byte_number);
+
+      b += byte_number;
+
+        if(a++->unicode != c)
+        {
+          return false;
+        }
+    }
+
+
+  return true;
+}
+
+
 size_t
 charptr::
-compare_string(const char*  string, size_t  length, Node&  node)
+compare_string(const std::string&  s, Node&  node)
 {
-    if(std::strncmp(p0,string,length) == 0)
+    if(test(s))
     {
-        for(int  i = 0;  i < length;  ++i)
+        for(int  i = 0;  i < s.size();  ++i)
         {
-          node.append(new Node(string,p0[i]));
+          node.append(new Node(s.data(),*p0++));
         }
 
 
-      (*this) += length;
-
-      return length;
+      return s.size();
     }
 
 
   return 0;
-}
-
-
-void
-charptr::
-print() const
-{
-  printf("[  line:%4d]\n",  line_number);
-  printf("[column:%4d]\n",column_number);
-
-  auto  p = p0;
-
-    if(p)
-    {
-        for(;;)
-        {
-          int  c = *p++;
-
-            if(!c || (c == '\n'))
-            {
-              break;
-            }
-
-
-          fputc(c,stdout);
-        }
-    }
 }
 
 

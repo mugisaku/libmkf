@@ -13,6 +13,7 @@
 #include<initializer_list>
 #include"mkf_node.hpp"
 #include"mkf_charptr.hpp"
+#include"libminpp/minpp.hpp"
 
 
 #ifndef report
@@ -24,7 +25,7 @@ namespace mkf{
 
 
 enum class
-ElementKind: uint8_t
+ElementKind: uint16_t
 {
   null,
   string,
@@ -47,9 +48,9 @@ struct Printer;
 struct
 Identifier
 {
-  const char*  ptr;
+  std::string*  s;
 
-  constexpr explicit Identifier(const char*  p): ptr(p){}
+  constexpr explicit Identifier(std::string*  s_): s(s_){}
 
 };
 
@@ -81,27 +82,22 @@ constexpr int  repetition_flag = 2;
 class
 Element
 {
-  static constexpr auto  ptr_size = sizeof(char*);
-
   ElementKind  kind;
 
-  uint16_t  length;
+  minpp::Position  position;
+
+  minpp::Index  id_index;
 
   union{
-    char*  ptr;
-
-    char  buf[ptr_size];
-
-    Group*  grp;
+    std::string*  str;
+    Group*        grp;
 
   } data;
 
 
-  void  copy(const char*  s);
-
 public:
   Element();
-  Element(const char*       str);
+  Element(std::string*  s);
   Element(const Identifier&  id);
   Element(Group*  grp);
   Element(const OptionGroup&      grp);
@@ -113,7 +109,7 @@ public:
 
   Element&  operator=(Element&&  rhs);
 
-  void  reset(const char*  str);
+  void  reset(std::string*  s);
   void  reset(const Identifier&  id);
   void  reset(Group*  grp);
   void  reset(const OptionGroup&      grp);
@@ -123,10 +119,8 @@ public:
 
   ElementKind  get_kind() const;
 
-  size_t  get_length() const;
-
-  const char*  get_string() const;
-  Group*       get_group() const;
+  const std::string*  get_string() const;
+  Group*              get_group() const;
 
   void  print(Printer&  pr) const;
 

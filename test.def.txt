@@ -1,0 +1,3 @@
+element = {(CTYPE_alpha|CTYPE_punct)};
+
+

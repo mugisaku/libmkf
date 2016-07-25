@@ -82,22 +82,28 @@ all: objects test_mkf$(EXE_EXT) randjson$(EXE_EXT) test_mkfjson$(EXE_EXT)
 
 
 clean:
+	make -C libminpp clean
 	rm -f $(OBJ) test_mkf$(EXE_EXT)         test_mkf.o  \
               randjson$(EXE_EXT)         randjson.o  \
               test_mkfjson$(EXE_EXT) test_mkfjson.o  \
 
 
 objects: $(OBJ)
+	make -C libminpp objects
 
 
-test_mkf$(EXE_EXT): $(OBJ) test_mkf.o
-	$(CXX) -o $@ $(OBJ) test_mkf.o $(LDFLAGS)
+archive: clean
+	tar -cJ ../libmkf-git > ../libmkf-git.tar.xz
 
-randjson$(EXE_EXT): $(OBJ) randjson.o
-	$(CXX) -o $@ $(OBJ) randjson.o $(LDFLAGS)
 
-test_mkfjson$(EXE_EXT): $(OBJ) test_mkfjson.o
-	$(CXX) -o $@ $(OBJ) test_mkfjson.o $(LDFLAGS)
+test_mkf$(EXE_EXT): $(OBJ) objects test_mkf.o
+	$(CXX) -o $@ $(OBJ) libminpp/*.o test_mkf.o $(LDFLAGS)
+
+randjson$(EXE_EXT): $(OBJ) objects randjson.o
+	$(CXX) -o $@ $(OBJ) libminpp/*.o randjson.o $(LDFLAGS)
+
+test_mkfjson$(EXE_EXT): $(OBJ) objects test_mkfjson.o
+	$(CXX) -o $@ $(OBJ) libminpp/*.o test_mkfjson.o $(LDFLAGS)
 
 
 

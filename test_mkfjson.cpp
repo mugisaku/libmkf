@@ -23,14 +23,16 @@ get_tree(const Book&  book, int  n, bool  check=false)
 
       rewind(f);
 
-      auto  s = to_string(f);
+      minpp::Stream  s(f);
+
+      minpp::String  txt(s);
 
       fclose(f);
 
 
       ParseContext  ctx(book);
 
-      auto  tree = ctx(s);
+      auto  tree = ctx(txt);
 
         if(tree)
         {
@@ -82,7 +84,12 @@ main(int  argc, char**  argv)
 {
   Book  book;
 
-  auto  def = load_file("json.def.txt");
+  minpp::Stream  s;
+
+  s.reset(minpp::FilePath("json.def.txt"));
+
+
+  minpp::String  def(s);
 
   book.make(def);
 

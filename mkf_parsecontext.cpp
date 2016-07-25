@@ -101,7 +101,7 @@ release_root()
 
 const Node*
 ParseContext::
-get(const Definition&  def, const std::string&  s)
+get(const Definition&  def, const minpp::String&  s)
 {
   root = new Node;
 
@@ -123,7 +123,7 @@ get(const Definition&  def, const std::string&  s)
             {
               p.skip_space();
 
-                if(!p || !*p)
+                if(!p || !p->unicode)
                 {
                   break;
                 }
@@ -185,7 +185,7 @@ get(const Definition&  def, const std::string&  s)
 
 const Node*
 ParseContext::
-operator()(const std::string&  s)
+operator()(const minpp::String&  s)
 {
   delete root          ;
          root = nullptr;
@@ -199,7 +199,7 @@ operator()(const std::string&  s)
 
 const Node*
 ParseContext::
-operator()(const char*  defname, const std::string&  s)
+operator()(const char*  defname, const minpp::String&  s)
 {
   delete root          ;
          root = nullptr;

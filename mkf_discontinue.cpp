@@ -13,7 +13,7 @@ namespace mkf{
 void
 discontinue(ErrorKind  k, const charptr&  p, const char*  fmt, ...)
 {
-  p.print();
+  (*p).print();
 
   printf("\n");
 

@@ -35,26 +35,26 @@ get_code(int  c)
 Element
 scan_identifier(charptr&  p)
 {
-  tmp_string<>  s;
+  auto  s = new std::string;
 
-    while(isalnum(*p) || (*p == '_'))
+    while(isalnum(p->unicode) || (p->unicode == '_'))
     {
-      s.push(*p++);
+      s->append(minpp::UTF8Chunk(p++->unicode).codes);
     }
 
 
-  return Element(Identifier(s.data()));
+  return Element(Identifier(s));
 }
 
 
 Element
 scan_string(charptr&  p)
 {
-  tmp_string<>  s;
+  auto  s = new std::string;
 
     for(;;)
     {
-      int  c = *p;
+      int  c = p->unicode;
 
         if(!c)
         {
@@ -74,17 +74,19 @@ scan_string(charptr&  p)
       else
         if(c == '\\')
         {
-          c = get_code(*++p);
+          ++p;
+
+          c = get_code(p->unicode);
         }
 
 
-      s.push(c);
+      s->append(minpp::UTF8Chunk(c).codes);
 
       ++p;
     }
 
 
-  return Element(s.data());
+  return Element(s);
 }
 
 
@@ -95,14 +97,14 @@ scan_element(charptr&  p)
 
   Element  el;
 
-    switch(*p)
+    switch(p->unicode)
     {
       case('\"'): el = scan_string(++p);break;
       case('[' ): el.reset(    OptionGroup(new Group(++p,']')));break;
       case('{' ): el.reset(RepetitionGroup(new Group(++p,'}')));break;
       case('(' ): el.reset(               (new Group(++p,')')));break;
       default:
-          if(isalnum(*p) || (*p == '_'))
+          if(isalnum(p->unicode) || (p->unicode == '_'))
           {
             el = scan_identifier(p);
           }
@@ -133,7 +135,7 @@ scan(charptr&  p, int  close)
 
   auto  c = *p++;
 
-    if(c == close)
+    if(c.unicode == close)
     {
       separator = 0;
 
@@ -141,9 +143,9 @@ scan(charptr&  p, int  close)
     }
 
 
-  separator = c;
+  separator = c.unicode;
 
-  const char*  last = nullptr;
+  const minpp::Character*  last = nullptr;
 
     for(;;)
     {
@@ -151,31 +153,31 @@ scan(charptr&  p, int  close)
 
       c = *p++;
 
-        if(c == close)
+        if(c.unicode == close)
         {
           break;
         }
 
       else
-        if(!c)
+        if(!c.unicode)
         {
           discontinue(ErrorKind::null,p,"\';\'で閉じられていません");
         }
 
       else
-        if(c != separator)
+        if(c.unicode != separator)
         {
           discontinue(ErrorKind::null,p,"複数のセパレーターが混在しています");
         }
 
 
-        if(last == p)
+        if(last == &*p)
         {
           discontinue(ErrorKind::null,p,"ループしました");
         }
 
 
-      last = p;
+      last = &*p;
     }
 }
 

@@ -16,10 +16,10 @@ kind(ElementKind::null)
 
 
 Element::
-Element(const char*  str):
+Element(std::string*  s):
 kind(ElementKind::null)
 {
-  reset(str);
+  reset(s);
 }
 
 
@@ -79,8 +79,6 @@ operator=(Element&&  rhs)
   kind = rhs.kind                    ;
          rhs.kind = ElementKind::null;
 
-  length = rhs.length;
-
   data = rhs.data;
 
   return *this;
@@ -89,41 +87,13 @@ operator=(Element&&  rhs)
 
 void
 Element::
-copy(const char*  s)
-{
-  length = std::strlen(s);
-
-    if(length >= ptr_size)
-    {
-      data.ptr = static_cast<char*>(malloc(length+1));
-
-      std::strcpy(data.ptr,s);
-    }
-
-  else
-    {
-      char*  dst = data.buf;
-
-        while(*s)
-        {
-          *dst++= *s++;
-        }
-
-
-      *dst = 0;
-    }
-}
-
-
-void
-Element::
-reset(const char*  str)
+reset(std::string*  s)
 {
   clear();
 
   kind = ElementKind::string;
 
-  copy(str);
+  data.str = s;
 }
 
 
@@ -135,7 +105,7 @@ reset(const Identifier&  id)
 
   kind = ElementKind::identifier;
 
-  copy(id.ptr);
+  data.str = id.s;
 }
 
 
@@ -185,10 +155,7 @@ clear()
         break;
       case(ElementKind::string):
       case(ElementKind::identifier):
-          if(length >= ptr_size)
-          {
-            free(data.ptr);
-          }
+        delete data.str;
         break;
       case(ElementKind::group):
       case(ElementKind::option_group):
@@ -201,16 +168,12 @@ clear()
 
 
   kind = ElementKind::null;
-
-  length = 0;
 }
 
 
 ElementKind  Element::get_kind() const{return kind;}
 
-size_t  Element::get_length() const{return length;}
-
-const char*  Element::get_string() const{return((length >= ptr_size)? data.ptr:data.buf);}
+const std::string*  Element::get_string() const{return data.str;}
 
 Group*  Element::get_group() const{return data.grp;}
 
@@ -225,10 +188,10 @@ print(Printer&  pr) const
         pr.puts("(null)");
         break;
       case(ElementKind::string):
-        pr.printf("\"%s\"",get_string());
+        pr.printf("\"%s\"",get_string()->data());
         break;
       case(ElementKind::identifier):
-        pr.puts(get_string());
+        pr.puts(get_string()->data());
         break;
       case(ElementKind::group):
         pr.puts("(");

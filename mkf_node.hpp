@@ -3,6 +3,7 @@
 
 
 #include<string>
+#include"libminpp/minpp.hpp"
 #include"mkf_list.hpp"
 #include"mkf_discontinue.hpp"
 #include"mkf_print.hpp"
@@ -22,11 +23,11 @@ Node
 {
   const char*  defname;
 
-  int  character;
+  minpp::Character  character;
 
   NodeList  children;
 
-   Node(const char*  defname_="", int  character_=0);
+   Node(const char*  defname_="", minpp::Character  character_=minpp::Character());
    Node(const Node&)=delete;
    Node(Node&&  rhs) noexcept;
   ~Node();
@@ -40,7 +41,7 @@ Node
 
   void  append(Node*  child);
 
-  void  collect_characters(std::string&  s) const;
+  void  collect_characters(minpp::String&  buf) const;
 
   void  print(FILE*  f=stdout) const;
   void  print(Printer&  pr) const;

@@ -28,7 +28,7 @@ append_definition(Definition&&  def)
 
 bool
 Book::
-make(const std::string&  s)
+make(const minpp::String&  s)
 {
   charptr  p(s);
 
@@ -36,7 +36,7 @@ make(const std::string&  s)
     {
         while(p)
         {
-          const char*  last = p;
+          const minpp::Character*  last = &*p;
 
           definitions.emplace_back();
 
@@ -45,7 +45,7 @@ make(const std::string&  s)
 
           p.skip_space();
 
-            if(p.get_raw_pointer() == last)
+            if(&*p == last)
             {
               discontinue(ErrorKind::null,p,"");
             }
