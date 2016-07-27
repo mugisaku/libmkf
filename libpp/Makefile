@@ -51,12 +51,14 @@ ifeq ($(delay),1)
 endif
 
 
-OBJ +=                        \
+OBJ +=                     \
   pp_position.o            \
   pp_folder.o              \
   pp_stream.o              \
   pp_character.o           \
   pp_string.o              \
+  pp_string__reset.o       \
+  pp_string__to_uint.o     \
   pp_unicode.o             \
   pp_utf8chunk.o           \
 

@@ -26,19 +26,27 @@ ErrorOnIncludeOnce
 
 
 class
-String: public std::vector<Character>
+String: public std::basic_string<Character>
 {
 
 public:
   String();
-
+  explicit String(const char16_t*  s);
   explicit String(Stream&  s);
+
+
+  void  reset(Stream&  s);
 
   std::string  to_stdstring() const;
 
   void  print(FILE*  f=stdout, bool  verbose=false) const;
 
 };
+
+
+unsigned int  to_uint(const Character*  ptr, const Character**  endptr, int  base=10);
+
+void  print(const Character*  s);
 
 
 }

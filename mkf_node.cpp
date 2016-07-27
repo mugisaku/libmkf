@@ -1,4 +1,5 @@
 #include"mkf_node.hpp"
+#include"libpp/pp.hpp"
 #include<cstring>
 
 
@@ -89,6 +90,25 @@ collect_characters(pp::String&  s) const
     if(children.empty())
     {
       s.push_back(character);
+    }
+
+  else
+    {
+        for(auto  child: children)
+        {
+          child->collect_characters(s);
+        }
+    }
+}
+
+
+void
+Node::
+collect_characters(std::string&  s) const
+{
+    if(children.empty())
+    {
+      s.append(pp::UTF8Chunk(character.unicode).codes);
     }
 
   else

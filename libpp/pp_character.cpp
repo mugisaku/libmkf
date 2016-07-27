@@ -23,6 +23,13 @@ unicode(c)
 
 
 
+Character::
+operator bool() const
+{
+  return unicode;
+}
+
+
 void
 Character::
 print(FILE*  f, bool  verbose) const

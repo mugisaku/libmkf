@@ -41,7 +41,8 @@ Node
 
   void  append(Node*  child);
 
-  void  collect_characters(pp::String&  buf) const;
+  void  collect_characters(pp::String&  s) const;
+  void  collect_characters(std::string&  s) const;
 
   void  print(FILE*  f=stdout) const;
   void  print(Printer&  pr) const;
@@ -50,36 +51,6 @@ Node
 
 
 using NodeList = List<Node*>;
-
-
-struct
-Result
-{
-  bool  matched;
-
-  NodeList  node_list;
-
-  Result(bool  b): matched(b){}
-  Result(NodeList&  ls): matched(true), node_list(std::move(ls)){}
-  Result(Result&&  rhs){*this = std::move(rhs);}
-  ~Result(){for(auto  nd: node_list){delete nd;}}
-
-
-  operator bool() const{return matched;}
-
-  Result&  operator=(Result&&  rhs)
-  {
-    matched = rhs.matched;
-
-    node_list = std::move(rhs.node_list);
-
-    return *this;
-  }
-
-
-  NodeList  release(){return std::move(node_list);}
-
-};
 
 
 }
