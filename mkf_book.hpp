@@ -37,7 +37,7 @@ public:
 
   void  append_definition(Definition&&  def);
 
-  bool  make(const minpp::String&  s);
+  bool  make(const pp::String&  s);
   bool  make(const Node&  src);
 
 

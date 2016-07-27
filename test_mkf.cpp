@@ -16,11 +16,11 @@ main(int  argc, char**  argv)
 
     if(argc >= 2)
     {
-      minpp::Stream  s;
+      pp::Stream  s;
 
-      s.reset(minpp::FilePath(argv[1]));
+      s.reset(pp::FilePath(argv[1]));
 
-      minpp::String  def(s);
+      pp::String  def(s);
 
         if(!book.make(def))
         {
@@ -34,9 +34,9 @@ main(int  argc, char**  argv)
 
         if(argc >= 3)
         {
-          s.reset(minpp::FilePath(argv[2]));
+          s.reset(pp::FilePath(argv[2]));
 
-          minpp::String  txt(s);
+          pp::String  txt(s);
 
           ParseContext  ctx(book);
 

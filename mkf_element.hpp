@@ -13,7 +13,7 @@
 #include<initializer_list>
 #include"mkf_node.hpp"
 #include"mkf_charptr.hpp"
-#include"libminpp/minpp.hpp"
+#include"libpp/pp.hpp"
 
 
 #ifndef report
@@ -84,9 +84,9 @@ Element
 {
   ElementKind  kind;
 
-  minpp::Position  position;
+  pp::Position  position;
 
-  minpp::Index  id_index;
+  pp::Index  id_index;
 
   union{
     std::string*  str;

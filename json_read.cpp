@@ -61,7 +61,7 @@ read_element(const mkf::Node&  base)
         if((nd == "positive_integer") ||
            (nd == "negative_integer"))
         {
-          minpp::String  s;
+          pp::String  s;
 
           nd.collect_characters(s);
 
@@ -72,7 +72,7 @@ read_element(const mkf::Node&  base)
         if((nd == "fp_number_form0") ||
            (nd == "fp_number_form1"))
         {
-          minpp::String  s;
+          pp::String  s;
 
           nd.collect_characters(s);
 
@@ -200,7 +200,7 @@ read_string(const mkf::Node&  base)
 {
   mkf::Cursor  cur(base);
 
-  minpp::String  s;
+  pp::String  s;
 
     while(!cur.test_ended())
     {

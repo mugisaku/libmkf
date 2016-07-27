@@ -39,7 +39,7 @@ scan_identifier(charptr&  p)
 
     while(isalnum(p->unicode) || (p->unicode == '_'))
     {
-      s->append(minpp::UTF8Chunk(p++->unicode).codes);
+      s->append(pp::UTF8Chunk(p++->unicode).codes);
     }
 
 
@@ -80,7 +80,7 @@ scan_string(charptr&  p)
         }
 
 
-      s->append(minpp::UTF8Chunk(c).codes);
+      s->append(pp::UTF8Chunk(c).codes);
 
       ++p;
     }
@@ -145,7 +145,7 @@ scan(charptr&  p, int  close)
 
   separator = c.unicode;
 
-  const minpp::Character*  last = nullptr;
+  const pp::Character*  last = nullptr;
 
     for(;;)
     {

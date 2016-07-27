@@ -23,7 +23,7 @@ ParseContext
 
   charptr  error_p;
 
-  const Node*  get(const Definition&  def, const minpp::String&  s);
+  const Node*  get(const Definition&  def, const pp::String&  s);
 
 public:
   const Book&  book;
@@ -32,8 +32,8 @@ public:
   ~ParseContext();
 
 
-  const Node*  operator()(                      const minpp::String&  s);
-  const Node*  operator()(const char*  defname, const minpp::String&  s);
+  const Node*  operator()(                      const pp::String&  s);
+  const Node*  operator()(const char*  defname, const pp::String&  s);
 
   Node*  release_root();
 

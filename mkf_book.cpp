@@ -28,7 +28,7 @@ append_definition(Definition&&  def)
 
 bool
 Book::
-make(const minpp::String&  s)
+make(const pp::String&  s)
 {
   charptr  p(s);
 
@@ -36,7 +36,7 @@ make(const minpp::String&  s)
     {
         while(p)
         {
-          const minpp::Character*  last = &*p;
+          const pp::Character*  last = &*p;
 
           definitions.emplace_back();
 

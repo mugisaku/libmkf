@@ -6,7 +6,7 @@
 #include<string>
 #include"mkf_ctype.hpp"
 #include"mkf_node.hpp"
-#include"libminpp/minpp.hpp"
+#include"libpp/pp.hpp"
 
 
 namespace mkf{
@@ -15,16 +15,16 @@ namespace mkf{
 class
 charptr
 {
-  const minpp::Character*  p0;
-  const minpp::Character*  p1;
+  const pp::Character*  p0;
+  const pp::Character*  p1;
 
 public:
   charptr();
-  charptr(const minpp::String&  s);
+  charptr(const pp::String&  s);
 
 
-  const minpp::Character&  operator*() const;
-  const minpp::Character*  operator->() const;
+  const pp::Character&  operator*() const;
+  const pp::Character*  operator->() const;
 
   operator bool() const;
 

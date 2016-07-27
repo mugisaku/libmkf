@@ -8,7 +8,7 @@ namespace mkf{
 
 
 Node::
-Node(const char*  defname_, minpp::Character  character_):
+Node(const char*  defname_, pp::Character  character_):
 defname(defname_),
 character(character_)
 {
@@ -59,7 +59,7 @@ clear()
 {
   defname = "";
 
-  character = minpp::Character();
+  character = pp::Character();
 
     for(auto&  nd: children)
     {
@@ -84,7 +84,7 @@ append(Node*  child)
 
 void
 Node::
-collect_characters(minpp::String&  s) const
+collect_characters(pp::String&  s) const
 {
     if(children.empty())
     {
@@ -117,7 +117,7 @@ print(Printer&  pr) const
 {
     if(children.empty())
     {
-      pr.printf("%s = \'%s\'",defname? defname:"<UNKNOWN>",minpp::UTF8Chunk(character.unicode).codes);
+      pr.printf("%s = \'%s\'",defname? defname:"<UNKNOWN>",pp::UTF8Chunk(character.unicode).codes);
     }
 
   else

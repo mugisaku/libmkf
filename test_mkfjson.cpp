@@ -23,9 +23,9 @@ get_tree(const Book&  book, int  n, bool  check=false)
 
       rewind(f);
 
-      minpp::Stream  s(f);
+      pp::Stream  s(f);
 
-      minpp::String  txt(s);
+      pp::String  txt(s);
 
       fclose(f);
 
@@ -84,12 +84,12 @@ main(int  argc, char**  argv)
 {
   Book  book;
 
-  minpp::Stream  s;
+  pp::Stream  s;
 
-  s.reset(minpp::FilePath("json.def.txt"));
+  s.reset(pp::FilePath("json.def.txt"));
 
 
-  minpp::String  def(s);
+  pp::String  def(s);
 
   book.make(def);
 

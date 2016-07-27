@@ -101,7 +101,7 @@ release_root()
 
 const Node*
 ParseContext::
-get(const Definition&  def, const minpp::String&  s)
+get(const Definition&  def, const pp::String&  s)
 {
   root = new Node;
 
@@ -185,7 +185,7 @@ get(const Definition&  def, const minpp::String&  s)
 
 const Node*
 ParseContext::
-operator()(const minpp::String&  s)
+operator()(const pp::String&  s)
 {
   delete root          ;
          root = nullptr;
@@ -199,7 +199,7 @@ operator()(const minpp::String&  s)
 
 const Node*
 ParseContext::
-operator()(const char*  defname, const minpp::String&  s)
+operator()(const char*  defname, const pp::String&  s)
 {
   delete root          ;
          root = nullptr;

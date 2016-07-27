@@ -18,7 +18,7 @@ p1(nullptr)
 
 
 charptr::
-charptr(const minpp::String&  s):
+charptr(const pp::String&  s):
 p0(s.data()         ),
 p1(s.data()+s.size())
 {
@@ -27,8 +27,8 @@ p1(s.data()+s.size())
 
 
 
-const minpp::Character&  charptr::operator*() const{return *p0;}
-const minpp::Character*  charptr::operator->() const{return p0;}
+const pp::Character&  charptr::operator*() const{return *p0;}
+const pp::Character*  charptr::operator->() const{return p0;}
 
 charptr::operator bool() const{return(p0 < p1);}
 
@@ -126,9 +126,9 @@ test(const std::string&  s) const
 
     while(n--)
     {
-      auto  byte_number = minpp::get_utf8_byte_number(b);
+      auto  byte_number = pp::get_utf8_byte_number(b);
 
-      auto  c = minpp::to_char16(b,byte_number);
+      auto  c = pp::to_char16(b,byte_number);
 
       b += byte_number;
 

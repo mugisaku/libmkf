@@ -82,14 +82,14 @@ all: objects test_mkf$(EXE_EXT) randjson$(EXE_EXT) test_mkfjson$(EXE_EXT)
 
 
 clean:
-	make -C libminpp clean
+	make -C libpp clean
 	rm -f $(OBJ) test_mkf$(EXE_EXT)         test_mkf.o  \
               randjson$(EXE_EXT)         randjson.o  \
               test_mkfjson$(EXE_EXT) test_mkfjson.o  \
 
 
 objects: $(OBJ)
-	make -C libminpp objects
+	make -C libpp objects
 
 
 archive: clean
@@ -97,13 +97,13 @@ archive: clean
 
 
 test_mkf$(EXE_EXT): $(OBJ) objects test_mkf.o
-	$(CXX) -o $@ $(OBJ) libminpp/*.o test_mkf.o $(LDFLAGS)
+	$(CXX) -o $@ $(OBJ) libpp/*.o test_mkf.o $(LDFLAGS)
 
 randjson$(EXE_EXT): $(OBJ) objects randjson.o
-	$(CXX) -o $@ $(OBJ) libminpp/*.o randjson.o $(LDFLAGS)
+	$(CXX) -o $@ $(OBJ) libpp/*.o randjson.o $(LDFLAGS)
 
 test_mkfjson$(EXE_EXT): $(OBJ) objects test_mkfjson.o
-	$(CXX) -o $@ $(OBJ) libminpp/*.o test_mkfjson.o $(LDFLAGS)
+	$(CXX) -o $@ $(OBJ) libpp/*.o test_mkfjson.o $(LDFLAGS)
 
 
 
