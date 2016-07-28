@@ -13,7 +13,7 @@ namespace mkf{
 
 bool
 Group::
-compare_element(ParseContext&  parser, charptr&  p, Node&  node, const Element&  elm) const
+compare_element(ParseContext&  parser, const pp::Character*&  p, Node&  node, const Element&  elm) const
 {
   auto  start = p;
 
@@ -21,14 +21,22 @@ compare_element(ParseContext&  parser, charptr&  p, Node&  node, const Element& 
     {
       p = start;
 
-      p.skip_space();
+      pp::skip_spaces(p);
 
-        if(!elm.compare(parser,p,node))
+        if(p->unicode)
         {
-          parser.push_error(p);
+            if(!elm.compare(parser,p,node))
+            {
+              parser.push_error(p);
 
-          p = start;
+              p = start;
 
+              return false;
+            }
+        }
+
+      else
+        {
           return false;
         }
     }
@@ -43,9 +51,9 @@ bool
 compare_exclusion(Group::Iterator  it,
                   Group::Iterator  end,
                   ParseContext&  parser,
-                  const charptr&  start_p,
-                  const charptr&    end_p,
-                        charptr&        p,
+                  const pp::Character*  start_p,
+                  const pp::Character*    end_p,
+                  const pp::Character*&       p,
                   Node&  parent, Node&  node)
 {
   Node  tmpnode;
@@ -80,7 +88,7 @@ compare_exclusion(Group::Iterator  it,
 
 bool
 Group::
-compare_with_exclusion(ParseContext&  parser, charptr&  p, Node&  node) const
+compare_with_exclusion(ParseContext&  parser, const pp::Character*&  p, Node&  node) const
 {
   auto  it = begin();
   auto   e =   end();
@@ -100,7 +108,7 @@ compare_with_exclusion(ParseContext&  parser, charptr&  p, Node&  node) const
     {
       p = start_p;
 
-      p.skip_space();
+      pp::skip_spaces(p);
 
       start_p = p;
 
@@ -119,7 +127,7 @@ compare_with_exclusion(ParseContext&  parser, charptr&  p, Node&  node) const
 
 bool
 Group::
-compare_for_anyone(ParseContext&  parser, charptr&  p, Node&  node) const
+compare_for_anyone(ParseContext&  parser, const pp::Character*&  p, Node&  node) const
 {
     for(auto&  elm: *this)
     {
@@ -136,7 +144,7 @@ compare_for_anyone(ParseContext&  parser, charptr&  p, Node&  node) const
 
 bool
 Group::
-compare_for_all(ParseContext&  parser, charptr&  p, Node&  node) const
+compare_for_all(ParseContext&  parser, const pp::Character*&  p, Node&  node) const
 {
     for(auto&  elm: *this)
     {
@@ -153,7 +161,7 @@ compare_for_all(ParseContext&  parser, charptr&  p, Node&  node) const
 
 bool
 Group::
-compare(ParseContext&  parser, charptr&  p, Node&  node) const
+compare(ParseContext&  parser, const pp::Character*&  p, Node&  node) const
 {
     if(test_alternation()){return compare_for_anyone(    parser,p,node);}
     if(test_exclusion()  ){return compare_with_exclusion(parser,p,node);}
@@ -166,7 +174,7 @@ compare(ParseContext&  parser, charptr&  p, Node&  node) const
 
 bool
 Group::
-compare(ParseContext&  parser, charptr&  p, Node&  node, int  flags) const
+compare(ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const
 {
     if(!compare(parser,p,node))
     {

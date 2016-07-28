@@ -57,8 +57,6 @@ endif
 
 
 OBJ +=                   \
-  mkf_file.o             \
-  mkf_charptr.o          \
   mkf_discontinue.o      \
   mkf_print.o            \
   mkf_element.o          \
@@ -70,7 +68,6 @@ OBJ +=                   \
   mkf_node.o             \
   mkf_cursor.o           \
   mkf_ctype.o            \
-  mkf_unicode.o          \
   mkf_book.o             \
   mkf_parsecontext.o     \
   json.o                 \

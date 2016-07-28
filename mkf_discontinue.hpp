@@ -2,6 +2,9 @@
 #define MKF_DISCONTINUE_HPP_INCLUDED
 
 
+#include"libpp/pp.hpp"
+
+
 namespace mkf{
 
 
@@ -15,7 +18,7 @@ ErrorKind
 };
 
 
-[[noreturn]] void  discontinue(ErrorKind  k, const charptr&  p, const char*  fmt, ...);
+[[noreturn]] void  discontinue(ErrorKind  k, const pp::Character*  p, const char*  fmt, ...);
 
 
 }

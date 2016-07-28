@@ -25,7 +25,7 @@ separator(separator_)
 
 
 Group::
-Group(charptr&  p, int  close)
+Group(const pp::Character*&  p, int  close)
 {
   scan(p,close);
 }

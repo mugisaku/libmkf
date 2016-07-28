@@ -33,7 +33,7 @@ get_code(int  c)
 
 
 Element
-scan_identifier(charptr&  p)
+scan_identifier(const pp::Character*&  p)
 {
   auto  s = new std::string;
 
@@ -48,7 +48,7 @@ scan_identifier(charptr&  p)
 
 
 Element
-scan_string(charptr&  p)
+scan_string(const pp::Character*&  p)
 {
   auto  s = new std::string;
 
@@ -91,9 +91,9 @@ scan_string(charptr&  p)
 
 
 Element
-scan_element(charptr&  p)
+scan_element(const pp::Character*&  p)
 {
-  p.skip_space();
+  pp::skip_spaces(p);
 
   Element  el;
 
@@ -116,7 +116,7 @@ scan_element(charptr&  p)
     }
 
 
-  p.skip_space();
+  pp::skip_spaces(p);
 
   return std::move(el);
 }
@@ -129,7 +129,7 @@ scan_element(charptr&  p)
 
 void
 Group::
-scan(charptr&  p, int  close)
+scan(const pp::Character*&  p, int  close)
 {
   push(scan_element(p));
 

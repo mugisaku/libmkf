@@ -27,7 +27,7 @@ public:
 
   void  clear();
 
-  void  reset(charptr&  p);
+  void  reset(const pp::Character*&  p);
 
   void  change_identifier(const char*  s);
 

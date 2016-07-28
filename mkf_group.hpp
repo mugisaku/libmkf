@@ -3,7 +3,6 @@
 
 
 #include"mkf_element.hpp"
-#include"mkf_charptr.hpp"
 #include"mkf_list.hpp"
 
 
@@ -16,12 +15,12 @@ Group: public List<Element>
 protected:
   int  separator;
 
-  void  scan(charptr&  p, int  close);
+  void  scan(const pp::Character*&  p, int  close);
 
 public:
    Group();
    Group(int  separator_, List<Element>&&  element_list_);
-   Group(charptr&  p, int  close);
+   Group(const pp::Character*&  p, int  close);
    Group(const Group&)=delete;
    Group(Group&&  rhs) noexcept;
   ~Group();
@@ -34,12 +33,12 @@ public:
 
   void  print(Printer&  pr) const;
 
-  bool  compare_element(ParseContext&  parser, charptr&  p, Node&  node, const Element&  elm) const;
-  bool  compare_with_exclusion(ParseContext&  parser, charptr&  p, Node&  node) const;
-  bool  compare_for_anyone(    ParseContext&  parser, charptr&  p, Node&  node) const;
-  bool  compare_for_all(       ParseContext&  parser, charptr&  p, Node&  node) const;
-  bool  compare(               ParseContext&  parser, charptr&  p, Node&  node) const;
-  bool  compare(ParseContext&  parser, charptr&  p, Node&  node, int  flags) const;
+  bool  compare_element(ParseContext&  parser, const pp::Character*&  p, Node&  node, const Element&  elm) const;
+  bool  compare_with_exclusion(ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
+  bool  compare_for_anyone(    ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
+  bool  compare_for_all(       ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
+  bool  compare(               ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
+  bool  compare(ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const;
 
 };
 

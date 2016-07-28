@@ -30,11 +30,11 @@ bool
 Book::
 make(const pp::String&  s)
 {
-  charptr  p(s);
+  auto  p = s.data();
 
     try
     {
-        while(p)
+        while(p->unicode)
         {
           const pp::Character*  last = &*p;
 
@@ -42,8 +42,7 @@ make(const pp::String&  s)
 
           definitions.back().reset(p);
 
-
-          p.skip_space();
+          pp::skip_spaces(p);
 
             if(&*p == last)
             {

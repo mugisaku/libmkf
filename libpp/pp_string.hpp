@@ -46,6 +46,8 @@ public:
 
 unsigned int  to_uint(const Character*  ptr, const Character**  endptr, int  base=10);
 
+void  skip_spaces(const Character*&  p);
+
 void  print(const Character*  s);
 
 

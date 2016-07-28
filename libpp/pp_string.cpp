@@ -1,5 +1,6 @@
 #include"pp.hpp"
 #include<cstdio>
+#include<cctype>
 
 
 
@@ -62,6 +63,16 @@ print(FILE*  f, bool  verbose) const
         {
           fprintf(f,"\n");
         }
+    }
+}
+
+
+void
+skip_spaces(const Character*&  p)
+{
+    while(isspace(p->unicode))
+    {
+      ++p;
     }
 }
 

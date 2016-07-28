@@ -27,7 +27,7 @@ ParseContext::
 
 void
 ParseContext::
-push_error(const charptr&  p)
+push_error(const pp::Character*  p)
 {
     if(error_p < p)
     {
@@ -37,15 +37,53 @@ push_error(const charptr&  p)
 }
 
 
+namespace{
+size_t
+compare_ctype(const pp::Character*&  p, CType  type, Node&  node)
+{
+    if(test_ctype_code(p->unicode,type))
+    {
+      node.append(new Node(get_ctype_name(type),*p++));
+
+      return 1;
+    }
+
+
+  return 0;
+}
+
+
+int
+get_unicode(const char*  name)
+{
+  unsigned int  n;
+
+    if(sscanf(name,"UNICODE_%X",&n) == 1)
+    {
+      return n;
+    }
+
+
+  return -1;
+}
+}
+
+
 bool
 ParseContext::
-enter(const char*  defname, charptr&  p, Node&  node)
+enter(const char*  defname, const pp::Character*&  p, Node&  node)
 {
+    if(!p->unicode)
+    {
+      return false;
+    }
+
+
   auto  ctype = get_ctype(defname);
 
     if(ctype != CType::null)
     {
-      return p.compare_ctype(ctype,node);
+      return compare_ctype(p,ctype,node);
     }
 
 
@@ -105,11 +143,11 @@ get(const Definition&  def, const pp::String&  s)
 {
   root = new Node;
 
-  charptr  p(s);
+  auto  p = s.data();
 
     try
     {
-        while(p)
+        while(p->unicode)
         {
           auto  tmp = p;
 
@@ -121,9 +159,9 @@ get(const Definition&  def, const pp::String&  s)
 
             if(!res)
             {
-              p.skip_space();
+              pp::skip_spaces(p);
 
-                if(!p || !p->unicode)
+                if(!p->unicode)
                 {
                   break;
                 }
@@ -147,9 +185,9 @@ get(const Definition&  def, const pp::String&  s)
 
             if(p == tmp)
             {
-              p.skip_space();
+              pp::skip_spaces(p);
 
-                if(!p)
+                if(!p->unicode)
                 {
                   break;
                 }

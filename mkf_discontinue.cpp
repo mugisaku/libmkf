@@ -1,5 +1,4 @@
 #include"mkf_discontinue.hpp"
-#include"mkf_charptr.hpp"
 #include<cstdlib>
 #include<cstdio>
 #include<cstdarg>
@@ -11,11 +10,15 @@ namespace mkf{
 
 
 void
-discontinue(ErrorKind  k, const charptr&  p, const char*  fmt, ...)
+discontinue(ErrorKind  k, const pp::Character*  p, const char*  fmt, ...)
 {
-  (*p).print();
+    if(*p)
+    {
+      p->print(stdout,true);
 
-  printf("\n");
+      printf("\n");
+    }
+
 
   va_list  ap;
   va_start(ap,fmt);

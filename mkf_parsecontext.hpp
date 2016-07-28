@@ -21,7 +21,7 @@ ParseContext
   std::vector<const Definition*>        defchain;
   std::vector<const Definition*>  error_defchain;
 
-  charptr  error_p;
+  const pp::Character*  error_p;
 
   const Node*  get(const Definition&  def, const pp::String&  s);
 
@@ -37,9 +37,9 @@ public:
 
   Node*  release_root();
 
-  void  push_error(const charptr&  p);
+  void  push_error(const pp::Character*  p);
 
-  bool  enter(const char*  defname, charptr&  p, Node&  node);
+  bool  enter(const char*  defname, const pp::Character*&  p, Node&  node);
 
   void  print() const;
 

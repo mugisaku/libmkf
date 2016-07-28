@@ -12,7 +12,6 @@
 #include<list>
 #include<initializer_list>
 #include"mkf_node.hpp"
-#include"mkf_charptr.hpp"
 #include"libpp/pp.hpp"
 
 
@@ -124,7 +123,7 @@ public:
 
   void  print(Printer&  pr) const;
 
-  bool  compare(ParseContext&  parser, charptr&  p, Node&  node) const;
+  bool  compare(ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
 
 };
 

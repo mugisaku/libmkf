@@ -49,11 +49,11 @@ clear()
 
 void
 Definition::
-reset(charptr&  p)
+reset(const pp::Character*&  p)
 {
   clear();
 
-  p.skip_space();
+  pp::skip_spaces(p);
 
     for(;;)
     {
@@ -73,7 +73,7 @@ reset(charptr&  p)
     }
 
 
-  p.skip_space();
+  pp::skip_spaces(p);
 
     if(p->unicode == '=')
     {
@@ -81,7 +81,7 @@ reset(charptr&  p)
     }
 
 
-  p.skip_space();
+  pp::skip_spaces(p);
 
   scan(p,';');
 }
