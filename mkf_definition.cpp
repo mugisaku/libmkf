@@ -11,7 +11,8 @@ namespace mkf{
 
 Definition::
 Definition(const char*  id):
-identifier(id)
+identifier(id),
+noskip_state(0)
 {
 }
 
@@ -33,6 +34,8 @@ operator=(Definition&&  rhs)
 
   identifier = std::move(rhs.identifier);
 
+  noskip_state = rhs.noskip_state;
+
   return *this;
 }
 
@@ -44,6 +47,28 @@ clear()
   Group::clear();
 
   identifier.clear();
+
+  noskip_state = 0;
+}
+
+
+namespace{
+bool
+test_noskip(const pp::Character*  p)
+{
+  const char16_t*  s = u"noskip";
+
+    while(*s)
+    {
+        if(p++->unicode != *s++)
+        {
+          return false;
+        }
+    }
+
+
+  return true;
+}
 }
 
 
@@ -55,13 +80,21 @@ reset(const pp::Character*&  p)
 
   pp::skip_spaces(p);
 
+    if(test_noskip(p))
+    {
+      noskip_state = 1;
+
+      p += 6;
+
+      pp::skip_spaces(p);
+    }
+
+
     for(;;)
     {
-      auto  c = p->unicode;
-
-        if(isalnum(c) || (c == '_'))
+        if(isalnum(p->unicode) || (p->unicode == '_'))
         {
-          identifier.push_back(c);
+          identifier.append(pp::UTF8Chunk(p->unicode).codes);
 
           ++p;
         }
@@ -103,21 +136,19 @@ get_identifier() const
 }
 
 
+bool
+Definition::
+test_noskip_flag() const
+{
+  return noskip_state;
+}
 
 
 void
 Definition::
 print(Printer&  pr) const
 {
-  printf("[");
-
-    for(auto  c: identifier)
-    {
-      printf("%c",c);
-    }
-
-
-  printf("] = ");
+  printf("%s[%s] = ",noskip_state? "noskip ":"",identifier.data());
 
   Group::print(pr);
 

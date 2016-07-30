@@ -17,6 +17,8 @@ Definition: public Group
 {
   std::string  identifier;
 
+  int  noskip_state;
+
 public:
   Definition(const char*  id="");
   Definition(const Definition&)=delete;
@@ -32,6 +34,8 @@ public:
   void  change_identifier(const char*  s);
 
   const std::string&  get_identifier() const;
+
+  bool  test_noskip_flag() const;
 
   void  print(Printer&  pr) const;
 

@@ -62,8 +62,10 @@ compare_string(const pp::Character*&  p, const std::string&  s, Node&  node)
 
 bool
 Element::
-compare(ParseContext&  parser, const pp::Character*&  p, Node&  node) const
+compare(ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const
 {
+  flags &= noskip_flag;
+
     switch(kind)
     {
       case(ElementKind::null):
@@ -74,9 +76,9 @@ compare(ParseContext&  parser, const pp::Character*&  p, Node&  node) const
       case(ElementKind::identifier):
         return parser.enter(get_string()->data(),p,node);
         break;
-      case(ElementKind::group           ): return data.grp->compare(parser,p,node,0                          );break;
-      case(ElementKind::option_group    ): return data.grp->compare(parser,p,node,option_flag                );break;
-      case(ElementKind::repetition_group): return data.grp->compare(parser,p,node,option_flag|repetition_flag);break;
+      case(ElementKind::group           ): return data.grp->compare(parser,p,node,flags                            );break;
+      case(ElementKind::option_group    ): return data.grp->compare(parser,p,node,flags|option_flag                );break;
+      case(ElementKind::repetition_group): return data.grp->compare(parser,p,node,flags|option_flag|repetition_flag);break;
       default:
         printf("Element clear error");
     }

@@ -76,6 +76,7 @@ RepetitionGroup
 
 constexpr int      option_flag = 1;
 constexpr int  repetition_flag = 2;
+constexpr int      noskip_flag = 4;
 
 
 class
@@ -123,7 +124,7 @@ public:
 
   void  print(Printer&  pr) const;
 
-  bool  compare(ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
+  bool  compare(ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const;
 
 };
 

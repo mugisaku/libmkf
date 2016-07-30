@@ -91,7 +91,7 @@ enter(const char*  defname, const pp::Character*&  p, Node&  node)
 
     if(!def)
     {
-      discontinue(ErrorKind::null,p,"definition [%s] is not found.",defname);
+      discontinue(ErrorKind::null,p,"定義%sがみつかりません\n",defname);
     }
 
 
@@ -105,7 +105,7 @@ enter(const char*  defname, const pp::Character*&  p, Node&  node)
 
   auto  child = new Node(defname);
 
-  auto  res = def->compare(*this,p,*child,0);
+  auto  res = def->compare(*this,p,*child,def->test_noskip_flag()? noskip_flag:0);
 
   defchain.pop_back();
 
@@ -143,6 +143,8 @@ get(const Definition&  def, const pp::String&  s)
 {
   root = new Node;
 
+  error_p = nullptr;
+
   auto  p = s.data();
 
     try
@@ -155,7 +157,7 @@ get(const Definition&  def, const pp::String&  s)
 
           auto  node = new Node(def.get_identifier().data());
 
-          auto  res = def.compare(*this,tmp,*node,0);
+          auto  res = def.compare(*this,tmp,*node,def.test_noskip_flag()? noskip_flag:0);
 
             if(!res)
             {
@@ -185,15 +187,19 @@ get(const Definition&  def, const pp::String&  s)
 
             if(p == tmp)
             {
-              pp::skip_spaces(p);
-
-                if(!p->unicode)
+                if(def.test_noskip_flag())
                 {
-                  break;
+                  discontinue(ErrorKind::null,p,"ループしました");
                 }
 
+              else
+                {
+                  delete node;
 
-              discontinue(ErrorKind::null,error_p,"[%s %s] ループしました",__FILE__,__func__);
+                  pp::skip_spaces(p);
+
+                  continue;
+                }
             }
 
 

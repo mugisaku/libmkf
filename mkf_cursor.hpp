@@ -2,11 +2,17 @@
 #define MKF_CURSOR_HPP_INCLUDED
 
 
-#include"mkf_node.hpp"
 #include"mkf_print.hpp"
+#include"mkf_list.hpp"
 
 
 namespace mkf{
+
+
+struct Node;
+
+
+using NodeList = List<Node*>;
 
 
 class

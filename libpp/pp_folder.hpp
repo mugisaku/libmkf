@@ -25,8 +25,11 @@ Index  push_text(std::string&&  id, const std::string&  content);
 
 const Text*  get_text(Index  i);
 
+const char*  get_line_pointer(Character  c);
+
 void  clear_table();
 
+void  print_table();
 
 }
 

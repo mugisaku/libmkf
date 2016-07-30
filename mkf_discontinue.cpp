@@ -12,7 +12,7 @@ namespace mkf{
 void
 discontinue(ErrorKind  k, const pp::Character*  p, const char*  fmt, ...)
 {
-    if(*p)
+    if(p && p->unicode)
     {
       p->print(stdout,true);
 

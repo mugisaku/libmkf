@@ -27,8 +27,6 @@ Character
 
   Character(Position  pos=Position(), Index  i=0, char16_t  c=0);
 
-  operator bool() const;
-
   void  print(FILE*  f=stdout, bool  verbose=false) const;
 
 };

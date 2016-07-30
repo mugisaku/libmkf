@@ -53,17 +53,7 @@ reset(std::string&&  source_)
 
   pointer = source.data();
 
-  auto  id = read_id();
-
-    if(id.size())
-    {
-      change_id_index(push_text(std::move(id),source));
-    }
-
-  else
-    {
-      change_id_index(nullidx);
-    }
+  change_id_index(push_text(read_id(),source));
 }
 
 

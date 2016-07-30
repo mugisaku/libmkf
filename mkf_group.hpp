@@ -33,12 +33,12 @@ public:
 
   void  print(Printer&  pr) const;
 
-  bool  compare_element(ParseContext&  parser, const pp::Character*&  p, Node&  node, const Element&  elm) const;
-  bool  compare_with_exclusion(ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
-  bool  compare_for_anyone(    ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
-  bool  compare_for_all(       ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
-  bool  compare(               ParseContext&  parser, const pp::Character*&  p, Node&  node) const;
-  bool  compare(ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const;
+  bool  compare_element(       ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags, const Element&  elm) const;
+  bool  compare_with_exclusion(ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const;
+  bool  compare_for_anyone(    ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const;
+  bool  compare_for_all(       ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const;
+  bool  subcompare(            ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const;
+  bool  compare(               ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags) const;
 
 };
 

@@ -67,6 +67,26 @@ print(FILE*  f, bool  verbose) const
 }
 
 
+bool
+compare(const Character*  s1, const char16_t*  s2, size_t  length)
+{
+    while(length--)
+    {
+        if(s1->unicode != *s2)
+        {
+          return false;
+        }
+
+
+      ++s1;
+      ++s2;
+    }
+
+
+  return true;
+}
+
+
 void
 skip_spaces(const Character*&  p)
 {
@@ -80,7 +100,7 @@ skip_spaces(const Character*&  p)
 void
 print(const Character*  s)
 {
-    while(*s)
+    while(s->unicode)
     {
       printf("%s",UTF8Chunk(s++->unicode).codes);
     }

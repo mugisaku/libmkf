@@ -1,3 +1,5 @@
-element = {(CTYPE_alpha|CTYPE_punct)};
+element = alphabet;
+
+noskip alphabet = {CTYPE_alpha};
 
 

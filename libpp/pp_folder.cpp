@@ -20,19 +20,29 @@ table;
 Index
 push_text(std::string&&  id, const std::string&  content)
 {
-  Index  i = 0;
+  Index  i;
 
-    for(auto  ptr: table)
+    if(id.size())
     {
-        if(ptr->id == id)
+      i = 0;
+
+        for(auto  ptr: table)
         {
-          ptr->include_count += 1;
+            if(ptr->id == id)
+            {
+              ptr->include_count += 1;
 
-          return i+1;
+              return i+1;
+            }
+
+
+          ++i;
         }
+    }
 
-
-      ++i;
+  else
+    {
+      i = table.size();
     }
 
 
@@ -61,6 +71,37 @@ get_text(Index  i)
 }
 
 
+const char*
+get_line_pointer(Character  c)
+{
+  auto  text = get_text(c.id_index);
+
+    if(text)
+    {
+      auto  p = text->content.data();
+
+      int  n = c.position.line_number;
+
+        while(n)
+        {
+          auto  c = *p++;
+
+            switch(c)
+            {
+              case('\n'): --n;break;
+              case('\0'): return nullptr;
+            }
+        }
+
+
+      return p;
+    }
+
+
+  return nullptr;
+}
+
+
 void
 clear_table()
 {
@@ -72,6 +113,20 @@ clear_table()
 
   table.clear();
 }
+
+
+void
+print_table()
+{
+  int  i = 1;
+
+    for(auto  ptr: table)
+    {
+      printf("%4d %s{\n%s\n}\n\n",i++,ptr->id.data(),ptr->content.data());
+    }
+}
+
+
 
 
 }

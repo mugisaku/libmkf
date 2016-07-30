@@ -121,6 +121,14 @@ collect_characters(std::string&  s) const
 }
 
 
+Cursor
+Node::
+make_cursor() const
+{
+  return Cursor(*this);
+}
+
+
 void
 Node::
 print(FILE*  f) const

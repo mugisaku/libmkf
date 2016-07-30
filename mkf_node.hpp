@@ -4,18 +4,11 @@
 
 #include<string>
 #include"libpp/pp.hpp"
-#include"mkf_list.hpp"
 #include"mkf_discontinue.hpp"
-#include"mkf_print.hpp"
+#include"mkf_cursor.hpp"
 
 
 namespace mkf{
-
-
-struct Node;
-
-
-using NodeList = List<Node*>;
 
 
 struct
@@ -37,6 +30,8 @@ Node
 
   Node&  operator=(Node&&  rhs);
 
+  Cursor  make_cursor() const;
+
   void  clear();
 
   void  append(Node*  child);
@@ -48,9 +43,6 @@ Node
   void  print(Printer&  pr) const;
 
 };
-
-
-using NodeList = List<Node*>;
 
 
 }
