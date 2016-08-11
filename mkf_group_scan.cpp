@@ -37,13 +37,56 @@ scan_identifier(const pp::Character*&  p)
 {
   auto  s = new std::string;
 
+    for(;;)
+    {
+      int  c = p->unicode;
+
+        if(!c)
+        {
+          discontinue(ErrorKind::null,p,"文字列が閉じられていません");
+
+          break;
+        }
+
+      else
+        if(c == '\'')
+        {
+          ++p;
+
+          break;
+        }
+
+      else
+        if(c == '\\')
+        {
+          ++p;
+
+          c = get_code(p->unicode);
+        }
+
+
+      s->append(pp::UTF8Chunk(c).codes);
+
+      ++p;
+    }
+
+
+  return Element(Identifier(s));
+}
+
+
+Element
+scan_reference(const pp::Character*&  p)
+{
+  auto  s = new std::string;
+
     while(isalnum(p->unicode) || (p->unicode == '_'))
     {
       s->append(pp::UTF8Chunk(p++->unicode).codes);
     }
 
 
-  return Element(Identifier(s));
+  return Element(Reference(s));
 }
 
 
@@ -100,18 +143,19 @@ scan_element(const pp::Character*&  p)
     switch(p->unicode)
     {
       case('\"'): el = scan_string(++p);break;
+      case('\''): el = scan_identifier(++p);break;
       case('[' ): el.reset(    OptionGroup(new Group(++p,']')));break;
       case('{' ): el.reset(RepetitionGroup(new Group(++p,'}')));break;
       case('(' ): el.reset(               (new Group(++p,')')));break;
       default:
           if(isalnum(p->unicode) || (p->unicode == '_'))
           {
-            el = scan_identifier(p);
+            el = scan_reference(p);
           }
 
         else
           {
-            discontinue(ErrorKind::null,p,"identifierに使えない文字です");
+            discontinue(ErrorKind::null,p,"referenceに使えない文字です");
           }
     }
 

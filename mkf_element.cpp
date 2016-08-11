@@ -32,6 +32,14 @@ kind(ElementKind::null)
 
 
 Element::
+Element(const Reference&  ref):
+kind(ElementKind::null)
+{
+  reset(ref);
+}
+
+
+Element::
 Element(Group*  grp):
 kind(ElementKind::null)
 {
@@ -111,6 +119,18 @@ reset(const Identifier&  id)
 
 void
 Element::
+reset(const Reference&  ref)
+{
+  clear();
+
+  kind = ElementKind::reference;
+
+  data.str = ref.s;
+}
+
+
+void
+Element::
 reset(Group*  grp)
 {
   clear();
@@ -155,6 +175,7 @@ clear()
         break;
       case(ElementKind::string):
       case(ElementKind::identifier):
+      case(ElementKind::reference):
         delete data.str;
         break;
       case(ElementKind::group):
@@ -191,6 +212,9 @@ print(Printer&  pr) const
         pr.printf("\"%s\"",get_string()->data());
         break;
       case(ElementKind::identifier):
+        pr.printf("\'%s\'",get_string()->data());
+        break;
+      case(ElementKind::reference):
         pr.puts(get_string()->data());
         break;
       case(ElementKind::group):

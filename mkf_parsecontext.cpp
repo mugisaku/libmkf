@@ -212,11 +212,15 @@ get(const Definition&  def, const pp::String&  s)
 
     catch(ErrorKind  k)
     {
-      printf("\n以下、できた構文木\n");
+      auto  f = fopen("__tree.txt","wb");
 
-      root->print();
+        if(f)
+        {
+          root->print(f);
 
-      printf("\n構文木終わり\n");
+          fclose(f);
+        }
+
 
       delete root          ;
              root = nullptr;

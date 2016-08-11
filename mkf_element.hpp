@@ -29,6 +29,7 @@ ElementKind: uint16_t
   null,
   string,
   identifier,
+  reference,
   group,
   option_group,
   repetition_group,
@@ -50,6 +51,16 @@ Identifier
   std::string*  s;
 
   constexpr explicit Identifier(std::string*  s_): s(s_){}
+
+};
+
+
+struct
+Reference
+{
+  std::string*  s;
+
+  constexpr explicit Reference(std::string*  s_): s(s_){}
 
 };
 
@@ -99,6 +110,7 @@ public:
   Element();
   Element(std::string*  s);
   Element(const Identifier&  id);
+  Element(const Reference&  ref);
   Element(Group*  grp);
   Element(const OptionGroup&      grp);
   Element(const RepetitionGroup&  grp);
@@ -111,6 +123,7 @@ public:
 
   void  reset(std::string*  s);
   void  reset(const Identifier&  id);
+  void  reset(const Reference&  ref);
   void  reset(Group*  grp);
   void  reset(const OptionGroup&      grp);
   void  reset(const RepetitionGroup&  grp);

@@ -16,33 +16,49 @@ namespace mkf{
 namespace{
 
 
-bool
+const pp::Character*
 test(const pp::Character*  a, const char*  b, size_t  n)
 {
-    while(n--)
+    while(n)
     {
       auto  byte_number = pp::get_utf8_byte_number(b);
 
       auto  c = pp::to_char16(b,byte_number);
 
       b += byte_number;
+      n -= byte_number;
 
-        if(a++->unicode != c)
+        if(a->unicode != c)
         {
-          return false;
+          return nullptr;
         }
+
+
+      ++a;
     }
 
 
-  return true;
+  return a;
 }
 
 
 size_t
-compare_string(const pp::Character*&  p, const std::string&  s, Node&  node)
+compare_string(const pp::Character*&  p, const std::string&  s, bool  id, Node&  node)
 {
-    if(test(p,s.data(),s.size()))
+  auto  res = test(p,s.data(),s.size());
+
+    if(res)
     {
+        if(id)
+        {
+            if(isalnum(res->unicode) ||
+               (res->unicode == '_'))
+            {
+              return 0;
+            }
+        }
+
+
         for(int  i = 0;  i < s.size();  ++i)
         {
           node.append(new Node(s.data(),*p++));
@@ -71,9 +87,12 @@ compare(ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags
       case(ElementKind::null):
         break;
       case(ElementKind::string):
-        return compare_string(p,*get_string(),node);
+        return compare_string(p,*get_string(),false,node);
         break;
       case(ElementKind::identifier):
+        return compare_string(p,*get_string(),true,node);
+        break;
+      case(ElementKind::reference):
         return parser.enter(get_string()->data(),p,node);
         break;
       case(ElementKind::group           ): return data.grp->compare(parser,p,node,flags                            );break;
