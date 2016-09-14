@@ -3,7 +3,7 @@ BASE_DIR = /usr/local
 
 
 
-CXXFLAGS = -std=gnu++11 -I. -Werror -Wno-unused-result
+CXXFLAGS = -std=gnu++11 -I. -I.. -Werror -Wno-unused-result
 
 
 ifeq ($(opt),1)
@@ -56,52 +56,23 @@ ifeq ($(delay),1)
 endif
 
 
-OBJ +=                   \
-  mkf_discontinue.o      \
-  mkf_print.o            \
-  mkf_element.o          \
-  mkf_element_compare.o  \
-  mkf_group.o            \
-  mkf_group_scan.o       \
-  mkf_group_compare.o    \
-  mkf_definition.o       \
-  mkf_node.o             \
-  mkf_cursor.o           \
-  mkf_ctype.o            \
-  mkf_book.o             \
-  mkf_parsecontext.o     \
-  mkf__read.o            \
-  json.o                 \
-  json_random.o          \
-  json_read.o            \
-
-
-all: assvm_program test_program
+all: test_mkf$(EXE_EXT) randjson$(EXE_EXT) test_mkfjson$(EXE_EXT)
 
 
 clean:
-	make -C libpp clean
-	make -C assvm clean
-	make -C test  clean
-	rm -f $(OBJ)
+	rm -f test_mkf$(EXE_EXT)     \
+       randjson$(EXE_EXT)     \
+       test_mkfjson$(EXE_EXT) \
 
 
-objects: $(OBJ)
-	make -C libpp objects
-	make -C assvm objects
+test_mkf$(EXE_EXT):
+	$(CXX) test_mkf.cpp -o $@ ../*.o ../libpp/*.o $(CXXFLAGS) $(LDFLAGS)
 
+randjson$(EXE_EXT):
+	$(CXX) randjson.cpp -o $@ ../*.o ../libpp/*.o $(CXXFLAGS) $(LDFLAGS)
 
-archive: clean
-	tar -cJ ../libmkf-git > ../libmkf-git.tar.xz
-
-
-assvm_program: $(OBJ)
-	make -C libpp objects
-	make -C assvm
-
-test_program: $(OBJ)
-	make -C libpp objects
-	make -C test
+test_mkfjson$(EXE_EXT):
+	$(CXX) test_mkfjson.cpp -o $@ ../*.o ../libpp/*.o $(CXXFLAGS) $(LDFLAGS)
 
 
 

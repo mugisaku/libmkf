@@ -1,0 +1,242 @@
+global_scope = 
+  {function_declaration|var_declaration|const_declaration|";"};
+
+
+statement =
+                    ";"|
+                 'halt'|
+        print_statement|
+      control_statement|
+  declaration_statement|
+                  block|
+     (expression:[";"]);
+
+
+
+
+declaration_statement = 
+  function_declaration|
+       var_declaration|
+     const_declaration|
+      enum_declaration;
+
+
+
+
+control_statement =
+        if_statement|
+        do_statement|
+    return_statement|
+     break_statement|
+  continue_statement|
+     label_statement;
+
+
+
+
+print_statement = 'print':expression;
+
+
+enum_declaration = 'enum':"{":enumerator:{",":enumerator}:"}";
+enumerator = identifier:["=":expression];
+
+
+
+
+break_statement    =    'break':[";"];
+continue_statement = 'continue':[";"];
+label_statement    = identifier:":":block;
+return_statement   = 'return':[expression]:[";"];
+
+
+
+
+do_statement = 'do':block;
+
+
+
+
+if_statement = 'if':conditional_block:{'else':'if':conditional_block}:['else':block];
+
+labeled_block     = identifier:":":block;
+conditional_block = "(":expression:")":block;
+
+block = "{":{statement}:"}";
+
+
+
+
+expression = unary_operand:{binary_operator:unary_operand};
+
+unary_operand = {unary_operator}:operand:[subscript|argument_list];
+
+operand =
+               'null'|
+               'true'|
+              'false'|
+ ("(":expression:")")|
+           identifier|
+      integer_literal|
+    character_literal|
+       string_literal;
+
+
+subscript     = "[":expression:"]";
+argument_list = "(":[expression:{",":expression}]:")";
+
+
+
+
+function_declaration = 'function':[identifier]:function_definition;
+
+function_definition = "(":[parameter:{",":parameter}]:")":block;
+
+parameter = identifier;
+
+
+
+
+const_declaration = ['static']:'const':identifier:"=":(expression|array_literal);
+var_declaration   = ['static']:'var'  :identifier:["=":(expression|array_literal)];
+
+
+
+
+
+white_space = CTYPE_space:{CTYPE_space};
+
+
+struct_literal = "{":[struct_member:{",":struct_member}]:"}";
+
+struct_member = identifier:":":expression;
+
+
+
+array_literal = "[":[expression:{",":expression}]:"]";
+
+
+
+integer_literal = hex_literal|binary_literal|decimal_literal;
+
+
+noskip decimal_literal = "0"|natural_number;
+noskip hex_literal     = "0x":CTYPE_xdigit:{CTYPE_xdigit};
+noskip binary_literal  = "0b":zero_or_one:{zero_or_one};
+
+
+natural_number  = one_to_nine:{CTYPE_digit};
+one_to_nine     = "1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9";
+zero_or_one     = "0"|"1";
+
+
+binary_operator =
+  "<<="|
+  "<<" |
+  "<=" |
+  "<"  |
+  ">>="|
+  ">>" |
+  ">=" |
+  ">"  |
+  "+=" |
+  "+"  |
+  "-=" |
+  "-"  |
+  "*=" |
+  "*"  |
+  "/=" |
+  "/"  |
+  "%=" |
+  "%"  |
+  "||" |
+  "|=" |
+  "|"  |
+  "&&" |
+  "&=" |
+  "&"  |
+  "==" |
+  "="  |
+  "^=" |
+  "^"  |
+  "!=" |
+  "."  ;
+
+
+unary_operator =
+     "!"|
+     "~"|
+     "-"|
+     "*"|
+     "&";
+
+
+
+
+identifier = ("_"|CTYPE_alpha):{"_"|CTYPE_alnum};
+
+
+
+
+character_literal = "\'": string_element :"\'";
+   string_literal = "\"":{string_element}:"\"";
+
+
+string_element =
+                         " "|
+               CTYPE_unicode|
+              null_character|
+           newline_character|
+         backslash_character|
+      single_quote_character|
+      double_quote_character|
+            normal_character;
+
+
+normal_character =
+          " "|
+  CTYPE_alnum|
+CTYPE_unicode|
+          "!"|
+          "#"|
+          "$"|
+          "%"|
+          "&"|
+          "("|
+          ")"|
+          "="|
+          "~"|
+          "|"|
+          "@"|
+          "["|
+          "]"|
+          "{"|
+          "}"|
+          ":"|
+          ";"|
+          "*"|
+          "+"|
+          "-"|
+          "`"|
+          "<"|
+          ">"|
+          "?"|
+          "_"|
+          ","|
+          "."|
+          "/"|
+              null_character   |
+              newline_character|
+            backslash_character|
+         single_quote_character|
+         double_quote_character;
+
+
+null_character         = "\\0";
+newline_character      = "\\n";
+backslash_character    = "\\\\";
+single_quote_character = "\\\'";
+double_quote_character = "\\\"";
+
+
+
+

@@ -1,0 +1,148 @@
+block = identifier:":":{instruction|data};
+
+
+data = 'data':('i8'|'i16'|'i32'):[[array_size]:[array]]:";";
+
+ 
+array_size = "[":integer:"]";
+
+
+instruction = opecode:[operand]:";";
+
+
+operand = ["-"]:(integer|identifier);
+
+
+opecode =
+  'nop'|
+  'hlt'|
+  'add'|
+  'sub'|
+  'mul'|
+  'div'|
+  'rem'|
+  'shl'|
+  'shr'|
+  'asn'|
+  'aadd'|
+  'asub'|
+  'amul'|
+  'adiv'|
+  'arem'|
+  'ashl'|
+  'ashr'|
+  'abor'|
+  'aband'|
+  'abxor'|
+  'eq'|
+  'neq'|
+  'lteq'|
+  'lt'|
+  'gteq'|
+  'gt'|
+  'neg'|
+  'lnot'|
+  'lor'|
+  'land'|
+  'bnot'|
+  'bor'|
+  'band'|
+  'bxor'|
+  'brz'|
+  'brnz'|
+  'ld'|
+  'st'|
+  'cal'|
+  'ret'|
+  'prn'|
+  'psh0'|
+  'pshi8'|
+  'pshui8'|
+  'pshi16'|
+  'pshui16'|
+  'pshi32'|
+  'dup'|
+  'arg'|
+  'pshpc'|
+  'pshbp'|
+  'pshsp'|
+  'pshlp'|
+  'pshlv'|
+  'updpc'|
+  'updbp'|
+  'updsp'|
+  'pop';
+
+
+
+
+noskip identifier = (CTYPE_alpha|"_"):{CTYPE_alnum|"_"};
+
+
+
+
+noskip integer = ["-"]:("0"|(one_to_nine:{CTYPE_digit}));
+one_to_nine = "1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9";
+
+
+array = "{":operand:{",":operand}:[","]:"}";
+
+
+string = "\"":{string_element}:"\"";
+
+string_element =
+                     " "|
+             CTYPE_alnum|
+           CTYPE_unicode|
+                     "!"|
+                     "#"|
+                     "$"|
+                     "%"|
+                     "&"|
+                     "("|
+                     ")"|
+                     "="|
+                     "~"|
+                     "^"|
+                     "|"|
+                     "@"|
+                     "["|
+                     "]"|
+                     "{"|
+                     "}"|
+                     ":"|
+                     ";"|
+                     "*"|
+                     "+"|
+                     "-"|
+                     "`"|
+                     "<"|
+                     ">"|
+                     "?"|
+                     "_"|
+                     ","|
+                     "."|
+                    "\'"|
+           tab_character|
+       newline_character|
+        return_character|
+         slash_character|
+     backslash_character|
+      formfeed_character|
+     backspace_character|
+  double_quote_character;
+
+
+newline_character      = "\\":"n";
+return_character       = "\\":"r";
+tab_character          = "\\":"t";
+backspace_character    = "\\":"b";
+formfeed_character     = "\\":"f";
+slash_character        = "\\":"/";
+backslash_character    = "\\":"\\";
+double_quote_character = "\\":"\"";
+
+
+
+
+

@@ -1,0 +1,12 @@
+start:
+pshi16 0;
+array:
+data i32 {20,20,20,20,20};
+add;
+sub;
+sub;
+pshi32 end;
+
+end:
+mul;
+

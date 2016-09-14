@@ -1,5 +1,5 @@
-element = alphabet;
+expression = operand:[operator:expression];
 
-noskip alphabet = {CTYPE_alpha};
+operand = CTYPE_digit;
 
-
+operator = "+"|"-";

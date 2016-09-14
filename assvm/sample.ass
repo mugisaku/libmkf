@@ -1,0 +1,69 @@
+
+
+function
+get()
+{
+  return 255;
+}
+
+
+function
+add(a,b)
+{
+  return a+b;
+}
+
+
+
+function
+mul(a,b)
+{
+  return a*b;
+}
+
+
+
+var  g=1234;
+
+
+function
+xorshift()
+{
+  static var  y = 463534242;
+
+  y = y ^ (y << 13); y = y ^ (y >> 17);
+
+  return y = y ^ (y << 5);
+}
+
+
+function
+main()
+{
+  static var  st = 88;
+
+  const  x = 3+2;
+  const  y = 1;
+  const  z = 0;
+
+  var  i = 0;
+
+    do
+    {
+      print xorshift();
+
+      i += 1;
+
+        if(i > 100)
+        {
+          break;
+        }
+    }
+
+
+  halt;
+}
+
+
+
+
