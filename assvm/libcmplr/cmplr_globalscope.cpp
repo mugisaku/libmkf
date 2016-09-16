@@ -1,13 +1,15 @@
 #include"cmplr_globalscope.hpp"
 #include"cmplr_function.hpp"
+#include"cmplr_block.hpp"
 #include"cmplr_context.hpp"
+#include"expression_node.hpp"
 
 
 
 
 void
 GlobalScope::
-print(FILE*  f) const
+print(FILE*  f)
 {
     for(auto&  decl: declaration_list)
     {
@@ -59,9 +61,11 @@ read(const mkf::Node&  src)
 
         if(nd == "function_declaration")
         {
-          auto  fn = new Function(nd,prectx);
+          function_list.emplace_back(nd,prectx);
 
-          declaration_list.emplace_back(fn);
+          auto&  fn = function_list.back();
+
+          declaration_list.emplace_back(&fn);
         }
 
       else

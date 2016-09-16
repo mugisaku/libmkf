@@ -17,7 +17,27 @@ struct Node;
 }
 
 
-using ArgumentList = std::vector<expression::Node>;
+using NodeList = std::vector<expression::Node>;
+
+
+struct
+ArgumentList
+{
+  NodeList*  node_list;
+
+  constexpr ArgumentList(NodeList*  ls): node_list(ls){}
+
+};
+
+
+struct
+Array
+{
+  NodeList*  node_list;
+
+  constexpr Array(NodeList*  ls): node_list(ls){}
+
+};
 
 
 namespace expression{
@@ -28,6 +48,7 @@ OperandKind
 {
   null,
   integer,
+  array,
   string,
   identifier,
   expression,
@@ -46,7 +67,7 @@ Identifier
 {
   std::string*  s;
 
-  Identifier(std::string*  s_): s(s_){};
+  constexpr Identifier(std::string*  s_): s(s_){};
 
 };
 
@@ -56,7 +77,7 @@ Subscript
 {
   Node*  nd;
 
-  Subscript(Node*  nd_): nd(nd_){};
+  constexpr Subscript(Node*  nd_): nd(nd_){};
 
 };
 
@@ -73,7 +94,7 @@ Operand
 
     Node*  nd;
 
-    ArgumentList*  args;
+    NodeList*  ndls;
 
   } data;
 
@@ -83,9 +104,10 @@ Operand
   Operand(const Identifier&  id);
   Operand(unsigned long  i);
   Operand(Node*  nd);
-  Operand(ArgumentList*  args);
+  Operand(const ArgumentList&  args);
+  Operand(const Array&  arr);
   Operand(const Subscript&  subsc);
-  Operand(const mkf::Node&  src);
+  Operand(const mkf::Node&  src, PreContext&  prectx);
   Operand(const Operand&  rhs);
   Operand(Operand&&  rhs) noexcept;
   ~Operand();
@@ -100,7 +122,8 @@ Operand
   void  reset(std::string*  s);
   void  reset(const Identifier&  id);
   void  reset(Node*  nd);
-  void  reset(ArgumentList*  args);
+  void  reset(const ArgumentList&  args);
+  void  reset(const Array&  arr);
   void  reset(const Subscript&  subsc);
 
   void  print(FILE*  f=stdout) const;
@@ -109,7 +132,7 @@ Operand
 
   ObjectKind  compile(Context&  ctx) const;
 
-  void  read(const mkf::Node&  src);
+  void  read(const mkf::Node&  src, PreContext&  prectx);
   void  read_integer_literal(const mkf::Node&  src);
   void  read_character_literal(const mkf::Node&  src);
 

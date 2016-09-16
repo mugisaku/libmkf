@@ -2,6 +2,7 @@
 #include"expression_element.hpp"
 #include"expression_node.hpp"
 #include"cmplr_declaration.hpp"
+#include"cmplr_function.hpp"
 #include<cstring>
 #include<string>
 #include<vector>
@@ -55,10 +56,18 @@ kind(OperandKind::null)
 
 
 Operand::
-Operand(ArgumentList*  args):
+Operand(const ArgumentList&  args):
 kind(OperandKind::null)
 {
   reset(args);
+}
+
+
+Operand::
+Operand(const Array&  arr):
+kind(OperandKind::null)
+{
+  reset(arr);
 }
 
 
@@ -71,10 +80,10 @@ kind(OperandKind::null)
 
 
 Operand::
-Operand(const mkf::Node&  src):
+Operand(const mkf::Node&  src, PreContext&  prectx):
 kind(OperandKind::null)
 {
-  read(src);
+  read(src,prectx);
 }
 
 
@@ -118,7 +127,8 @@ operator=(const Operand&  rhs)
         data.s = new std::string(*rhs.data.s);
         break;
       case(OperandKind::argument_list):
-        data.args = new ArgumentList(*rhs.data.args);
+      case(OperandKind::array):
+        data.ndls = new NodeList(*rhs.data.ndls);
         break;
       case(OperandKind::expression):
       case(OperandKind::subscript):
@@ -150,7 +160,8 @@ operator=(Operand&&  rhs) noexcept
         data.s = rhs.data.s;
         break;
       case(OperandKind::argument_list):
-        data.args = rhs.data.args;
+      case(OperandKind::array):
+        data.ndls = rhs.data.ndls;
         break;
       case(OperandKind::expression):
       case(OperandKind::subscript):
@@ -177,7 +188,8 @@ clear()
         delete data.s;
         break;
       case(OperandKind::argument_list):
-        delete data.args;
+      case(OperandKind::array):
+        delete data.ndls;
         break;
       case(OperandKind::expression):
       case(OperandKind::subscript):
@@ -242,13 +254,25 @@ reset(Node*  nd)
 
 void
 Operand::
-reset(ArgumentList*  args)
+reset(const ArgumentList&  args)
 {
   clear();
 
   kind = OperandKind::argument_list;
 
-  data.args = args;
+  data.ndls = args.node_list;
+}
+
+
+void
+Operand::
+reset(const Array&  arr)
+{
+  clear();
+
+  kind = OperandKind::array;
+
+  data.ndls = arr.node_list;
 }
 
 
@@ -280,7 +304,8 @@ fold(FoldContext&  ctx) const
 
             if(!decl)
             {
-              printf("識別子%sが指すオブジェクトが見つかりません\n",data.s->data());
+              printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
+                     ctx.function->identifier.data(),data.s->data());
 
               throw;
             }
@@ -295,6 +320,8 @@ fold(FoldContext&  ctx) const
       case(OperandKind::subscript):
         break;
       case(OperandKind::argument_list):
+        break;
+      case(OperandKind::array):
         break;
       case(OperandKind::integer):
         return FoldResult(data.i);
@@ -321,7 +348,8 @@ compile(Context&  ctx) const
 
             if(!decl)
             {
-              printf("識別子%sが指すオブジェクトが見つかりません\n",data.s->data());
+              printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
+                     ctx.function->identifier.data(),data.s->data());
 
               throw;
             }
@@ -336,7 +364,7 @@ compile(Context&  ctx) const
       case(OperandKind::subscript):
         break;
       case(OperandKind::argument_list):
-          for(auto  it = data.args->crbegin();  it != data.args->crend();  ++it)
+          for(auto  it = data.ndls->crbegin();  it != data.ndls->crend();  ++it)
           {
             auto  k = it->compile(ctx);
 
@@ -347,7 +375,7 @@ compile(Context&  ctx) const
           }
 
 
-        ctx.push("  pshi8 %d;//引数個数\n",data.args->size());
+        ctx.push("  pshi8 %d;//引数個数\n",data.ndls->size());
 
         return ObjectKind::argument_list;
         break;
@@ -385,13 +413,24 @@ print(FILE*  f) const
       case(OperandKind::argument_list):
         fprintf(f,"(");
 
-          for(auto&  arg: *data.args)
+          for(auto&  arg: *data.ndls)
           {
             arg.print(f);
 
             fprintf(f,",");
           }
         fprintf(f,")");
+        break;
+      case(OperandKind::array):
+        fprintf(f,"{");
+
+          for(auto&  e: *data.ndls)
+          {
+            e.print(f);
+
+            fprintf(f,",");
+          }
+        fprintf(f,"}");
         break;
       case(OperandKind::integer):
         fprintf(f,"%lu",data.i);
@@ -402,7 +441,7 @@ print(FILE*  f) const
 
 void
 Operand::
-read(const mkf::Node&  src)
+read(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
@@ -436,6 +475,12 @@ read(const mkf::Node&  src)
         }
 
       else
+        if(nd == "array_literal")
+        {
+          reset(Array(new NodeList(Node::read_list(nd,prectx))));
+        }
+
+      else
         if(nd == "character_literal")
         {
           read_character_literal(nd);
@@ -444,9 +489,7 @@ read(const mkf::Node&  src)
       else
         if(nd == "expression")
         {
-          auto  expr = new Node;
-
-          expr->read(nd);
+          auto  expr = new Node(nd,prectx);
 
           reset(expr);
         }
@@ -473,6 +516,8 @@ read(const mkf::Node&  src)
       cur.advance();
     }
 }
+
+
 
 
 }

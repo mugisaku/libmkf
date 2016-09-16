@@ -138,7 +138,7 @@ resolve(std::vector<Block>&  ls)
 
       printf("識別子%sが見つかりません\n",operand.identifier.data());
 
-      throw operand;
+//      throw operand;
     }
 }
 

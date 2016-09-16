@@ -53,33 +53,6 @@ read_declaration(const mkf::Node&  src, PreContext&  prectx)
 
 
 
-namespace{
-std::vector<expression::Node>*
-read_array(const mkf::Node&  src)
-{
-  auto  arr = new std::vector<expression::Node>;
-
-  mkf::Cursor  cur(src);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "expression")
-        {
-          arr->emplace_back(nd);
-        }
-
-
-      cur.advance();
-    }
-
-
-  return arr;
-}
-}
-
-
 Declaration
 Statement::
 read_var_declaration(const mkf::Node&  src, PreContext&  prectx)
@@ -105,28 +78,7 @@ read_var_declaration(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "expression")
         {
-          decl.data.expr = new expression::Node(nd);
-        }
-
-      else
-        if(nd == "array_literal")
-        {
-          decl.data.arr = read_array(nd);
-
-          decl.object_kind = ObjectKind::array;
-
-            switch(decl.kind)
-            {
-              case(DeclarationKind::local):
-                decl.index = prectx.function->local_object_size;
-
-                prectx.function->local_object_size += decl.get_size();
-                break;
-              case(DeclarationKind::local_static):
-                decl.index = prectx.globalscope.local_static_number++;
-                break;
-              default:;
-            }
+          decl.data.expr = new expression::Node(nd,prectx);
         }
 
       else
@@ -171,7 +123,7 @@ read_const_declaration(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "expression")
         {
-          auto  expr = new expression::Node(nd);
+          auto  expr = new expression::Node(nd,prectx);
 
           FoldContext  folctx(prectx.globalscope);
 
@@ -188,54 +140,6 @@ read_const_declaration(const mkf::Node&  src, PreContext&  prectx)
 
 
           decl.data.i = res.value;
-        }
-
-      else
-        if(nd == "array_literal")
-        {
-          auto  carr = new std::vector<int>;
-
-          auto  arr = read_array(nd);
-
-          FoldContext  folctx(prectx.globalscope);
-
-            for(auto&  expr: *arr)
-            {
-              auto  res = expr.fold(folctx);
-
-                if(!res.folded)
-                {
-                  delete  arr;
-                  delete carr;
-
-                  printf("定数式を畳めませんんでした\n");
-
-                  throw;
-                }
-
-
-              carr->emplace_back(res.value);
-
-                switch(decl.kind)
-                {
-                  case(DeclarationKind::local):
-                    decl.index = prectx.function->local_object_size;
-
-                    prectx.function->local_object_size += decl.get_size();
-                    break;
-                  case(DeclarationKind::local_static):
-                    decl.index = prectx.globalscope.local_static_number++;
-                    break;
-                  default:;
-                }
-            }
-
-
-          delete arr;
-
-          decl.data.carr = carr;
-
-          decl.object_kind = ObjectKind::constant_array;
         }
 
 

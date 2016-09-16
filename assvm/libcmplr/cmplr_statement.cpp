@@ -13,7 +13,7 @@ kind(StatementKind::null)
 
 
 Statement::
-Statement(Block*  blk):
+Statement(const Block*  blk):
 kind(StatementKind::null)
 {
   reset(blk);
@@ -78,14 +78,15 @@ clear()
       case(StatementKind::break_):
       case(StatementKind::continue_):
       case(StatementKind::declaration):
+      case(StatementKind::block):
+        break;
+      case(StatementKind::branchnode):
+        delete data.brand;
         break;
       case(StatementKind::return_):
       case(StatementKind::expression):
       case(StatementKind::print):
         delete data.expr;
-        break;
-      case(StatementKind::block):
-        delete data.blk;
         break;
       default:
         report;
@@ -112,7 +113,19 @@ reset(expression::Node*  expr)
 
 void
 Statement::
-reset(Block*  blk)
+reset(BranchNode*  brand)
+{
+  clear();
+
+  kind = StatementKind::branchnode;
+
+  data.brand = brand;
+}
+
+
+void
+Statement::
+reset(const Block*  blk)
 {
   clear();
 
@@ -178,20 +191,17 @@ reset(const Halt&  halt)
 
 void
 Statement::
-compile(Context&  ctx)
+compile(Context&  ctx) const
 {
     switch(kind)
     {
       case(StatementKind::null):
         break;
       case(StatementKind::block):
-        {
-          ctx.block_stack.emplace_back(data.blk);
-
-          data.blk->compile(ctx);
-
-          ctx.block_stack.pop_back();
-        }
+        data.blk->compile(ctx);
+        break;
+      case(StatementKind::branchnode):
+        data.brand->compile(ctx);
         break;
       case(StatementKind::declaration):
         data.decl->compile_definition(ctx);
@@ -221,7 +231,7 @@ compile(Context&  ctx)
       case(StatementKind::break_):
           if(ctx.control_block)
           {
-            ctx.push("  pshui16 %s_END;\n",ctx.control_block->label.data());
+            ctx.control_block->compile_push_do_end(ctx);
             ctx.push("  updpc;//break\n");
           }
 
@@ -235,7 +245,7 @@ compile(Context&  ctx)
       case(StatementKind::continue_):
           if(ctx.control_block)
           {
-            ctx.push("  pshui16 %s_BEGIN;\n",ctx.control_block->label.data());
+            ctx.control_block->compile_push_do_begin(ctx);
             ctx.push("  updpc;//continue\n");
           }
 
@@ -282,6 +292,9 @@ print(FILE*  f) const
         break;
       case(StatementKind::block):
         data.blk->print(f);
+        break;
+      case(StatementKind::branchnode):
+        data.brand->print(f);
         break;
       case(StatementKind::declaration):
         data.decl->print(f);

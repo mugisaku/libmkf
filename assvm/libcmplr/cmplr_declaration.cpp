@@ -26,8 +26,7 @@ object_kind(expr? ObjectKind::value:ObjectKind::null)
 
 
 Declaration::
-Declaration(Function*  fn):
-identifier(fn->identifier),
+Declaration(const Function*  fn):
 index(0),
 kind(DeclarationKind::global),
 object_kind(ObjectKind::null)
@@ -108,17 +107,16 @@ void
 Declaration::
 clear()
 {
+  identifier.clear();
+
     switch(object_kind)
     {
       case(ObjectKind::function):
-        delete data.f;
+      case(ObjectKind::reference):
+      case(ObjectKind::constant):
         break;
       case(ObjectKind::value):
         delete data.expr;
-        break;
-      case(ObjectKind::reference):
-        break;
-      case(ObjectKind::constant):
         break;
       case(ObjectKind::array):
         delete data.arr;
@@ -137,17 +135,17 @@ clear()
 
 void
 Declaration::
-reset(Function*  fn)
+reset(const Function*  fn)
 {
   clear();
+
+  identifier = fn->identifier;
 
   kind = DeclarationKind::global;
 
   object_kind = ObjectKind::function;
 
-  data.f = fn;
-
-  identifier = fn->identifier;
+  data.fn = fn;
 }
 
 

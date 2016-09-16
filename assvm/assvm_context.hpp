@@ -19,11 +19,18 @@ FileSet
   FILE*  out=nullptr;
   FILE*  err=nullptr;
 
+  void  flush_all() const
+  {
+      if(in ){fflush(in );}
+      if(out){fflush(out);}
+      if(err){fflush(err);}
+  }
+
   void  close_all()
   {
-      if(in ){fclose(in );}
-      if(out){fclose(out);}
-      if(err){fclose(err);}
+      if(in ){  fclose(in );  in  = nullptr;}
+      if(out){  fclose(out);  out = nullptr;}
+      if(err){  fclose(err);  err = nullptr;}
   }
 
 };

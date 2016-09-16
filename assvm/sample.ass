@@ -50,11 +50,11 @@ main()
 
     do
     {
-      print xorshift();
+      print i;
 
       i += 1;
 
-        if(i > 100)
+        if(i > 12)
         {
           break;
         }

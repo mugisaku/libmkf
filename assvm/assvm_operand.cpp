@@ -75,7 +75,7 @@ print(FILE*  f) const
 
     if(identifier.size())
     {
-      fprintf(f,"(%s)",identifier.data());
+      fprintf(f,"/*%s*/",identifier.data());
     }
 }
 

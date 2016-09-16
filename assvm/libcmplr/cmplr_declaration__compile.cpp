@@ -1,4 +1,5 @@
 #include"cmplr_declaration.hpp"
+#include"cmplr_globalscope.hpp"
 #include"cmplr_function.hpp"
 
 
@@ -13,8 +14,6 @@ compile_function(Context&  ctx) const
       case(DeclarationKind::parameter):
         break;
       case(DeclarationKind::local):
-        ctx.push("  pshui16 %s;\n",data.f->identifier.data());
-        return ObjectKind::reference;
         break;
       case(DeclarationKind::local_static):
         break;
@@ -80,7 +79,7 @@ compile_value(Context&  ctx) const
         return ObjectKind::reference;
         break;
       case(DeclarationKind::local_static):
-        ctx.push("  pshui16 _STATIC_%04d;\n",index);
+        ctx.push("  pshui16 _STATIC_%04d;//%s\n",index,identifier.data());
         return ObjectKind::reference;
         break;
       case(DeclarationKind::global):

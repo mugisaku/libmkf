@@ -1,4 +1,5 @@
 #include"cmplr_block.hpp"
+#include"cmplr_function.hpp"
 #include<cstdlib>
 
 
@@ -12,21 +13,16 @@ kind(BlockKind::plain)
 
 
 Block::
-Block(BlockKind  k, std::string&&  id, int  i):
-kind(k),
-condition(nullptr),
-index(i),
-label(std::move(id))
+Block(BlockKind  k):
+kind(k)
 {
 }
 
 
 Block::
-Block(BlockKind  k, std::string&&  id, const mkf::Node&  src, PreContext&  prectx, int  i, expression::Node*  cond):
+Block(BlockKind  k, const mkf::Node&  src, PreContext&  prectx, expression::Node*  cond):
 kind(k),
-condition(cond),
-index(i),
-label(std::move(id))
+condition(cond)
 {
   read(src,prectx);
 }
@@ -52,15 +48,17 @@ print(FILE*  f) const
 
         fprintf(f,")");
         break;
-      case(BlockKind::elseif):
-        fprintf(f,"else if(");
-
-        condition->print(f);
-
-        fprintf(f,")");
-        break;
       case(BlockKind::else_):
         fprintf(f,"else");
+
+          if(condition)
+          {
+            fprintf(f," if(");
+
+            condition->print(f);
+
+            fprintf(f,")");
+          }
         break;
     }
 
@@ -79,82 +77,88 @@ print(FILE*  f) const
 
 
   fprintf(f,"}\n\n\n");
-
-    if(next_block)
-    {
-      next_block->print(f);
-    }
 }
 
 
 void
 Block::
-compile(Context&  ctx)
+compile_push_do_begin(Context&  ctx) const
+{
+  ctx.push("  pshui16 _FUNC%s_DO%04d_BEGIN;\n",function->identifier.data(),index);
+}
+
+
+void
+Block::
+compile_push_do_end(Context&  ctx) const
+{
+  ctx.push("  pshui16 _FUNC%s_DO%04d_END;\n",function->identifier.data(),index);
+}
+
+
+void
+Block::
+compile(Context&  ctx) const
 {
   const Block*  ctrlblk = nullptr;
 
+  ctx.block_stack.emplace_back(this);
+
     switch(kind)
     {
-      case(BlockKind ::do_):
-        ctx.push("%s_BEGIN:\n",label.data());
+      case(BlockKind::do_):
+        ctx.push("_FUNC%s_DO%04d_BEGIN:\n",function->identifier.data(),index>>16);
         ctrlblk = ctx.change_control_block(this);
         break;
-      case(BlockKind ::if_):
-        ctx.push("%s_%04d_BEGIN:\n",label.data(),index);
+      case(BlockKind::if_):
+        ctx.push("_FUNC%s_IF%04dxxxx:\n",function->identifier.data(),index>>16);
         condition->compile(ctx);
-        ctx.push("  pshui16 %s_%04d_BEGIN;\n",label.data(),index+1);
-        ctx.push("  brz;\n",label.data());
+        ctx.push("  pshui16 _FUNC%s_IF%08d_END;\n",function->identifier.data(),index);
+        ctx.push("  brz;\n");
         break;
-      case(BlockKind ::elseif):
-        ctx.push("%s_%04d_BEGIN:\n",label.data(),index);
-        condition->compile(ctx);
-        ctx.push("  pshui16 %s_%04d_BEGIN;\n",label.data(),index+1);
-        ctx.push("  brz;\n",label.data());
-        break;
-      case(BlockKind ::else_):
-        ctx.push("%s_%04d_BEGIN:\n",label.data(),index);
+      case(BlockKind::else_):
+          if(condition)
+          {
+            condition->compile(ctx);
+
+            ctx.push("  pshui16 _FUNC%s_IF%08d;\n",function->identifier.data(),index);
+            ctx.push("  brz;\n");
+          }
         break;
     }
 
 
+  compile_basic(ctx);
+
+    switch(kind)
+    {
+      case(BlockKind::do_):
+        ctx.push("  pshui16  _FUNC%s_DO%04d_BEGIN;\n",function->identifier.data(),index);
+        ctx.push("  updpc;\n");
+        ctx.push("_FUNC%s_DO%04d_END:\n",function->identifier.data(),index);
+
+        ctx.change_control_block(ctrlblk);
+        break;
+      case(BlockKind::if_):
+      case(BlockKind::else_):
+        ctx.push("  pshui16  _FUNC%s_IF%04dxxxx_END;\n",function->identifier.data(),index>>16);
+        ctx.push("  updpc;\n");
+        ctx.push("_FUNC%s_IF%08d_END:\n",function->identifier.data(),index);
+        break;
+    }
+
+
+  ctx.block_stack.pop_back();
+}
+
+
+void
+Block::
+compile_basic(Context&  ctx) const
+{
     for(auto&  stmt: statement_list)
     {
       stmt.compile(ctx);
-    }
-
-
-    switch(kind)
-    {
-      case(BlockKind ::do_):
-        ctx.push("  pshui16  %s_BEGIN;\n",label.data());
-        ctx.push("  updpc;\n");
-        break;
-      case(BlockKind ::if_):
-      case(BlockKind ::elseif):
-        ctx.push("  pshui16  %s_END;\n",label.data());
-        ctx.push("  updpc;\n");
-        break;
-      case(BlockKind ::else_):
-        break;
-    }
-
-
-    switch(kind)
-    {
-      case(BlockKind ::do_):
-        ctx.change_control_block(ctrlblk);
-        break;
-    }
-
-
-    if(next_block)
-    {
-      next_block->compile(ctx);
-    }
-
-  else
-    {
-      ctx.push("%s_END:\n",label.data());
     }
 }
 

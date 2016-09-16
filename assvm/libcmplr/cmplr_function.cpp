@@ -7,22 +7,14 @@
 
 Function::
 Function():
-local_object_size(0),
-nolabel_block_count(0),
-do_block_count(0),
-switch_block_count(0),
-if_node_count(0)
+local_object_size(0)
 {
 }
 
 
 Function::
 Function(const mkf::Node&  src, PreContext&  prectx):
-local_object_size(0),
-nolabel_block_count(0),
-do_block_count(0),
-switch_block_count(0),
-if_node_count(0)
+local_object_size(0)
 {
   read_declaration(src,prectx);
 }
@@ -30,9 +22,25 @@ if_node_count(0)
 
 
 
+Block&
+Function::
+make_block(BlockKind  k, int  count, const mkf::Node&  src, PreContext&  prectx)
+{
+  block_list.emplace_back(k,src,prectx);
+
+  auto&  blk = block_list.back();
+
+  blk.function = this;
+
+  blk.index = count;
+
+  return blk;
+}
+
+
 void
 Function::
-compile_definition(Context&  ctx)
+compile_definition(Context&  ctx) const
 {
   auto  f = ctx.function       ;
             ctx.function = this;
@@ -50,7 +58,7 @@ compile_definition(Context&  ctx)
     }
 
 
-  statement.compile(ctx);
+  block->compile(ctx);
 
   ctx.entry_list.emplace_back(Entry{this,std::move(ctx.current_content)});
 
@@ -89,7 +97,7 @@ print(FILE*  f) const
 
   fprintf(f,")\n");
 
-  statement.print(f);
+  block->print(f);
 
   fprintf(f,"\n");
 }
@@ -133,6 +141,9 @@ read_definition(const mkf::Node&  src, PreContext&  prectx)
   auto  fn = prectx.function       ;
              prectx.function = this;
 
+  prectx.do_block_count   = 0;
+  prectx.branchnode_count = 0;
+
     while(!cur.test_ended())
     {
       auto&  nd = cur.get();
@@ -155,7 +166,9 @@ read_definition(const mkf::Node&  src, PreContext&  prectx)
             }
 
 
-          statement = Statement(new Block(BlockKind::function,std::string(identifier),nd,prectx));
+          auto  blk = new Block(BlockKind::plain,nd,prectx);
+
+          block.reset(blk);
         }
 
 

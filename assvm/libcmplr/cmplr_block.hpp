@@ -19,10 +19,9 @@ BlockKind
 {
   plain,
 
-  function,
   do_,
+
   if_,
-  elseif,
   else_,
 
 };
@@ -31,25 +30,28 @@ BlockKind
 struct
 Block
 {
+  const Function*  function;
+
   BlockKind  kind;
 
-  std::string  label;
+  int  index;
 
   std::list<Declaration>  declaration_list;
   std::list<Statement>      statement_list;
 
-  int  index;
-
   std::unique_ptr<expression::Node>  condition;
-  std::unique_ptr<Block>            next_block;
 
-  Block(                                                                                                                      );
-  Block(BlockKind  k, std::string&&  id, int  i=0                                                                             );
-  Block(BlockKind  k, std::string&&  id, const mkf::Node&  src, PreContext&  prectx, int  i=0, expression::Node*  cond=nullptr);
+  Block(                                                                                         );
+  Block(BlockKind  k                                                                             );
+  Block(BlockKind  k, const mkf::Node&  src, PreContext&  prectx, expression::Node*  cond=nullptr);
 
   void  print(FILE*  f=stdout) const;
 
-  void  compile(Context&  ctx);
+  void  compile_push_do_begin(Context&  ctx) const;
+  void  compile_push_do_end(Context&  ctx) const;
+
+  void  compile(Context&  ctx) const;
+  void  compile_basic(Context&  ctx) const;
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
 

@@ -4,6 +4,8 @@
 
 #include"cmplr_statement.hpp"
 #include"cmplr_declaration.hpp"
+#include"cmplr_block.hpp"
+#include<memory>
 
 
 
@@ -12,6 +14,7 @@ using ParameterList = std::vector<Declaration>;
 
 
 struct Statement;
+struct Block;
 struct GlobalScope;
 struct PreContext;
 
@@ -21,25 +24,23 @@ Function
 {
   std::string  identifier;
 
+  std::list<Block>  block_list;
+
   ParameterList  parameter_list;
 
   size_t  local_object_size;
 
-  unsigned int  nolabel_block_count;
-  unsigned int       do_block_count;
-  unsigned int   switch_block_count;
-  unsigned int        if_node_count;
-
-
-  Statement  statement;
+  std::unique_ptr<Block>  block;
 
    Function();
    Function(const mkf::Node&  src, PreContext&  prectx);
 
 
+  Block&  make_block(BlockKind  k, int  count, const mkf::Node&  src, PreContext&  prectx);
+
   void  print(FILE*  f=stdout) const;
 
-  void  compile_definition(Context&  ctx);
+  void  compile_definition(Context&  ctx) const;
 
   void  read_declaration(const mkf::Node&  src, PreContext&  prectx);
   void   read_definition(const mkf::Node&  src, PreContext&  prectx);

@@ -1,4 +1,5 @@
 #include"cmplr_declaration.hpp"
+#include"cmplr_globalscope.hpp"
 #include"cmplr_function.hpp"
 
 
@@ -15,7 +16,7 @@ compile_function_definition(Context&  ctx) const
       case(DeclarationKind::local_static):
         break;
       case(DeclarationKind::global):
-        data.f->compile_definition(ctx);
+        data.fn->compile_definition(ctx);
         break;
       case(DeclarationKind::parameter):
         break;
@@ -123,7 +124,7 @@ compile_value_definition(Context&  ctx) const
             }
 
 
-          ctx.push_definition("_STATIC_%04d:\n",index);
+          ctx.push_definition("_STATIC_%04d://%s\n",index,identifier.data());
           ctx.push_definition("data i32 {%d};\n",i);
         }
         break;

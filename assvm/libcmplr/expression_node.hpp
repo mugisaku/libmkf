@@ -9,6 +9,9 @@
 #include<list>
 
 
+struct PreContext;
+
+
 namespace expression{
 
 
@@ -22,7 +25,7 @@ Node
 
 
   Node();
-  Node(const mkf::Node&  src);
+  Node(const mkf::Node&  src, PreContext&  prectx);
   Node(Element&&  el);
   Node(const Element&  el);
   Node(Node&&  rhs) noexcept;
@@ -46,7 +49,9 @@ Node
 
   ObjectKind  compile(Context&  ctx) const;
 
-  void  read(const mkf::Node&  src);
+  void  read(const mkf::Node&  src, PreContext&  prectx);
+
+  static std::vector<Node>  read_list(const mkf::Node&  src, PreContext&  prectx);
 
 };
 

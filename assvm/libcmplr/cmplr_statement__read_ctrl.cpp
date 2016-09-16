@@ -43,7 +43,7 @@ read_control_statement(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "return_statement")
         {
-          read_return_statement(nd);
+          read_return_statement(nd,prectx);
         }
 
 
@@ -54,7 +54,7 @@ read_control_statement(const mkf::Node&  src, PreContext&  prectx)
 
 namespace{
 Block*
-read_block(const char*  base, BlockKind  k, int  n, const mkf::Node&  src, PreContext&  prectx)
+read_block(Function*  fn, BlockKind  k, int  n, const mkf::Node&  src, PreContext&  prectx)
 {
   expression::Node*  cond = nullptr;
 
@@ -66,15 +66,17 @@ read_block(const char*  base, BlockKind  k, int  n, const mkf::Node&  src, PreCo
 
         if(nd == "expression")
         {
-          cond = new expression::Node;
-
-          cond->read(nd);
+          cond = new expression::Node(nd,prectx);
         }
 
       else
         if(nd == "block")
         {
-          return new Block(k,std::string(base),nd,prectx,n,cond);
+          auto&  blk = fn->make_block(k,n,nd,prectx);
+
+          blk.condition.reset(cond);
+
+          return &blk;
         }
 
 
@@ -91,19 +93,13 @@ void
 Statement::
 read_if_statement(const mkf::Node&  src, PreContext&  prectx)
 {
-  char  buf[80];
-
   auto  fn = prectx.function;
 
-  snprintf(buf,sizeof(buf),"_FUNC_%s_IF%04d",fn->identifier.data(),fn->if_node_count++);
-
-  int  block_count = 0;
-
-  bool  else_flag = false;
-
-  Block*  last = nullptr;
-
   mkf::Cursor  cur(src);
+
+  auto  brand = new BranchNode;
+
+  brand->index_base = prectx.branchnode_count++;
 
     while(!cur.test_ended())
     {
@@ -111,33 +107,27 @@ read_if_statement(const mkf::Node&  src, PreContext&  prectx)
 
         if(nd == "conditional_block")
         {
-            if(last)
+            if(brand->block_list.size())
             {
-              auto  blk = read_block(buf,BlockKind::elseif,block_count++,nd,prectx);
+              auto&  blk = fn->make_block(BlockKind::else_,0,nd,prectx);
 
-              last->next_block.reset(blk);
-
-              last = blk;
+              brand->push(blk);
             }
 
           else
             {
-              last = read_block(buf,BlockKind::if_,block_count++,nd,prectx);
+              auto  blk = read_block(fn,BlockKind::if_,0,nd,prectx);
 
-              reset(last);
+              brand->push(*blk);
             }
         }
 
       else
         if(nd == "else_block")
         {
-          auto  blk = read_block(buf,BlockKind::else_,block_count,nd,prectx);
+          auto  blk = read_block(fn,BlockKind::else_,0,nd,prectx);
 
-          last->next_block.reset(blk);
-
-          last = blk;
-
-          else_flag = true;
+          brand->push(*blk);
         }
 
 
@@ -145,10 +135,7 @@ read_if_statement(const mkf::Node&  src, PreContext&  prectx)
     }
 
 
-    if(!else_flag)
-    {
-      last->next_block.reset(new Block(BlockKind::else_,std::string(buf),block_count));
-    }
+  reset(brand);
 }
 
 
@@ -164,15 +151,11 @@ read_do_statement(const mkf::Node&  src, PreContext&  prectx)
 
         if(nd == "block")
         {
-          char  buf[32];
+          int  n = prectx.do_block_count++;
 
-          auto  fn = prectx.function;
+          auto&  blk = prectx.function->make_block(BlockKind::do_,n,nd,prectx);
 
-          snprintf(buf,sizeof(buf),"_FUNC_%s_DO%04d",fn->identifier.data(),fn->do_block_count++);
-
-          auto  blk = new Block(BlockKind::do_,std::string(buf),nd,prectx);
-
-          reset(blk);
+          reset(&blk);
         }
 
 
@@ -183,7 +166,7 @@ read_do_statement(const mkf::Node&  src, PreContext&  prectx)
 
 void
 Statement::
-read_return_statement(const mkf::Node&  src)
+read_return_statement(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
@@ -195,9 +178,7 @@ read_return_statement(const mkf::Node&  src)
 
         if(nd == "expression")
         {
-          data.expr = new expression::Node;
-
-          data.expr->read(nd);
+          data.expr = new expression::Node(nd,prectx);
 
           kind = StatementKind::return_;
         }

@@ -31,7 +31,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "print_statement")
         {
-          read_print_statement(nd);
+          read_print_statement(nd,prectx);
         }
 
       else
@@ -43,21 +43,15 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "block")
         {
-          char  buf[256];
+          auto&  blk = prectx.function->make_block(BlockKind::plain,0,nd,prectx);
 
-          auto  fn = prectx.function;
-
-          snprintf(buf,sizeof(buf),"FN_%s_%04d",fn->identifier.data(),fn->nolabel_block_count++);
-
-          reset(new Block(BlockKind::plain,std::string(buf),nd,prectx));
+          reset(&blk);
         }
 
       else
         if(nd == "expression")
         {
-          auto  expr = new expression::Node;
-
-          expr->read(nd);
+          auto  expr = new expression::Node(nd,prectx);
 
           reset(expr);
         }
@@ -70,7 +64,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
 
 void
 Statement::
-read_print_statement(const mkf::Node&  src)
+read_print_statement(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
@@ -82,9 +76,7 @@ read_print_statement(const mkf::Node&  src)
 
         if(nd == "expression")
         {
-          expr = new expression::Node;
-
-          expr->read(nd);
+          expr = new expression::Node(nd,prectx);
         }
 
 

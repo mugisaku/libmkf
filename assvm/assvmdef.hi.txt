@@ -78,7 +78,8 @@ operand =
            identifier|
       integer_literal|
     character_literal|
-       string_literal;
+       string_literal|
+        array_literal;
 
 
 subscript     = "[":expression:"]";

@@ -78,6 +78,7 @@ CMPLR_OBJ =                                      \
   libcmplr/cmplr_precontext.o                    \
   libcmplr/cmplr_context.o                       \
   libcmplr/cmplr_block.o                         \
+  libcmplr/cmplr_branchnode.o                    \
   libcmplr/cmplr_function.o                      \
   libcmplr/cmplr_globalscope.o                   \
   libcmplr/cmplr_statement.o                     \

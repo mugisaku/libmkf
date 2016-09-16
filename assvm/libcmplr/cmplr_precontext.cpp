@@ -12,7 +12,11 @@ PreContext::
 PreContext(GlobalScope&  g):
 globalscope(g),
 function(nullptr),
-block(nullptr){}
+block(nullptr),
+do_block_count(0),
+branchnode_count(0),
+static_object_count(0)
+{}
 
 
 
@@ -31,7 +35,7 @@ append(Declaration&&  decl)
 
           ptr = &block->declaration_list.back();
 
-          ptr->index = globalscope.local_static_number++;
+          ptr->index = static_object_count++;
         }
 
       else

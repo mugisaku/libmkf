@@ -7,6 +7,7 @@
 #include"mkf_cursor.hpp"
 #include"expression_node.hpp"
 #include"cmplr_declaration.hpp"
+#include"cmplr_branchnode.hpp"
 
 
 #ifndef report
@@ -27,6 +28,7 @@ StatementKind
   print,
 
   block,
+  branchnode,
   expression,
   declaration,
   break_,
@@ -83,16 +85,20 @@ Statement
   union{
     void*  ptr;
 
+    int  i;
+
     const Declaration*    decl;
+    const Block*           blk;
+
     std::string*            id;
-    Block*                 blk;
+    BranchNode*          brand;
     expression::Node*     expr;
 
   } data;
 
 
    Statement();
-   Statement(Block*  blk);
+   Statement(const Block*  blk);
    Statement(const mkf::Node&  src, PreContext&  prectx);
    Statement(const Statement&)=delete;
    Statement(      Statement&&  rhs) noexcept;
@@ -106,7 +112,8 @@ Statement
   void  clear();
 
   void  reset(expression::Node*  expr);
-  void  reset(Block*  blk);
+  void  reset(BranchNode*  brand);
+  void  reset(const Block*  blk);
   void  reset(const Declaration*  decl);
   void  reset(const Print&  prn);
   void  reset(const Halt&  hlt);
@@ -115,16 +122,16 @@ Statement
 
   void  print(FILE*  f=stdout) const;
 
-  void  compile(Context&  ctx);
+  void  compile(Context&  ctx) const;
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
 
-  void    read_print_statement(const mkf::Node&  src);
+  void  read_print_statement(const mkf::Node&  src, PreContext&  prectx);
 
   void  read_control_statement( const mkf::Node&  src, PreContext&  prectx);
   void     read_if_statement(   const mkf::Node&  src, PreContext&  prectx);
   void     read_do_statement(   const mkf::Node&  src, PreContext&  prectx);
-  void  read_return_statement(  const mkf::Node&  src);
+  void  read_return_statement(  const mkf::Node&  src, PreContext&  prectx);
 
 
   void  read_declaration(const mkf::Node&  base, PreContext&  prectx);

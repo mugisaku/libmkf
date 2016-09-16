@@ -143,7 +143,7 @@ resolve(std::vector<Block>&  ls)
             {
               printf("識別子%sが見つかりません",op.identifier.data());
 
-              throw op;
+//              throw op;
             }
         }
     }

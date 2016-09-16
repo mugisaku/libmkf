@@ -18,6 +18,10 @@ PreContext
   Function*        function;
   Block*              block;
 
+  unsigned int       do_block_count;
+  unsigned int     branchnode_count;
+  unsigned int  static_object_count;
+
   PreContext(GlobalScope&  g);
 
   const Declaration*  append(Declaration&&  decl);

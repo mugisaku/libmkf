@@ -18,17 +18,15 @@ struct Declaration;
 struct
 FoldContext
 {
-  GlobalScope&  globalscope;
+  const GlobalScope&  globalscope;
 
-  Function*  function;
+  const Function*  function;
 
-  std::vector<Block*>  block_stack;
+  std::vector<const Block*>  block_stack;
 
-  FoldContext(GlobalScope&  g);
+  FoldContext(const GlobalScope&  g);
 
-  void  operator()();
-
-  Declaration*  find_declaration(const std::string&  id);
+  const Declaration*  find_declaration(const std::string&  id) const;
 
 };
 

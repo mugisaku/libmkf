@@ -10,9 +10,8 @@
 
 
 
-struct Block;
-struct Function;
 struct Context;
+
 
 namespace expression{
 struct Node;
@@ -23,6 +22,8 @@ enum class
 ObjectKind
 {
   null,
+
+  undefined,
 
   value,
   constant,
@@ -61,8 +62,9 @@ Declaration
   union Data{
     void*  ptr;
 
-    int         i;
-    Function*   f;
+    int  i;
+
+    const Function*  fn;
 
     expression::Node*  expr;
 
@@ -74,7 +76,7 @@ Declaration
 
   Declaration();
   Declaration(DeclarationKind  k, std::string&&  id, expression::Node*  expr=nullptr);
-  Declaration(Function*  fn);
+  Declaration(const Function*  fn);
   Declaration(const Declaration&  rhs)=delete;
   Declaration(Declaration&&  rhs) noexcept;
   ~Declaration();
@@ -86,7 +88,7 @@ Declaration
 
   void  clear();
 
-  void  reset(Function*  fn);
+  void  reset(const Function*  fn);
 
   expression::FoldResult  fold(FoldContext&  ctx) const;
 

@@ -1,4 +1,5 @@
 #include"cmplr_declaration.hpp"
+#include"cmplr_globalscope.hpp"
 #include"cmplr_function.hpp"
 
 
@@ -132,7 +133,7 @@ print_function(FILE*  f) const
       case(DeclarationKind::global):
         fprintf(f,"function %s",identifier.data());
 
-        data.f->print(f);
+        data.fn->print(f);
         break;
       case(DeclarationKind::parameter):
         break;

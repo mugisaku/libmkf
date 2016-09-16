@@ -1,6 +1,8 @@
 #include"mkf_book.hpp"
 #include"mkf_parsecontext.hpp"
 #include"libcmplr/cmplr_globalscope.hpp"
+#include"libcmplr/cmplr_function.hpp"
+#include"libcmplr/cmplr_block.hpp"
 #include"assvm_program.hpp"
 #include"assvm_context.hpp"
 #include<cstdlib>
@@ -105,6 +107,7 @@ execute(std::string&&  s, bool  disp, const FileSet*  fs)
         if(fs && fs->out)
         {
           prog.print(fs->out);
+fs->flush_all();
         }
 
 

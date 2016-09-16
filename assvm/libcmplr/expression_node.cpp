@@ -1,5 +1,6 @@
 #include"expression_node.hpp"
 #include"expression_operator.hpp"
+#include"cmplr_precontext.hpp"
 
 
 
@@ -18,11 +19,11 @@ right(nullptr)
 
 
 Node::
-Node(const mkf::Node&  src):
+Node(const mkf::Node&  src, PreContext&  prectx):
 left(nullptr),
 right(nullptr)
 {
-  read(src);
+  read(src,prectx);
 }
 
 
@@ -387,41 +388,14 @@ print(FILE*  f) const
 }
 
 
+namespace{
+
+
 using ElementList = std::vector<Element>;
 
 
-namespace{
 void
-read_argument_list(const mkf::Node&  base, ElementList&  ls)
-{
-  ls.emplace_back(BinaryOperator('(',')'));
-
-  auto  args = new ArgumentList;
-
-  mkf::Cursor  cur(base);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "expression")
-        {
-          args->emplace_back();
-
-          args->back().read(nd);
-        }
-
-
-      cur.advance();
-    }
-
-
-  ls.emplace_back(Operand(args));
-}
-
-
-void
-read_unary_operand(const mkf::Node&  base, ElementList&  ls)
+read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls)
 {
   mkf::Cursor  cur(base);
 
@@ -437,13 +411,17 @@ read_unary_operand(const mkf::Node&  base, ElementList&  ls)
       else
         if(nd == "operand")
         {
-          ls.emplace_back(Operand(nd));
+          ls.emplace_back(Operand(nd,prectx));
         }
 
       else
         if(nd == "argument_list")
         {
-          read_argument_list(nd,ls);
+          ls.emplace_back(BinaryOperator('(',')'));
+
+          ArgumentList  args(new NodeList(Node::read_list(base,prectx)));
+
+          ls.emplace_back(Operand(args));
         }
 
       else
@@ -469,7 +447,7 @@ read_unary_operand(const mkf::Node&  base, ElementList&  ls)
 
 void
 Node::
-read(const mkf::Node&  base)
+read(const mkf::Node&  base, PreContext&  prectx)
 {
   mkf::Cursor  cur(base);
 
@@ -487,7 +465,7 @@ read(const mkf::Node&  base)
       else
         if(nd == "unary_operand")
         {
-          read_unary_operand(nd,ls);
+          read_unary_operand(nd,prectx,ls);
         }
 
 
@@ -498,6 +476,32 @@ read(const mkf::Node&  base)
   auto  rpn = to_rpn(std::move(ls));
 
   left = create_tree(std::move(rpn));
+}
+
+
+std::vector<Node>
+Node::
+read_list(const mkf::Node&  src, PreContext&  prectx)
+{
+  std::vector<Node>  ndls;
+
+  mkf::Cursor  cur(src);
+
+    while(!cur.test_ended())
+    {
+      auto&  nd = cur.get();
+
+        if(nd == "expression")
+        {
+          ndls.emplace_back(nd,prectx);
+        }
+
+
+      cur.advance();
+    }
+
+
+  return std::move(ndls);
 }
 
 

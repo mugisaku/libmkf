@@ -9,7 +9,7 @@
 
 
 FoldContext::
-FoldContext(GlobalScope&  g):
+FoldContext(const GlobalScope&  g):
 globalscope(g),
 function(nullptr)
 {
@@ -18,9 +18,9 @@ function(nullptr)
 
 
 
-Declaration*
+const Declaration*
 FoldContext::
-find_declaration(const std::string&  id)
+find_declaration(const std::string&  id) const
 {
     {
       auto   it = block_stack.rbegin();
