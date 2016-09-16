@@ -45,7 +45,7 @@ enumerator = identifier:["=":expression];
 
 break_statement    =    'break':[";"];
 continue_statement = 'continue':[";"];
-label_statement    = identifier:":":block;
+label_statement    = identifier:":";
 return_statement   = 'return':[expression]:[";"];
 
 
@@ -58,7 +58,6 @@ do_statement = 'do':block;
 
 if_statement = 'if':conditional_block:{'else':'if':conditional_block}:['else':block];
 
-labeled_block     = identifier:":":block;
 conditional_block = "(":expression:")":block;
 
 block = "{":{statement}:"}";
@@ -77,9 +76,7 @@ operand =
  ("(":expression:")")|
            identifier|
       integer_literal|
-    character_literal|
-       string_literal|
-        array_literal;
+    character_literal;
 
 
 subscript     = "[":expression:"]";
@@ -97,19 +94,10 @@ parameter = identifier;
 
 
 
-const_declaration = ['static']:'const':identifier:"=":(expression|array_literal);
-var_declaration   = ['static']:'var'  :identifier:["=":(expression|array_literal)];
+const_declaration = ['static']:'const':identifier: "=":(expression|array_literal|string_literal);
+var_declaration   = ['static']:'var'  :identifier:["=":(expression|array_literal|string_literal)];
 
 
-
-
-
-white_space = CTYPE_space:{CTYPE_space};
-
-
-struct_literal = "{":[struct_member:{",":struct_member}]:"}";
-
-struct_member = identifier:":":expression;
 
 
 

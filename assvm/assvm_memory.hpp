@@ -23,8 +23,15 @@ Memory
 
   Memory(Callback  cb=nullptr);
 
-  uint8_t&  get_byte(int  ptr);
-  word_t&   get_word(int  ptr);
+  int  get8(  int  ptr) const;
+  int  get8u( int  ptr) const;
+  int  get16( int  ptr) const;
+  int  get16u(int  ptr) const;
+  int  get32( int  ptr) const;
+
+  void  put8( int  ptr, int  val);
+  void  put16(int  ptr, int  val);
+  void  put32(int  ptr, int  val);
 
   void  fill(int  v=0);
 

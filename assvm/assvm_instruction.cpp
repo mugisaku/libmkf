@@ -26,17 +26,6 @@ get_string(Opecode  op)
       case(Opecode::bor): return "bor";
       case(Opecode::band): return "band";
       case(Opecode::bxor): return "bxor";
-      case(Opecode::asn): return "asn";
-      case(Opecode::aadd): return "aadd";
-      case(Opecode::asub): return "asub";
-      case(Opecode::amul): return "amul";
-      case(Opecode::adiv): return "adiv";
-      case(Opecode::arem): return "arem";
-      case(Opecode::ashl): return "ashl";
-      case(Opecode::ashr): return "ashr";
-      case(Opecode::abor): return "abor";
-      case(Opecode::aband): return "aband";
-      case(Opecode::abxor): return "abxor";
       case(Opecode::lor): return "lor";
       case(Opecode::land): return "land";
       case(Opecode::eq): return "eq";
@@ -51,12 +40,12 @@ get_string(Opecode  op)
       case(Opecode::hlt): return "hlt";
       case(Opecode::brz): return "brz";
       case(Opecode::brnz): return "brnz";
-      case(Opecode::psh0): return "psh0";
-      case(Opecode::pshi8): return "pshi8";
-      case(Opecode::pshui8): return "pshui8";
-      case(Opecode::pshi16): return "pshi16";
-      case(Opecode::pshui16): return "pshui16";
-      case(Opecode::pshi32): return "pshi32";
+      case(Opecode::pshz): return "pshz";
+      case(Opecode::psh8): return "psh8";
+      case(Opecode::psh8u): return "psh8u";
+      case(Opecode::psh16): return "psh16";
+      case(Opecode::psh16u): return "psh16u";
+      case(Opecode::psh32): return "psh32";
       case(Opecode::arg): return "arg";
       case(Opecode::pshpc): return "pshpc";
       case(Opecode::pshbp): return "pshbp";
@@ -66,8 +55,14 @@ get_string(Opecode  op)
       case(Opecode::updsp): return "updsp";
       case(Opecode::pop): return "pop";
       case(Opecode::dup): return "dup";
-      case(Opecode::ld): return "ld";
-      case(Opecode::st): return "st";
+      case(Opecode::ld8): return "ld8";
+      case(Opecode::ld8u): return "ld8u";
+      case(Opecode::ld16): return "ld16";
+      case(Opecode::ld16u): return "ld16u";
+      case(Opecode::ld32): return "ld32";
+      case(Opecode::st8): return "st8";
+      case(Opecode::st16): return "st16";
+      case(Opecode::st32): return "st32";
       case(Opecode::cal): return "cal";
       case(Opecode::ret): return "ret";
       case(Opecode::prn): return "prn";
@@ -85,13 +80,13 @@ get_byte_number(Opecode  op)
 {
     switch(op)
     {
-      case(Opecode::pshi8):
-      case(Opecode::pshui8):
+      case(Opecode::psh8):
+      case(Opecode::psh8u):
         return 2;
-      case(Opecode::pshi16):
-      case(Opecode::pshui16):
+      case(Opecode::psh16):
+      case(Opecode::psh16u):
         return 3;
-      case(Opecode::pshi32):
+      case(Opecode::psh32):
         return 5;
       default:;
     }
@@ -114,25 +109,25 @@ print(const uint8_t*  bin)
 
     switch(op)
     {
-      case(Opecode::pshi8):
+      case(Opecode::psh8):
         printf("  %d",static_cast<int8_t>(*bin++));
         break;
-      case(Opecode::pshui8):
+      case(Opecode::psh8u):
         printf("  %d",static_cast<uint8_t>(*bin++));
         break;
-      case(Opecode::pshi16):
+      case(Opecode::psh16):
         i   = *bin++<<8;
         i  |= *bin++;
 
         printf("  %d",static_cast<int16_t>(i));
         break;
-      case(Opecode::pshui16):
+      case(Opecode::psh16u):
         i   = *bin++<<8;
         i  |= *bin++;
 
         printf("  %d",static_cast<uint16_t>(i));
         break;
-      case(Opecode::pshi32):
+      case(Opecode::psh32):
         i  = *bin++<<24;
         i |= *bin++<<16;
         i |= *bin++<< 8;

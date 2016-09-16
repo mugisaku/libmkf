@@ -36,19 +36,19 @@ state(0)
 
 
 
-word_t&
+word_t
 Context::
 get_bottom() const
 {
-  return memory.get_word(bp);
+  return memory.get32(bp);
 }
 
 
-word_t&
+word_t
 Context::
 get_top() const
 {
-  return memory.get_word(sp);
+  return memory.get32(sp);
 }
 
 
@@ -56,7 +56,7 @@ void
 Context::
 set_bottom(word_t  v) const
 {
-  memory.get_word(bp) = v;
+  memory.put32(bp,v);
 }
 
 
@@ -64,7 +64,7 @@ void
 Context::
 set_top(word_t  v) const
 {
-  memory.get_word(sp) = v;
+  memory.put32(sp,v);
 }
 
 
@@ -74,7 +74,7 @@ push(word_t  v)
 {
   sp -= word_size;
 
-  memory.get_word(sp) = v;
+  memory.put32(sp,v);
 }
 
 
@@ -82,7 +82,7 @@ word_t
 Context::
 pop()
 {
-  auto  v = memory.get_word(sp);
+  auto  v = memory.get32(sp);
 
   sp += word_size;
 
@@ -94,7 +94,7 @@ word_t
 Context::
 get_instruction()
 {
-  return memory.get_byte(pc++);
+  return memory.get8u(pc++);
 }
 
 
@@ -132,38 +132,26 @@ step()
     {
       case(Opecode::nop):
         break;
-      case(Opecode::add ): {  auto  t = pop();  get_top()  += t;}break;
-      case(Opecode::sub ): {  auto  t = pop();  get_top()  -= t;}break;
-      case(Opecode::mul ): {  auto  t = pop();  get_top()  *= t;}break;
-      case(Opecode::div ): {  auto  t = pop();  if(t){get_top()  /= t;} else{report;}}break;
-      case(Opecode::rem ): {  auto  t = pop();  if(t){get_top()  %= t;} else{report;}}break;
-      case(Opecode::shl ): {  auto  t = pop();  get_top() <<= t;}break;
-      case(Opecode::shr ): {  auto  t = pop();  get_top() >>= t;}break;
-      case(Opecode::bor ): {  auto  t = pop();  get_top()  |= t;}break;
-      case(Opecode::band): {  auto  t = pop();  get_top()  &= t;}break;
-      case(Opecode::bxor): {  auto  t = pop();  get_top()  ^= t;}break;
+      case(Opecode::add ): {  auto  t = pop();  set_top(get_top()+t);}break;
+      case(Opecode::sub ): {  auto  t = pop();  set_top(get_top()-t);}break;
+      case(Opecode::mul ): {  auto  t = pop();  set_top(get_top()*t);}break;
+      case(Opecode::div ): {  auto  t = pop();  if(t){set_top(get_top()/t);} else{report;}}break;
+      case(Opecode::rem ): {  auto  t = pop();  if(t){set_top(get_top()%t);} else{report;}}break;
+      case(Opecode::shl ): {  auto  t = pop();  set_top(get_top()<<t);}break;
+      case(Opecode::shr ): {  auto  t = pop();  set_top(get_top()>>t);}break;
+      case(Opecode::bor ): {  auto  t = pop();  set_top(get_top() |t);}break;
+      case(Opecode::band): {  auto  t = pop();  set_top(get_top() &t);}break;
+      case(Opecode::bxor): {  auto  t = pop();  set_top(get_top() ^t);}break;
 
-      case(Opecode::asn  ): {  auto&  r = memory.get_word(pop());  r   = get_top();  get_top() = r;}break;
-      case(Opecode::aadd ): {  auto&  r = memory.get_word(pop());  r  += get_top();  get_top() = r;}break;
-      case(Opecode::asub ): {  auto&  r = memory.get_word(pop());  r  -= get_top();  get_top() = r;}break;
-      case(Opecode::amul ): {  auto&  r = memory.get_word(pop());  r  *= get_top();  get_top() = r;}break;
-      case(Opecode::adiv ): {  auto&  r = memory.get_word(pop());  r  /= get_top();  get_top() = r;}break;
-      case(Opecode::arem ): {  auto&  r = memory.get_word(pop());  r  %= get_top();  get_top() = r;}break;
-      case(Opecode::ashl ): {  auto&  r = memory.get_word(pop());  r <<= get_top();  get_top() = r;}break;
-      case(Opecode::ashr ): {  auto&  r = memory.get_word(pop());  r >>= get_top();  get_top() = r;}break;
-      case(Opecode::abor ): {  auto&  r = memory.get_word(pop());  r  |= get_top();  get_top() = r;}break;
-      case(Opecode::aband): {  auto&  r = memory.get_word(pop());  r  &= get_top();  get_top() = r;}break;
-      case(Opecode::abxor): {  auto&  r = memory.get_word(pop());  r  ^= get_top();  get_top() = r;}break;
+      case(Opecode::eq  ): {  auto  t = pop();  set_top(get_top() == t);}break;
+      case(Opecode::neq ): {  auto  t = pop();  set_top(get_top() != t);}break;
+      case(Opecode::lor ): {  auto  t = pop();  set_top(get_top() || t);}break;
+      case(Opecode::land): {  auto  t = pop();  set_top(get_top() && t);}break;
 
-      case(Opecode::eq  ): {  auto  t = pop();  get_top() = (get_top() == t);}break;
-      case(Opecode::neq ): {  auto  t = pop();  get_top() = (get_top() != t);}break;
-      case(Opecode::lor ): {  auto  t = pop();  get_top() = (get_top() || t);}break;
-      case(Opecode::land): {  auto  t = pop();  get_top() = (get_top() && t);}break;
-
-      case(Opecode::lt  ): {  auto  t = pop();  get_top() = (get_top() <  t);}break;
-      case(Opecode::lteq): {  auto  t = pop();  get_top() = (get_top() <= t);}break;
-      case(Opecode::gt  ): {  auto  t = pop();  get_top() = (get_top() >  t);}break;
-      case(Opecode::gteq): {  auto  t = pop();  get_top() = (get_top() >= t);}break;
+      case(Opecode::lt  ): {  auto  t = pop();  set_top(get_top() <  t);}break;
+      case(Opecode::lteq): {  auto  t = pop();  set_top(get_top() <= t);}break;
+      case(Opecode::gt  ): {  auto  t = pop();  set_top(get_top() >  t);}break;
+      case(Opecode::gteq): {  auto  t = pop();  set_top(get_top() >= t);}break;
 
 
       case(Opecode::pop):
@@ -178,16 +166,16 @@ step()
             set_flag(halted_flag);
           }
         break;
-      case(Opecode::psh0):
+      case(Opecode::pshz):
         push(0);
         break;
-      case(Opecode::pshi8):
+      case(Opecode::psh8):
         push(static_cast<int8_t>(get_instruction()));
         break;
-      case(Opecode::pshui8):
+      case(Opecode::psh8u):
         push(static_cast<uint8_t>(get_instruction()));
         break;
-      case(Opecode::pshi16):
+      case(Opecode::psh16):
         {
           int  i  = get_instruction()<<8;
                i |= get_instruction()   ;
@@ -195,7 +183,7 @@ step()
           push(static_cast<int16_t>(i));
         }
         break;
-      case(Opecode::pshui16):
+      case(Opecode::psh16u):
         {
           int  i  = get_instruction()<<8;
                i |= get_instruction()   ;
@@ -203,7 +191,7 @@ step()
           push(static_cast<uint16_t>(i));
         }
         break;
-      case(Opecode::pshi32):
+      case(Opecode::psh32):
         {
           int  i  = get_instruction()<<24;
                i |= get_instruction()<<16;
@@ -238,20 +226,68 @@ step()
       case(Opecode::updsp):
         sp = pop();
         break;
-      case(Opecode::ld):
+      case(Opecode::ld8):
         {
           auto  lp = pop();
-          auto  lv = memory.get_word(lp);
+          auto  lv = memory.get8(lp);
 
           push(lv);
         }
         break;
-      case(Opecode::st):
+      case(Opecode::ld8u):
         {
           auto  lp = pop();
-          auto  lv = pop();
+          auto  lv = memory.get8u(lp);
 
-          memory.get_word(lp) = lv;
+          push(lv);
+        }
+        break;
+      case(Opecode::ld16):
+        {
+          auto  lp = pop();
+          auto  lv = memory.get16(lp);
+
+          push(lv);
+        }
+        break;
+      case(Opecode::ld16u):
+        {
+          auto  lp = pop();
+          auto  lv = memory.get16u(lp);
+
+          push(lv);
+        }
+        break;
+      case(Opecode::ld32):
+        {
+          auto  lp = pop();
+          auto  lv = memory.get32(lp);
+
+          push(lv);
+        }
+        break;
+      case(Opecode::st8):
+        {
+          auto  lv = pop();
+          auto  lp = pop();
+
+          memory.put8(lp,lv);
+        }
+        break;
+      case(Opecode::st16):
+        {
+          auto  lv = pop();
+          auto  lp = pop();
+
+          memory.put16(lp,lv);
+        }
+        break;
+      case(Opecode::st32):
+        {
+          auto  lv = pop();
+          auto  lp = pop();
+
+          memory.put32(lp,lv);
         }
         break;
       case(Opecode::cal):
@@ -285,12 +321,12 @@ step()
           push(v);
         }
         break;
-      case(Opecode::lnot): get_top() = !get_top();break;
-      case(Opecode::bnot): get_top() = ~get_top();break;
-      case(Opecode::neg ): get_top() = -get_top();break;
+      case(Opecode::lnot): set_top(!get_top());break;
+      case(Opecode::bnot): set_top(~get_top());break;
+      case(Opecode::neg ): set_top(-get_top());break;
 
-      case(Opecode::brz ): {  auto   p = pop();  auto  v = pop();  if(!v){pc = p;}};break;
-      case(Opecode::brnz): {  auto   p = pop();  auto  v = pop();  if( v){pc = p;}};break;
+      case(Opecode::brz ): {  auto   v = pop();  auto  p = pop();  if(!v){pc = p;}};break;
+      case(Opecode::brnz): {  auto   v = pop();  auto  p = pop();  if( v){pc = p;}};break;
 
       case(Opecode::prn):
           if(fileset.err)

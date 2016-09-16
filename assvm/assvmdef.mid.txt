@@ -23,17 +23,6 @@ opecode =
   'rem'|
   'shl'|
   'shr'|
-  'asn'|
-  'aadd'|
-  'asub'|
-  'amul'|
-  'adiv'|
-  'arem'|
-  'ashl'|
-  'ashr'|
-  'abor'|
-  'aband'|
-  'abxor'|
   'eq'|
   'neq'|
   'lteq'|
@@ -50,17 +39,23 @@ opecode =
   'bxor'|
   'brz'|
   'brnz'|
-  'ld'|
-  'st'|
+  'ld8'|
+  'ld8u'|
+  'ld16'|
+  'ld16u'|
+  'ld32'|
+  'st8'|
+  'st16'|
+  'st32'|
   'cal'|
   'ret'|
   'prn'|
-  'psh0'|
-  'pshi8'|
-  'pshui8'|
-  'pshi16'|
-  'pshui16'|
-  'pshi32'|
+  'pshz'|
+  'psh8'|
+  'psh8u'|
+  'psh16'|
+  'psh16u'|
+  'psh32'|
   'dup'|
   'arg'|
   'pshpc'|

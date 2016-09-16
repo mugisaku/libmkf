@@ -60,8 +60,8 @@ public:
   void    push(word_t  v);
   word_t  pop();
 
-  word_t&  get_bottom() const;
-  word_t&  get_top(   ) const;
+  word_t  get_bottom() const;
+  word_t  get_top(   ) const;
 
   void  set_bottom(word_t  v) const;
   void  set_top(   word_t  v) const;

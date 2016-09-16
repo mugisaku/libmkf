@@ -35,9 +35,26 @@ print(std::string&&  s)
     if(root)
     {
 //      root->print();
+      auto  mem = new assvm::Memory;
+
       assvm::Program  prog(*root);
 
       prog.print();
+
+      assvm::FileSet  fs;
+
+      fs.out = stdout;
+      fs.err = stdout;
+
+      assvm::Context  vm(prog,*mem,&fs);
+
+      vm.set_flag(assvm::Context::enable_halt_flag);
+      vm.set_flag(assvm::Context::display_flag);
+
+        while(!vm.test_flag(assvm::Context::halted_flag))
+        {
+          vm.step();
+        }
     }
 }
 

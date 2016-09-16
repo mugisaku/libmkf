@@ -1,12 +1,16 @@
-start:
-pshi16 0;
-array:
-data i32 {20,20,20,20,20};
-add;
+main:
+pshsp;
+psh8 32;
 sub;
+updsp;
+pshbp;
+psh8 0;
 sub;
-pshi32 end;
-
-end:
-mul;
+dup;
+dup;
+psh8 -1;
+st32;
+ld16u;
+prn;
+hlt;
 

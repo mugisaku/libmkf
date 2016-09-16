@@ -33,24 +33,19 @@ read_opecode(const mkf::Node&  src)
       else if(nd == "band"){return Opecode::band;}
       else if(nd == "bxor"){return Opecode::bxor;}
       else if(nd == "bnot"){return Opecode::bnot;}
-      else if(nd == "asn"){return Opecode::asn;}
-      else if(nd == "aadd"){return Opecode::aadd;}
-      else if(nd == "asub"){return Opecode::asub;}
-      else if(nd == "amul"){return Opecode::amul;}
-      else if(nd == "adiv"){return Opecode::adiv;}
-      else if(nd == "arem"){return Opecode::arem;}
-      else if(nd == "ashl"){return Opecode::ashl;}
-      else if(nd == "ashr"){return Opecode::ashr;}
-      else if(nd == "abor"){return Opecode::abor;}
-      else if(nd == "aband"){return Opecode::aband;}
-      else if(nd == "abxor"){return Opecode::abxor;}
       else if(nd == "bnot"){return Opecode::bnot;}
       else if(nd == "lor"){return Opecode::lor;}
       else if(nd == "land"){return Opecode::land;}
       else if(nd == "lnot"){return Opecode::lnot;}
       else if(nd == "neg"){return Opecode::neg;}
-      else if(nd == "ld"){return Opecode::ld;}
-      else if(nd == "st"){return Opecode::st;}
+      else if(nd == "ld8"){return Opecode::ld8;}
+      else if(nd == "ld8u"){return Opecode::ld8u;}
+      else if(nd == "ld16"){return Opecode::ld16;}
+      else if(nd == "ld16u"){return Opecode::ld16u;}
+      else if(nd == "ld32"){return Opecode::ld32;}
+      else if(nd == "st8"){return Opecode::st8;}
+      else if(nd == "st16"){return Opecode::st16;}
+      else if(nd == "st32"){return Opecode::st32;}
       else if(nd == "eq"){return Opecode::eq;}
       else if(nd == "neq"){return Opecode::neq;}
       else if(nd == "lt"){return Opecode::lt;}
@@ -60,12 +55,12 @@ read_opecode(const mkf::Node&  src)
       else if(nd == "hlt"){return Opecode::hlt;}
       else if(nd == "brz"){return Opecode::brz;}
       else if(nd == "brnz"){return Opecode::brnz;}
-      else if(nd == "psh0"){return Opecode::psh0;}
-      else if(nd == "pshi8"){return Opecode::pshi8;}
-      else if(nd == "pshui8"){return Opecode::pshui8;}
-      else if(nd == "pshi16"){return Opecode::pshi16;}
-      else if(nd == "pshui16"){return Opecode::pshui16;}
-      else if(nd == "pshi32"){return Opecode::pshi32;}
+      else if(nd == "pshz"){return Opecode::pshz;}
+      else if(nd == "psh8"){return Opecode::psh8;}
+      else if(nd == "psh8u"){return Opecode::psh8u;}
+      else if(nd == "psh16"){return Opecode::psh16;}
+      else if(nd == "psh16u"){return Opecode::psh16u;}
+      else if(nd == "psh32"){return Opecode::psh32;}
       else if(nd == "dup"){return Opecode::dup;}
       else if(nd == "arg"){return Opecode::arg;}
       else if(nd == "pshpc"){return Opecode::pshpc;}
@@ -155,16 +150,16 @@ write(uint8_t*  base, size_t  offset) const
 
     switch(opecode)
     {
-      case(Opecode::pshi8):
-      case(Opecode::pshui8):
+      case(Opecode::psh8):
+      case(Opecode::psh8u):
         *p = (i&0xFF);
         break;
-      case(Opecode::pshi16):
-      case(Opecode::pshui16):
+      case(Opecode::psh16):
+      case(Opecode::psh16u):
         *p++ = ((i>>8)&0xFF);
         *p   = ((i   )&0xFF);
         break;
-      case(Opecode::pshi32):
+      case(Opecode::psh32):
         *p++ = ((i>>24)&0xFF);
         *p++ = ((i>>16)&0xFF);
         *p++ = ((i>> 8)&0xFF);
@@ -191,11 +186,11 @@ print(FILE*  f) const
 
     switch(opecode)
     {
-      case(Opecode::pshi8):
-      case(Opecode::pshui8):
-      case(Opecode::pshi16):
-      case(Opecode::pshui16):
-      case(Opecode::pshi32):
+      case(Opecode::psh8):
+      case(Opecode::psh8u):
+      case(Opecode::psh16):
+      case(Opecode::psh16u):
+      case(Opecode::psh32):
         fprintf(f," ");
         operand.print(f);
         break;
