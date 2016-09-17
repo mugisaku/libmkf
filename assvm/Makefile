@@ -70,6 +70,7 @@ CMPLR_OBJ =                                      \
   libcmplr/expression_operand__read_integer.o    \
   libcmplr/expression_element.o                  \
   libcmplr/expression_operator.o                 \
+  libcmplr/cmplr_type.o                          \
   libcmplr/cmplr_declaration.o                   \
   libcmplr/cmplr_declaration__print.o            \
   libcmplr/cmplr_declaration__compile.o          \

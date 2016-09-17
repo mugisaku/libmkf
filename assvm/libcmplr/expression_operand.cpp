@@ -64,14 +64,6 @@ kind(OperandKind::null)
 
 
 Operand::
-Operand(const Array&  arr):
-kind(OperandKind::null)
-{
-  reset(arr);
-}
-
-
-Operand::
 Operand(const Subscript&  subsc):
 kind(OperandKind::null)
 {
@@ -127,7 +119,6 @@ operator=(const Operand&  rhs)
         data.s = new std::string(*rhs.data.s);
         break;
       case(OperandKind::argument_list):
-      case(OperandKind::array):
         data.ndls = new NodeList(*rhs.data.ndls);
         break;
       case(OperandKind::expression):
@@ -160,7 +151,6 @@ operator=(Operand&&  rhs) noexcept
         data.s = rhs.data.s;
         break;
       case(OperandKind::argument_list):
-      case(OperandKind::array):
         data.ndls = rhs.data.ndls;
         break;
       case(OperandKind::expression):
@@ -188,7 +178,6 @@ clear()
         delete data.s;
         break;
       case(OperandKind::argument_list):
-      case(OperandKind::array):
         delete data.ndls;
         break;
       case(OperandKind::expression):
@@ -266,18 +255,6 @@ reset(const ArgumentList&  args)
 
 void
 Operand::
-reset(const Array&  arr)
-{
-  clear();
-
-  kind = OperandKind::array;
-
-  data.ndls = arr.node_list;
-}
-
-
-void
-Operand::
 reset(const Subscript&  subsc)
 {
   clear();
@@ -320,8 +297,6 @@ fold(FoldContext&  ctx) const
       case(OperandKind::subscript):
         break;
       case(OperandKind::argument_list):
-        break;
-      case(OperandKind::array):
         break;
       case(OperandKind::integer):
         return FoldResult(data.i);
@@ -421,17 +396,6 @@ print(FILE*  f) const
           }
         fprintf(f,")");
         break;
-      case(OperandKind::array):
-        fprintf(f,"{");
-
-          for(auto&  e: *data.ndls)
-          {
-            e.print(f);
-
-            fprintf(f,",");
-          }
-        fprintf(f,"}");
-        break;
       case(OperandKind::integer):
         fprintf(f,"%lu",data.i);
         break;
@@ -477,7 +441,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "array_literal")
         {
-          reset(Array(new NodeList(Node::read_list(nd,prectx))));
+//          reset(Array(new NodeList(Node::read_list(nd,prectx))));
         }
 
       else

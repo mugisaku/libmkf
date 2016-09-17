@@ -7,7 +7,6 @@
 #include"cmplr_context.hpp"
 #include"expression_foldresult.hpp"
 #include"mkf_node.hpp"
-#include"mkf_cursor.hpp"
 
 
 
@@ -30,16 +29,6 @@ ArgumentList
 };
 
 
-struct
-Array
-{
-  NodeList*  node_list;
-
-  constexpr Array(NodeList*  ls): node_list(ls){}
-
-};
-
-
 namespace expression{
 
 
@@ -48,7 +37,6 @@ OperandKind
 {
   null,
   integer,
-  array,
   string,
   identifier,
   expression,
@@ -105,7 +93,6 @@ Operand
   Operand(unsigned long  i);
   Operand(Node*  nd);
   Operand(const ArgumentList&  args);
-  Operand(const Array&  arr);
   Operand(const Subscript&  subsc);
   Operand(const mkf::Node&  src, PreContext&  prectx);
   Operand(const Operand&  rhs);
@@ -123,7 +110,6 @@ Operand
   void  reset(const Identifier&  id);
   void  reset(Node*  nd);
   void  reset(const ArgumentList&  args);
-  void  reset(const Array&  arr);
   void  reset(const Subscript&  subsc);
 
   void  print(FILE*  f=stdout) const;

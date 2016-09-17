@@ -5,6 +5,7 @@
 #include<string>
 #include<vector>
 #include"cmplr_foldcontext.hpp"
+#include"cmplr_type.hpp"
 #include"expression_foldresult.hpp"
 
 
@@ -25,6 +26,7 @@ ObjectKind
 
   undefined,
 
+  integer,
   value,
   constant,
   array,
@@ -32,6 +34,7 @@ ObjectKind
   function,
 
   reference,
+  parameter,
   argument_list,
 
 };
@@ -56,6 +59,8 @@ Declaration
   std::string  identifier;
 
   int  index;
+
+  Type  type;
 
   ObjectKind  object_kind;
 
@@ -93,21 +98,20 @@ Declaration
   expression::FoldResult  fold(FoldContext&  ctx) const;
 
   void  print(FILE*  f=stdout) const;
-  void  print_value(FILE*  f=stdout) const;
+  void  print_integer(FILE*  f=stdout) const;
   void  print_constant(FILE*  f=stdout) const;
   void  print_array(FILE*  f=stdout) const;
   void  print_constant_array(FILE*  f=stdout) const;
   void  print_function(FILE*  f=stdout) const;
 
   ObjectKind  compile(Context&  ctx) const;
+  ObjectKind  compile_integer(Context&  ctx) const;
   ObjectKind  compile_function(Context&  ctx) const;
-  ObjectKind  compile_value(Context&  ctx) const;
   ObjectKind  compile_constant(Context&  ctx) const;
   ObjectKind  compile_array(Context&  ctx) const;
   ObjectKind  compile_constant_array(Context&  ctx) const;
 
   void  compile_definition(Context&  ctx) const;
-  void  compile_value_definition(Context&  ctx) const;
   void  compile_constant_definition(Context&  ctx) const;
   void  compile_array_definition(Context&  ctx) const;
   void  compile_constant_array_definition(Context&  ctx) const;

@@ -94,9 +94,18 @@ parameter = identifier;
 
 
 
-const_declaration = ['static']:'const':identifier: "=":(expression|array_literal|string_literal);
-var_declaration   = ['static']:'var'  :identifier:["=":(expression|array_literal|string_literal)];
+const_declaration = ['static']:'const':'integer_kind':[array_size]:identifier: "=":(expression|array_literal|string_literal);
+var_declaration   = ['static']:'var'  :'integer_kind':[array_size]:identifier:["=":(expression|array_literal|string_literal)];
 
+
+
+
+integer_kind = 
+  'int8'|
+  'uint8'|
+  'int16'|
+  'uint16'|
+  'int32';
 
 
 

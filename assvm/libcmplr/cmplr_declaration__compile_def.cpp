@@ -78,15 +78,20 @@ compile_constant_definition(Context&  ctx) const
 }
 
 
+/*
 void
 Declaration::
-compile_value_definition(Context&  ctx) const
+compile_integer_definition(Context&  ctx) const
 {
     switch(kind)
     {
       case(DeclarationKind::local):
           if(data.expr)
           {
+            ctx.push("  pshbp;        //\n");
+            ctx.push("  pshui8 %6d;//\n",index);
+            ctx.push("  sub;          //\n");
+
             auto  k = data.expr->compile(ctx);
 
               if(k == ObjectKind::reference)
@@ -95,11 +100,7 @@ compile_value_definition(Context&  ctx) const
               }
 
 
-            ctx.push("  pshbp;        //\n");
-            ctx.push("  pshui8 %6d;//\n",index);
-            ctx.push("  sub;          //\n");
-            ctx.push("  asn;          //ローカル変数%s\n",identifier.data());
-            ctx.push("  pop;\n");
+            ctx.push("  st32;\n");
           }
         break;
       case(DeclarationKind::local_static):
@@ -158,6 +159,7 @@ compile_value_definition(Context&  ctx) const
         break;
     }
 }
+*/
 
 
 void
@@ -167,7 +169,7 @@ compile_definition(Context&  ctx) const
     switch(object_kind)
     {
       case(ObjectKind::value):
-        compile_value_definition(ctx);
+//        compile_value_definition(ctx);
         break;
       case(ObjectKind::constant):
         compile_constant_definition(ctx);

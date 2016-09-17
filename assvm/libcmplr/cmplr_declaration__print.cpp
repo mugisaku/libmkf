@@ -5,6 +5,7 @@
 
 
 
+/*
 void
 Declaration::
 print_value(FILE*  f) const
@@ -46,6 +47,7 @@ print_value(FILE*  f) const
         break;
     }
 }
+*/
 
 
 void
@@ -148,7 +150,7 @@ print(FILE*  f) const
     switch(object_kind)
     {
       case(ObjectKind::value):
-        print_value(f);
+//        print_value(f);
         break;
       case(ObjectKind::constant):
         print_constant(f);

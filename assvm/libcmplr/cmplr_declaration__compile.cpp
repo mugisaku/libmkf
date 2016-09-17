@@ -61,6 +61,7 @@ compile_constant_array(Context&  ctx) const
 }
 
 
+/*
 ObjectKind
 Declaration::
 compile_value(Context&  ctx) const
@@ -88,6 +89,7 @@ compile_value(Context&  ctx) const
         break;
     }
 }
+*/
 
 
 ObjectKind
@@ -123,7 +125,7 @@ compile(Context&  ctx) const
     switch(object_kind)
     {
       case(ObjectKind::value):
-        return compile_value(ctx);
+//        return compile_value(ctx);
         break;
       case(ObjectKind::constant):
         return compile_constant(ctx);
