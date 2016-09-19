@@ -282,7 +282,7 @@ fold(FoldContext&  ctx) const
             if(!decl)
             {
               printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
-                     ctx.function->identifier.data(),data.s->data());
+                     ctx.function->signature.name.data(),data.s->data());
 
               throw;
             }
@@ -308,14 +308,14 @@ fold(FoldContext&  ctx) const
 }
 
 
-ObjectKind
+Type
 Operand::
 compile(Context&  ctx) const
 {
     switch(kind)
     {
       case(OperandKind::string):
-        return ObjectKind::value;
+        return Type(TypeKind::pointer);
         break;
       case(OperandKind::identifier):
         {
@@ -324,7 +324,7 @@ compile(Context&  ctx) const
             if(!decl)
             {
               printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
-                     ctx.function->identifier.data(),data.s->data());
+                     ctx.function->signature.name.data(),data.s->data());
 
               throw;
             }
@@ -341,27 +341,27 @@ compile(Context&  ctx) const
       case(OperandKind::argument_list):
           for(auto  it = data.ndls->crbegin();  it != data.ndls->crend();  ++it)
           {
-            auto  k = it->compile(ctx);
+            auto  t = it->compile(ctx);
 
-              if(k == ObjectKind::reference)
+              if(t == TypeKind::reference)
               {
-                ctx.push("  ld;\n");
+                t = t.source_type->compile_dereference(ctx);
               }
           }
 
 
-        ctx.push("  pshi8 %d;//引数個数\n",data.ndls->size());
+        ctx.push("  psh8u %d;//引数個数\n",data.ndls->size());
 
-        return ObjectKind::argument_list;
+        return Type(TypeKind::argument_list);
         break;
       case(OperandKind::integer):
-        ctx.push("  pshi16  %d;//int\n",data.i);
-        return ObjectKind::value;
+        ctx.push("  psh32  %d;//int\n",data.i);
+        return Type(TypeKind::int32);
         break;
     }
 
 
-  return ObjectKind::null;
+  return Type();
 }
 
 

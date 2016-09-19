@@ -29,14 +29,14 @@ codes{0}
 
 
 
-ObjectKind
+Type
 compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
 {
-  auto  lk = l.compile(ctx);
+  auto  l_type = l.compile(ctx);
 
     if(op == Operator('&'))
     {
-        if(lk != ObjectKind::reference)
+        if(l_type != TypeKind::reference)
         {
           printf("参照でないオブジェクトのアドレスを取得しようとしました\n");
 
@@ -44,49 +44,58 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
         }
 
 
-      return ObjectKind::value;
+      return Type(TypeKind::int32);
     }
 
 
-    if(lk == ObjectKind::reference)
+    if(l_type == TypeKind::reference)
     {
-      ctx.push("  ld;\n");
+      l_type = l_type.source_type->compile_dereference(ctx);
     }
 
 
     switch(op)
     {
-      case(Operator('*')): return ObjectKind::reference;
-      case(Operator('&')): break;
+      case(Operator('*')):
+          if(l_type != TypeKind::pointer)
+          {
+            printf("ポインタでないオブジェクトを参照しようとしました\n");
+
+            throw;
+          }
+
+
+        return Type(*l_type.source_type);
+        break;
       case(Operator('!')): ctx.push("  lnot;\n");break;
       case(Operator('~')): ctx.push("  bnot;\n");break;
       case(Operator('-')): ctx.push("  neg ;\n");break;
     }
 
 
-  return ObjectKind::value;
+  return Type(TypeKind::int32,l_type.constant);
 }
 
 
 namespace{
 
 
-ObjectKind
+Type
 compile_arithmetic(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx)
 {
-  auto  lk = l.compile(ctx);
+  auto  l_type = l.compile(ctx);
 
-    if(lk == ObjectKind::reference)
+    if(l_type == TypeKind::reference)
     {
-      ctx.push("  ld;\n");
+      l_type = l_type.source_type->compile_dereference(ctx);
     }
 
 
-  auto  rk = r.compile(ctx);
+  auto  r_type = r.compile(ctx);
 
-    if(rk == ObjectKind::reference)
+    if(r_type == TypeKind::reference)
     {
-      ctx.push("  ld;\n");
+      r_type = r_type.source_type->compile_dereference(ctx);
     }
 
 
@@ -114,27 +123,19 @@ compile_arithmetic(const Node&  l, const Node&  r, const BinaryOperator&  op, Co
     }
 
 
-  const bool  flag = ((lk == ObjectKind::constant) &&
-                      (rk == ObjectKind::constant));
+  const bool  flag = ((l_type.constant) &&
+                      (r_type.constant));
 
-  return (flag? ObjectKind::constant:ObjectKind::value);
+  return Type(TypeKind::int32,flag);
 }
 
 
-ObjectKind
+Type
 compile_assign(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx)
 {
-  auto  rk = r.compile(ctx);
+  auto  l_type = l.compile(ctx);
 
-    if(rk == ObjectKind::reference)
-    {
-      ctx.push("  ld;\n");
-    }
-
-
-  auto  lk = l.compile(ctx);
-
-    if(lk != ObjectKind::reference)
+    if(l_type != TypeKind::reference)
     {
       printf("参照ではないオブジェクトに代入しようとしました;\n");
 
@@ -142,31 +143,41 @@ compile_assign(const Node&  l, const Node&  r, const BinaryOperator&  op, Contex
     }
 
 
+  ctx.push("  dup;//代入\n");
+  ctx.push("  dup;//\n");
+
+  auto  r_type = r.compile(ctx);
+
+    if(r_type == TypeKind::reference)
+    {
+      r_type = r_type.source_type->compile_dereference(ctx);
+    }
+
+
     switch(op)
     {
-      case(Operator('<','<','=')): ctx.push("  ashl;\n");break;
-      case(Operator('>','>','=')): ctx.push("  ashr;\n");break;
-      case(Operator('+','='    )): ctx.push("  aadd;\n");break;
-      case(Operator('-','='    )): ctx.push("  asub;\n");break;
-      case(Operator('*','='    )): ctx.push("  amul;\n");break;
-      case(Operator('/','='    )): ctx.push("  adiv;\n");break;
-      case(Operator('%','='    )): ctx.push("  arem;\n");break;
-      case(Operator('&','='    )): ctx.push("  aband;\n");break;
-      case(Operator('|','='    )): ctx.push("  abor;\n");break;
-      case(Operator('^','='    )): ctx.push("  abxor;\n");break;
-      case(Operator('='        )): ctx.push("  asn;\n");break;
+      case(Operator('<','<','=')): ctx.push("  shl;\n");break;
+      case(Operator('>','>','=')): ctx.push("  shr;\n");break;
+      case(Operator('+','='    )): ctx.push("  add;\n");break;
+      case(Operator('-','='    )): ctx.push("  sub;\n");break;
+      case(Operator('*','='    )): ctx.push("  mul;\n");break;
+      case(Operator('/','='    )): ctx.push("  div;\n");break;
+      case(Operator('%','='    )): ctx.push("  rem;\n");break;
+      case(Operator('&','='    )): ctx.push("  band;\n");break;
+      case(Operator('|','='    )): ctx.push("  bor;\n");break;
+      case(Operator('^','='    )): ctx.push("  bxor;\n");break;
       default:;
     }
 
 
-  return ObjectKind::value;
+  return l_type.compile_assign(ctx);
 }
 
 
 }
 
 
-ObjectKind
+Type
 compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx)
 {
     switch(op)
@@ -222,6 +233,9 @@ compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx
 
       default:;
     }
+
+
+  return Type();
 }
 
 

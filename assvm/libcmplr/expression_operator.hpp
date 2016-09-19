@@ -4,6 +4,7 @@
 
 #include<cstring>
 #include"cmplr_declaration.hpp"
+#include"cmplr_type.hpp"
 #include"expression_foldresult.hpp"
 
 
@@ -77,8 +78,8 @@ BinaryOperator(const char*  s): Operator(s){}
 
 
 
-ObjectKind  compile(const Node&  l                , const UnaryOperator&   op, Context&  ctx);
-ObjectKind  compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx);
+Type  compile(const Node&  l                , const UnaryOperator&   op, Context&  ctx);
+Type  compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx);
 
 FoldResult  fold(const Node&  l                , const UnaryOperator&   op, FoldContext&  ctx);
 FoldResult  fold(const Node&  l, const Node&  r, const BinaryOperator&  op, FoldContext&  ctx);

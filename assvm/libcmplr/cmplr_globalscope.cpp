@@ -59,25 +59,9 @@ read(const mkf::Node&  src)
     {
       auto&  nd = cur.get();
 
-        if(nd == "function_declaration")
+        if(nd == "declaration")
         {
-          function_list.emplace_back(nd,prectx);
-
-          auto&  fn = function_list.back();
-
-          declaration_list.emplace_back(&fn);
-        }
-
-      else
-        if(nd == "var_declaration")
-        {
-          declaration_list.emplace_back(Statement::read_var_declaration(nd,prectx));
-        }
-
-      else
-        if(nd == "const_declaration")
-        {
-          declaration_list.emplace_back(Statement::read_const_declaration(nd,prectx));
+          declaration_list.emplace_back(nd,prectx);
         }
 
 

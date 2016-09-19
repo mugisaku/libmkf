@@ -17,9 +17,9 @@ read(const mkf::Node&  src, PreContext&  prectx)
     {
       auto&  nd = cur.get();
 
-        if(nd == "declaration_statement")
+        if(nd == "declaration")
         {
-          read_declaration(nd,prectx);
+          reset(prectx.append(Declaration(nd,prectx)));
         }
 
       else

@@ -5,6 +5,7 @@
 #include<string>
 #include"cmplr_declaration.hpp"
 #include"cmplr_context.hpp"
+#include"cmplr_type.hpp"
 #include"expression_foldresult.hpp"
 #include"mkf_node.hpp"
 
@@ -116,7 +117,7 @@ Operand
 
   FoldResult  fold(FoldContext&  ctx) const;
 
-  ObjectKind  compile(Context&  ctx) const;
+  Type  compile(Context&  ctx) const;
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
   void  read_integer_literal(const mkf::Node&  src);

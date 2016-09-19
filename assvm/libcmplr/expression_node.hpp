@@ -4,8 +4,8 @@
 
 #include"expression_operand.hpp"
 #include"expression_element.hpp"
+#include"cmplr_type.hpp"
 #include"mkf_node.hpp"
-#include"mkf_cursor.hpp"
 #include<list>
 
 
@@ -47,7 +47,7 @@ Node
 
   FoldResult  fold(FoldContext&  ctx) const;
 
-  ObjectKind  compile(Context&  ctx) const;
+  Type  compile(Context&  ctx) const;
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
 

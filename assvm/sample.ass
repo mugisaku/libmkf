@@ -1,64 +1,29 @@
 
 
-function
-get()
-{
-  return 255;
-}
+/*
+int16  g=1234;
 
 
 function
-add(a,b)
-{
-  return a+b;
-}
-
-
-
-function
-mul(a,b)
-{
-  return a*b;
-}
-
-
-
-var  g=1234;
-
-
-function
+int32
 xorshift()
 {
-  static var  y = 463534242;
+  static int32  y = 463534242;
 
   y = y ^ (y << 13); y = y ^ (y >> 17);
 
   return y = y ^ (y << 5);
 }
+*/
 
 
 function
+void
 main()
 {
-  static var  st = 88;
+  int8  i = 128;
 
-  const  x = 3+2;
-  const  y = 1;
-  const  z = 0;
-
-  var  i = 0;
-
-    do
-    {
-      print i;
-
-      i += 1;
-
-        if(i > 12)
-        {
-          break;
-        }
-    }
+  print i+2;
 
 
   halt;

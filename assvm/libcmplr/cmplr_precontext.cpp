@@ -29,7 +29,7 @@ append(Declaration&&  decl)
 
     if(block)
     {
-        if(decl.kind == DeclarationKind::local_static)
+        if(decl.storage_kind == StorageKind::local_static)
         {
           block->declaration_list.emplace_back(std::move(decl));
 

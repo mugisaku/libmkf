@@ -209,11 +209,11 @@ compile(Context&  ctx) const
       case(StatementKind::print):
           if(data.expr)
           {
-            auto  k = data.expr->compile(ctx);
+            auto  t = data.expr->compile(ctx);
 
-              if(k == ObjectKind::reference)
+              if(t == TypeKind::reference)
               {
-                ctx.push("  ld;//dereference\n");
+                ctx.push("  ld;\n");
               }
           }
 
@@ -260,11 +260,11 @@ compile(Context&  ctx) const
       case(StatementKind::return_):
           if(data.expr)
           {
-            auto  k = data.expr->compile(ctx);
+            auto  t = data.expr->compile(ctx);
 
-              if(k == ObjectKind::reference)
+              if(t == TypeKind::reference)
               {
-                ctx.push("  ld;//dereference\n");
+                ctx.push("  ld;\n");
               }
           }
 

@@ -32,7 +32,7 @@ find_declaration(const std::string&  id) const
 
             for(auto&  decl: blk->declaration_list)
             {
-                if(decl.identifier == id)
+                if(decl.get_name() == id)
                 {
                   return &decl;
                 }
@@ -41,21 +41,9 @@ find_declaration(const std::string&  id) const
     }
 
 
-    if(function)
-    {
-        for(auto&  decl: function->parameter_list)
-        {
-            if(decl.identifier == id)
-            {
-              return &decl;
-            }
-        }
-    }
-
-
     for(auto&  decl: globalscope.declaration_list)
     {
-        if(decl.identifier == id)
+        if(decl.get_name() == id)
         {
           return &decl;
         }

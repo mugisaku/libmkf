@@ -1,49 +1,41 @@
 #include"cmplr_declaration.hpp"
 #include"cmplr_function.hpp"
+#include"cmplr_variable.hpp"
+#include"cmplr_constant.hpp"
 
 
 
 
 Declaration::
 Declaration():
-index(0),
-kind(DeclarationKind::global),
-object_kind(ObjectKind::null)
+storage_kind(StorageKind::null),
+kind(DeclarationKind::null),
+index(0)
 {
-  data.ptr = nullptr;
 }
 
 
 Declaration::
-Declaration(DeclarationKind  k, std::string&&  id, expression::Node*  expr):
-identifier(std::move(id)),
-index(0),
-kind(k),
-object_kind(expr? ObjectKind::value:ObjectKind::null)
+Declaration(const Parameter&  par, int  i):
+storage_kind(StorageKind::null),
+kind(DeclarationKind::null)
 {
-  data.expr = expr;
+  reset(par,i);
 }
 
 
 Declaration::
-Declaration(const Function*  fn):
-index(0),
-kind(DeclarationKind::global),
-object_kind(ObjectKind::null)
+Declaration(const mkf::Node&  src, PreContext&  prectx):
+kind(DeclarationKind::null)
 {
-  data.ptr = nullptr;
-
-  reset(fn);
+  read(src,prectx);
 }
 
 
 Declaration::
 Declaration(Declaration&&  rhs) noexcept:
-kind(DeclarationKind::global),
-object_kind(ObjectKind::null)
+kind(DeclarationKind::null)
 {
-  data.ptr = nullptr;
-
   *this = std::move(rhs);
 }
 
@@ -63,38 +55,63 @@ operator=(Declaration&&  rhs) noexcept
 {
   clear();
 
-  identifier = std::move(rhs.identifier);
+  storage_kind = rhs.storage_kind;
 
-  index = rhs.index;
-
-  kind = rhs.kind;
-
-  object_kind = rhs.object_kind                   ;
-                rhs.object_kind = ObjectKind::null;
+  kind = rhs.kind                        ;
+         rhs.kind = DeclarationKind::null;
 
   data = rhs.data;
 
+  index = rhs.index;
+
+
   return *this;
 }
+
+
+void
+Declaration::
+clear()
+{
+    switch(kind)
+    {
+      case(DeclarationKind::function):
+        delete data.fn;
+        break;
+      case(DeclarationKind::variable):
+        delete data.var;
+        break;
+      case(DeclarationKind::constant):
+        delete data.con;
+        break;
+      case(DeclarationKind::parameter):
+        break;
+    }
+
+
+  kind = DeclarationKind::null;
+}
+
+
 
 
 size_t
 Declaration::
 get_size() const
 {
-    switch(object_kind)
+    switch(kind)
     {
-      case(ObjectKind::function):
-      case(ObjectKind::value):
-      case(ObjectKind::constant):
-      case(ObjectKind::reference):
-        return assvm::word_size;
+      case(DeclarationKind::function):
+        return data.fn->signature.type.get_size();
         break;
-      case(ObjectKind::array):
-        return assvm::word_size*data.arr->size();
+      case(DeclarationKind::variable):
+        return data.var->type.get_size();
         break;
-      case(ObjectKind::constant_array):
-        return assvm::word_size*data.carr->size();
+      case(DeclarationKind::constant):
+        return data.con->type.get_size();
+        break;
+      case(DeclarationKind::parameter):
+        return data.par->type.get_size();
         break;
     }
 
@@ -103,49 +120,82 @@ get_size() const
 }
 
 
-void
+const std::string&
 Declaration::
-clear()
+get_name() const
 {
-  identifier.clear();
-
-    switch(object_kind)
+    switch(kind)
     {
-      case(ObjectKind::function):
-      case(ObjectKind::reference):
-      case(ObjectKind::constant):
+      case(DeclarationKind::function):
+        return data.fn->signature.name;
         break;
-      case(ObjectKind::value):
-        delete data.expr;
+      case(DeclarationKind::variable):
+        return data.var->name;
         break;
-      case(ObjectKind::array):
-        delete data.arr;
+      case(DeclarationKind::constant):
+        return data.con->name;
         break;
-      case(ObjectKind::constant_array):
-        delete data.carr;
+      case(DeclarationKind::parameter):
+        return data.par->name;
         break;
     }
 
 
-  data.ptr = nullptr;
+  report;
 
-  object_kind = ObjectKind::null;
+  printf("データがありません\n");
+
+  throw;
 }
 
 
 void
 Declaration::
-reset(const Function*  fn)
+reset(Type&&  type, std::string&&  name, expression::Node*  initexpr)
 {
   clear();
 
-  identifier = fn->identifier;
+    if(type.constant)
+    {
+      kind = DeclarationKind::constant;
 
-  kind = DeclarationKind::global;
+      data.con = new Constant(std::move(type),std::move(name),initexpr);
+    }
 
-  object_kind = ObjectKind::function;
+  else
+    {
+      kind = DeclarationKind::variable;
+
+      data.var = new Variable(std::move(type),std::move(name),initexpr);
+    }
+}
+
+
+void
+Declaration::
+reset(Function*  fn)
+{
+  clear();
+
+  storage_kind = StorageKind::global;
+
+  kind = DeclarationKind::function;
 
   data.fn = fn;
+}
+
+
+void
+Declaration::
+reset(const Parameter&  par, int  i)
+{
+  clear();
+
+  storage_kind = StorageKind::local;
+
+  kind = DeclarationKind::parameter;
+
+  data.par = &par;
 }
 
 
@@ -153,15 +203,99 @@ expression::FoldResult
 Declaration::
 fold(FoldContext&  ctx) const
 {
+/*
     if(object_kind == ObjectKind::constant)
     {
       return expression::FoldResult(data.i);
     }
+*/
 
 
   return expression::FoldResult();
 }
 
+
+
+
+Type
+Declaration::
+compile(Context&  ctx) const
+{
+    switch(kind)
+    {
+      case(DeclarationKind::function):
+        return data.fn->compile(ctx);
+        break;
+      case(DeclarationKind::variable):
+        return data.var->compile(*this,ctx);
+        break;
+      case(DeclarationKind::constant):
+        return data.con->compile(*this,ctx);
+        break;
+      case(DeclarationKind::parameter):
+        return data.par->compile(*this,ctx);
+        break;
+     }
+
+
+  return Type();
+}
+
+
+void
+Declaration::
+compile_definition(Context&  ctx) const
+{
+    switch(kind)
+    {
+      case(DeclarationKind::function):
+        data.fn->compile_definition(ctx);
+        break;
+      case(DeclarationKind::variable):
+        data.var->compile_definition(*this,ctx);
+        break;
+      case(DeclarationKind::constant):
+        data.con->compile_definition(*this,ctx);
+        break;
+      case(DeclarationKind::parameter):
+        data.par->compile_definition(*this,ctx);
+        break;
+    }
+}
+
+
+
+
+void
+Declaration::
+print(FILE*  f) const
+{
+    switch(storage_kind)
+    {
+      case(StorageKind::local_static):
+        fprintf(f,"static ");
+      case(StorageKind::local):
+      case(StorageKind::global):
+        break;
+    }
+
+
+    switch(kind)
+    {
+      case(DeclarationKind::function):
+        data.fn->print(f);
+        break;
+      case(DeclarationKind::variable):
+        data.var->print(f);
+        break;
+      case(DeclarationKind::constant):
+        data.con->print(f);
+        break;
+      case(DeclarationKind::parameter):
+        data.par->print(f);
+        break;
+    }
+}
 
 
 

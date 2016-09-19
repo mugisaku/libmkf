@@ -106,8 +106,8 @@ execute(std::string&&  s, bool  disp, const FileSet*  fs)
 
         if(fs && fs->out)
         {
-          prog.print(fs->out);
-fs->flush_all();
+//          prog.print(fs->out);
+//fs->flush_all();
         }
 
 
@@ -137,7 +137,8 @@ main(int  argc, char**  argv)
   FileSet  fs;
 
   fs.out = fopen("__assvm_out.txt","wb");
-  fs.err = fopen("__assvm_err.txt","wb");
+  fs.err = stdout;
+//  fs.err = fopen("__assvm_err.txt","wb");
 
     if(--argc)
     {
@@ -170,6 +171,11 @@ main(int  argc, char**  argv)
             }
         }
 
+
+        for(auto  c: s)
+        {
+          fputc(c,fs.out);
+        }
 
 
       execute(std::move(s),disp_flag,&fs);

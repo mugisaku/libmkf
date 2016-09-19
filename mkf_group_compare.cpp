@@ -197,7 +197,6 @@ compare(ParseContext&  parser, const pp::Character*&  p, Node&  node, int  flags
                   break;
                 }
             }
-
         }
     }
 

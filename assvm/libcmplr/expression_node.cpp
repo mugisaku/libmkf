@@ -319,7 +319,7 @@ fold(FoldContext&  ctx) const
 }
 
 
-ObjectKind
+Type
 Node::
 compile(Context&  ctx) const
 {
@@ -348,7 +348,7 @@ compile(Context&  ctx) const
     }
 
 
-  return ObjectKind::null;
+  return Type();
 }
 
 

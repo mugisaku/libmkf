@@ -96,6 +96,8 @@ archive: clean
 
 
 assvm_program: $(OBJ)
+	rm -f assvm/assvm
+	rm -f assvm/assvm_as
 	make -C libpp objects
 	make -C assvm
 

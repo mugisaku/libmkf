@@ -133,14 +133,6 @@ Statement
   void     read_do_statement(   const mkf::Node&  src, PreContext&  prectx);
   void  read_return_statement(  const mkf::Node&  src, PreContext&  prectx);
 
-
-  void  read_declaration(const mkf::Node&  base, PreContext&  prectx);
-
-  static Declaration    read_var_declaration(const mkf::Node&  base, PreContext&  prectx);
-  static Declaration  read_const_declaration(const mkf::Node&  base, PreContext&  prectx);
-
-  void       read_enum_declaration(const mkf::Node&  base);
-
 };
 
 

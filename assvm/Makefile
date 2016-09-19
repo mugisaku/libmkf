@@ -71,20 +71,21 @@ CMPLR_OBJ =                                      \
   libcmplr/expression_element.o                  \
   libcmplr/expression_operator.o                 \
   libcmplr/cmplr_type.o                          \
+  libcmplr/cmplr_parameter.o                     \
+  libcmplr/cmplr_signature.o                     \
+  libcmplr/cmplr_function.o                      \
+  libcmplr/cmplr_variable.o                      \
+  libcmplr/cmplr_constant.o                      \
   libcmplr/cmplr_declaration.o                   \
-  libcmplr/cmplr_declaration__print.o            \
-  libcmplr/cmplr_declaration__compile.o          \
-  libcmplr/cmplr_declaration__compile_def.o      \
+  libcmplr/cmplr_declaration__read.o             \
   libcmplr/cmplr_foldcontext.o                   \
   libcmplr/cmplr_precontext.o                    \
   libcmplr/cmplr_context.o                       \
   libcmplr/cmplr_block.o                         \
   libcmplr/cmplr_branchnode.o                    \
-  libcmplr/cmplr_function.o                      \
   libcmplr/cmplr_globalscope.o                   \
   libcmplr/cmplr_statement.o                     \
   libcmplr/cmplr_statement__read.o               \
-  libcmplr/cmplr_statement__read_decl.o          \
   libcmplr/cmplr_statement__read_ctrl.o          \
 
 

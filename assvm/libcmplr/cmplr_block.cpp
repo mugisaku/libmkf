@@ -84,7 +84,9 @@ void
 Block::
 compile_push_do_begin(Context&  ctx) const
 {
-  ctx.push("  pshui16 _FUNC%s_DO%04d_BEGIN;\n",function->identifier.data(),index);
+  auto  name = function->signature.name.data();
+
+  ctx.push("  psh16u _FUNC%s_DO%04d_BEGIN;\n",name,index);
 }
 
 
@@ -92,7 +94,9 @@ void
 Block::
 compile_push_do_end(Context&  ctx) const
 {
-  ctx.push("  pshui16 _FUNC%s_DO%04d_END;\n",function->identifier.data(),index);
+  auto  name = function->signature.name.data();
+
+  ctx.push("  psh16u _FUNC%s_DO%04d_END;\n",name,index);
 }
 
 
@@ -104,16 +108,18 @@ compile(Context&  ctx) const
 
   ctx.block_stack.emplace_back(this);
 
+  auto  name = function->signature.name.data();
+
     switch(kind)
     {
       case(BlockKind::do_):
-        ctx.push("_FUNC%s_DO%04d_BEGIN:\n",function->identifier.data(),index>>16);
+        ctx.push("_FUNC%s_DO%04d_BEGIN:\n",name,index>>16);
         ctrlblk = ctx.change_control_block(this);
         break;
       case(BlockKind::if_):
-        ctx.push("_FUNC%s_IF%04dxxxx:\n",function->identifier.data(),index>>16);
+        ctx.push("_FUNC%s_IF%04dxxxx:\n",name,index>>16);
         condition->compile(ctx);
-        ctx.push("  pshui16 _FUNC%s_IF%08d_END;\n",function->identifier.data(),index);
+        ctx.push("  psh16u _FUNC%s_IF%08d_END;\n",name,index);
         ctx.push("  brz;\n");
         break;
       case(BlockKind::else_):
@@ -121,7 +127,7 @@ compile(Context&  ctx) const
           {
             condition->compile(ctx);
 
-            ctx.push("  pshui16 _FUNC%s_IF%08d;\n",function->identifier.data(),index);
+            ctx.push("  psh16u _FUNC%s_IF%08d;\n",name,index);
             ctx.push("  brz;\n");
           }
         break;
@@ -133,17 +139,17 @@ compile(Context&  ctx) const
     switch(kind)
     {
       case(BlockKind::do_):
-        ctx.push("  pshui16  _FUNC%s_DO%04d_BEGIN;\n",function->identifier.data(),index);
+        ctx.push("  psh16u  _FUNC%s_DO%04d_BEGIN;\n",name,index);
         ctx.push("  updpc;\n");
-        ctx.push("_FUNC%s_DO%04d_END:\n",function->identifier.data(),index);
+        ctx.push("_FUNC%s_DO%04d_END:\n",name,index);
 
         ctx.change_control_block(ctrlblk);
         break;
       case(BlockKind::if_):
       case(BlockKind::else_):
-        ctx.push("  pshui16  _FUNC%s_IF%04dxxxx_END;\n",function->identifier.data(),index>>16);
+        ctx.push("  psh16u  _FUNC%s_IF%04dxxxx_END;\n",name,index>>16);
         ctx.push("  updpc;\n");
-        ctx.push("_FUNC%s_IF%08d_END:\n",function->identifier.data(),index);
+        ctx.push("_FUNC%s_IF%08d_END:\n",name,index);
         break;
     }
 

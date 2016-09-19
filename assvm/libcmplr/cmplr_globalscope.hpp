@@ -14,8 +14,6 @@ GlobalScope
 {
   std::list<Declaration>  declaration_list;
 
-  std::list<Function>  function_list;
-
 
   void  print(FILE*  f=stdout);
 

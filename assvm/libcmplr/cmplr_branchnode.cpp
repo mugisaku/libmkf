@@ -40,7 +40,9 @@ compile(Context&  ctx) const
 
   auto  first = block_list[0];
 
-  ctx.push("_FUNC%s_IF%04dxxxx_END:\n",first->function->identifier.data(),first->index>>16);
+  auto  name = first->function->signature.name.data();
+
+  ctx.push("_FUNC%s_IF%04dxxxx_END:\n",name,first->index>>16);
 }
 
 

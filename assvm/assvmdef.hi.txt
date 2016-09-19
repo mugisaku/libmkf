@@ -1,5 +1,4 @@
-global_scope = 
-  {function_declaration|var_declaration|const_declaration|";"};
+global_scope = {declaration|";"};
 
 
 statement =
@@ -7,18 +6,16 @@ statement =
                  'halt'|
         print_statement|
       control_statement|
-  declaration_statement|
+            declaration|
                   block|
      (expression:[";"]);
 
 
 
 
-declaration_statement = 
+declaration = 
   function_declaration|
-       var_declaration|
-     const_declaration|
-      enum_declaration;
+    object_declaration;
 
 
 
@@ -85,29 +82,36 @@ argument_list = "(":[expression:{",":expression}]:")";
 
 
 
-function_declaration = 'function':[identifier]:function_definition;
+function_declaration = 'function':signature:block;
 
-function_definition = "(":[parameter:{",":parameter}]:")":block;
+signature = type:identifier:"(":[parameter:{",":parameter}]:")";
 
-parameter = identifier;
-
-
-
-
-const_declaration = ['static']:'const':'integer_kind':[array_size]:identifier: "=":(expression|array_literal|string_literal);
-var_declaration   = ['static']:'var'  :'integer_kind':[array_size]:identifier:["=":(expression|array_literal|string_literal)];
+parameter = type:[identifier];
 
 
 
 
-integer_kind = 
+object_declaration = ['static']:['const']:type:identifier:["=":object_initialization];
+
+object_initialization = expression|array_literal|string_literal;
+
+
+type = type_kind/*:{"*"|array_size}:["&"]*/;
+
+
+type_kind = 
+  'void'|
   'int8'|
   'uint8'|
   'int16'|
   'uint16'|
-  'int32';
+  'int32'|
+  'int';
 
 
+
+
+array_size = "[":[expression]:"]";
 
 
 array_literal = "[":[expression:{",":expression}]:"]";

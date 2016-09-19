@@ -16,7 +16,7 @@ Function::
 Function(const mkf::Node&  src, PreContext&  prectx):
 local_object_size(0)
 {
-  read_declaration(src,prectx);
+  read(src,prectx);
 }
 
 
@@ -38,6 +38,16 @@ make_block(BlockKind  k, int  count, const mkf::Node&  src, PreContext&  prectx)
 }
 
 
+Type
+Function::
+compile(Context&  ctx) const
+{
+  ctx.push("  pshui16 %s;\n",signature.name.data());
+
+  return Type(TypeKind::function);
+}
+
+
 void
 Function::
 compile_definition(Context&  ctx) const
@@ -47,14 +57,14 @@ compile_definition(Context&  ctx) const
 
   ctx.block_stack.clear();
 
-  ctx.push("%s:\n",identifier.data());
+  ctx.push("%s:\n",signature.name.data());
 
     if(local_object_size)
     {
-      ctx.push("  pshsp;        //////\n");
-      ctx.push("  pshui8 %6d;//\n",local_object_size);
-      ctx.push("  sub;          //ローカルオブジェクト領域確保\n");
-      ctx.push("  updsp;        //////\n");
+      ctx.push("  pshsp       ;//****************************//\n");
+      ctx.push("  psh8u %6d;//                            //\n",local_object_size);
+      ctx.push("  sub         ;//ローカルオブジェクト領域確保//\n");
+      ctx.push("  updsp       ;//****************************//\n");
     }
 
 
@@ -72,30 +82,7 @@ void
 Function::
 print(FILE*  f) const
 {
-  fprintf(f,"(");
-
-    if(parameter_list.size())
-    {
-      auto  it = parameter_list.cbegin();
-
-        for(;;)
-        {
-          auto&  p = *it++;
-
-          p.print(f);
-
-            if(it == parameter_list.cend())
-            {
-              break;
-            }
-
-
-          fprintf(f,",");
-        }
-    }
-
-
-  fprintf(f,")\n");
+  signature.print(f);
 
   block->print(f);
 
@@ -107,34 +94,7 @@ print(FILE*  f) const
 
 void
 Function::
-read_declaration(const mkf::Node&  src, PreContext&  prectx)
-{
-  mkf::Cursor  cur(src);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "identifier")
-        {
-          nd.collect_characters(identifier);
-        }
-
-      else
-        if(nd == "function_definition")
-        {
-          read_definition(nd,prectx);
-        }
-
-
-      cur.advance();
-    }
-}
-
-
-void
-Function::
-read_definition(const mkf::Node&  src, PreContext&  prectx)
+read(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
@@ -148,25 +108,31 @@ read_definition(const mkf::Node&  src, PreContext&  prectx)
     {
       auto&  nd = cur.get();
 
-        if(nd == "parameter")
+        if(nd == "signature")
         {
-          read_parameter(nd);
+          signature.read(nd);
         }
 
       else
         if(nd == "block")
         {
-          int  local_object_count = parameter_list.size()-1;
+          auto  blk = new Block(BlockKind::plain,nd,prectx);
 
-            for(auto  it  = parameter_list.rbegin();
-                      it != parameter_list.rend()  ;
-                                               ++it)
+          blk->function = this;
+
+          auto&  prmls = signature.parameter_list;
+
+          int  local_object_count = prmls.size()-1;
+
+            for(auto  it  = prmls.crbegin();
+                      it != prmls.crend()  ;
+                                      ++it)
             {
-              it->index = local_object_count--;
+              auto&  prm = *it++;
+
+              blk->declaration_list.emplace_back(prm,local_object_count--);
             }
 
-
-          auto  blk = new Block(BlockKind::plain,nd,prectx);
 
           block.reset(blk);
         }
@@ -178,34 +144,6 @@ read_definition(const mkf::Node&  src, PreContext&  prectx)
 
   prectx.function = fn;
 }
-
-
-void
-Function::
-read_parameter(const mkf::Node&  src)
-{
-  mkf::Cursor  cur(src);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "identifier")
-        {
-          std::string  s;
-
-          nd.collect_characters(s);
-
-          parameter_list.emplace_back(DeclarationKind::parameter,std::move(s));
-
-          parameter_list.back().object_kind = ObjectKind::value;
-        }
-
-
-      cur.advance();
-    }
-}
-
 
 
 

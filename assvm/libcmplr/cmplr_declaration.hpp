@@ -6,12 +6,18 @@
 #include<vector>
 #include"cmplr_foldcontext.hpp"
 #include"cmplr_type.hpp"
+#include"cmplr_parameter.hpp"
+#include"cmplr_variable.hpp"
 #include"expression_foldresult.hpp"
 
 
 
 
 struct Context;
+struct PreContext;
+struct Variable;
+struct Constant;
+struct Function;
 
 
 namespace expression{
@@ -20,22 +26,14 @@ struct Node;
 
 
 enum class
-ObjectKind
+StorageKind
 {
   null,
 
-  undefined,
-
-  integer,
-  value,
-  constant,
-  array,
-  constant_array,
-  function,
-
-  reference,
-  parameter,
-  argument_list,
+  global,
+  local,
+  local_static,
+  alias,
 
 };
 
@@ -43,9 +41,11 @@ ObjectKind
 enum class
 DeclarationKind
 {
-  global,
-  local,
-  local_static,
+  null,
+
+  function,
+  variable,
+  constant,
   parameter,
 
 };
@@ -54,68 +54,53 @@ DeclarationKind
 struct
 Declaration
 {
-  DeclarationKind  kind;
+  StorageKind  storage_kind;
 
-  std::string  identifier;
+  DeclarationKind  kind;
 
   int  index;
 
-  Type  type;
-
-  ObjectKind  object_kind;
-
   union Data{
-    void*  ptr;
+    const Parameter*  par;
 
-    int  i;
-
-    const Function*  fn;
-
-    expression::Node*  expr;
-
-    std::vector<expression::Node>*   arr;
-    std::vector<int>*               carr;
+    Function*    fn;
+    Variable*   var;
+    Constant*   con;
 
   } data;
 
 
   Declaration();
-  Declaration(DeclarationKind  k, std::string&&  id, expression::Node*  expr=nullptr);
-  Declaration(const Function*  fn);
-  Declaration(const Declaration&  rhs)=delete;
-  Declaration(Declaration&&  rhs) noexcept;
-  ~Declaration();
+  Declaration(const Parameter&  par, int  i);
+  Declaration(const mkf::Node&  src, PreContext&  prectx);
+  Declaration(const Declaration&   rhs)=delete;
+  Declaration(      Declaration&&  rhs) noexcept;
+ ~Declaration();
 
 
   Declaration&  operator=(Declaration&&  rhs) noexcept;
 
-  size_t  get_size() const;
-
   void  clear();
 
-  void  reset(const Function*  fn);
+  size_t  get_size() const;
+
+  const std::string&  get_name() const;
+
+  void  reset(Type&&  type, std::string&&  name, expression::Node*  initexpr=nullptr);
+  void  reset(const Parameter&  par, int  i);
+  void  reset(Function*  fn);
 
   expression::FoldResult  fold(FoldContext&  ctx) const;
 
   void  print(FILE*  f=stdout) const;
-  void  print_integer(FILE*  f=stdout) const;
-  void  print_constant(FILE*  f=stdout) const;
-  void  print_array(FILE*  f=stdout) const;
-  void  print_constant_array(FILE*  f=stdout) const;
-  void  print_function(FILE*  f=stdout) const;
 
-  ObjectKind  compile(Context&  ctx) const;
-  ObjectKind  compile_integer(Context&  ctx) const;
-  ObjectKind  compile_function(Context&  ctx) const;
-  ObjectKind  compile_constant(Context&  ctx) const;
-  ObjectKind  compile_array(Context&  ctx) const;
-  ObjectKind  compile_constant_array(Context&  ctx) const;
-
+  Type  compile(Context&  ctx) const;
   void  compile_definition(Context&  ctx) const;
-  void  compile_constant_definition(Context&  ctx) const;
-  void  compile_array_definition(Context&  ctx) const;
-  void  compile_constant_array_definition(Context&  ctx) const;
-  void  compile_function_definition(Context&  ctx) const;
+
+  void  read(const mkf::Node&  src, PreContext&  prectx);
+
+  void  read_object_declaration(const mkf::Node&  src, PreContext&  prectx);
+  expression::Node*  read_object_initialization(const mkf::Node&  src, PreContext&  prectx);
 
 };
 
