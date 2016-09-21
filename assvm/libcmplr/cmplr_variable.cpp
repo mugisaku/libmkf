@@ -26,9 +26,9 @@ initexpr(initexpr_)
 void
 compile_local(const Declaration&  decl, const std::string&  name, Context&  ctx)
 {
-  ctx.push("  pshbp       ;//*********************************//\n");
-  ctx.push("  psh8u %6d;//ローカル変数%sのアドレスを読み出し//\n",decl.index,name.data());
-  ctx.push("  sub         ;//*********************************//\n");
+  ctx.push("  pshbp       ;//**********************************//\n");
+  ctx.push("  psh16u %6d;//ローカル変数%sのアドレスを読み出し//\n",decl.offset,name.data());
+  ctx.push("  sub         ;//**********************************//\n");
 }
 
 
@@ -42,7 +42,7 @@ compile(const Declaration&  decl, Context&  ctx) const
         compile_local(decl,name,ctx);
         break;
       case(StorageKind::local_static):
-        ctx.push("  psh16u _STATIC_%04d;//%s\n",decl.index,name.data());
+        ctx.push("  psh16u _STATIC_%06z;//%s\n",decl.offset,name.data());
         break;
       case(StorageKind::global):
         ctx.push("  psh16u %s;\n",name.data());
@@ -69,7 +69,7 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
 
               if(t == TypeKind::reference)
               {
-                t = t.source_type->compile_dereference(ctx);
+                t = t.referred_type->compile_dereference(ctx);
               }
 
 
@@ -98,7 +98,7 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
             }
 
 
-          ctx.push_definition("_STATIC_%04d://%s\n",decl.index,name.data());
+          ctx.push_definition("_STATIC_%06z://%s\n",decl.offset,name.data());
           ctx.push_definition("data i32 {%d};\n",i);
         }
         break;

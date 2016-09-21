@@ -50,6 +50,7 @@ Context
   word_t  pc;
   word_t  bp;
   word_t  sp;
+  word_t  tm;
 
   unsigned int  state;
 

@@ -19,11 +19,23 @@ xorshift()
 
 function
 void
-main()
+main(int8  a,  int32  d,  int8  a,  int16  b, int8  a,  int16  b, int8  c,  int8  c,  int8  c,  int32  d)
 {
-  int8  i = 128;
+  int8  i = 127;
 
-  print i+2;
+  int  n = 0;
+
+    do
+    {
+      print i += 1;
+
+      n += 1;
+
+        if(n > 4)
+        {
+          break;
+        }
+    }
 
 
   halt;

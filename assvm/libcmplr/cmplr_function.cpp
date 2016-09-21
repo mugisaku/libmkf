@@ -62,7 +62,7 @@ compile_definition(Context&  ctx) const
     if(local_object_size)
     {
       ctx.push("  pshsp       ;//****************************//\n");
-      ctx.push("  psh8u %6d;//                            //\n",local_object_size);
+      ctx.push("  psh16u %6d;//                            //\n",local_object_size);
       ctx.push("  sub         ;//ローカルオブジェクト領域確保//\n");
       ctx.push("  updsp       ;//****************************//\n");
     }
@@ -84,6 +84,37 @@ print(FILE*  f) const
 {
   signature.print(f);
 
+  fprintf(f,"//parameters\n");
+
+    for(auto&  decl: block->declaration_list)
+    {
+        if(decl.kind == DeclarationKind::parameter)
+        {
+          decl.print(f);
+
+          fprintf(f,"(offset %6zu);\n",decl.offset);
+        }
+    }
+
+
+  fprintf(f,"\n");
+
+  fprintf(f,"//local_variables\n");
+
+    for(auto&  decl: block->declaration_list)
+    {
+        if((decl.storage_kind == StorageKind::local) &&
+           (decl.kind         == DeclarationKind::variable))
+        {
+          decl.print(f);
+
+          fprintf(f,"(offset %6zu);\n",decl.offset);
+        }
+    }
+
+
+  fprintf(f,"\n");
+
   block->print(f);
 
   fprintf(f,"\n");
@@ -101,8 +132,8 @@ read(const mkf::Node&  src, PreContext&  prectx)
   auto  fn = prectx.function       ;
              prectx.function = this;
 
-  prectx.do_block_count   = 0;
-  prectx.branchnode_count = 0;
+  prectx.do_block_count      = 0;
+  prectx.branchnode_count    = 0;
 
     while(!cur.test_ended())
     {
@@ -122,15 +153,39 @@ read(const mkf::Node&  src, PreContext&  prectx)
 
           auto&  prmls = signature.parameter_list;
 
-          int  local_object_count = prmls.size()-1;
+          size_t  offset = 0;
 
-            for(auto  it  = prmls.crbegin();
-                      it != prmls.crend()  ;
-                                      ++it)
+          offset += 4;//リターンアドレス
+          offset += 4;//スタックアドレス
+          offset += 4;//ベースアドレス
+
+          auto  it = prmls.crbegin();
+
+            while(it != prmls.crend())
             {
               auto&  prm = *it++;
 
-              blk->declaration_list.emplace_back(prm,local_object_count--);
+              auto&  type = prm.type;
+
+                switch(type.get_object_alignment_size())
+                {
+              case(0):
+              case(1):
+                  break;
+              case(2):
+                  offset +=  1;
+                  offset &= ~1;
+                  break;
+              case(4):
+                  offset +=  3;
+                  offset &= ~3;
+                  break;
+                }
+
+
+              blk->declaration_list.emplace_back(prm,offset);
+
+              offset += type.get_object_size();
             }
 
 

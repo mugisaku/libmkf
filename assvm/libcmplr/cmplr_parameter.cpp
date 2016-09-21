@@ -24,15 +24,9 @@ Type
 Parameter::
 compile(const Declaration&  decl, Context&  ctx) const
 {
-  ctx.push("  pshui8 %d;\n",decl.index);
-  ctx.push("  arg;\n");
-}
-
-
-void
-Parameter::
-compile_definition(const Declaration&  decl, Context&  ctx) const
-{
+  ctx.push("  pshbp;//****************//\n");
+  ctx.push_psh(decl.offset,"//実引数%sのアドレス読み出し//",name.data());
+  ctx.push("  sub;//******************//");
 }
 
 

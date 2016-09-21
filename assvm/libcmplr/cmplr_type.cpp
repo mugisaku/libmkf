@@ -60,7 +60,7 @@ operator=(const Type&  rhs)
 
   element_number = rhs.element_number;
 
-  source_type.reset(rhs.source_type? new Type(*rhs.source_type):nullptr);
+  referred_type.reset(rhs.referred_type? new Type(*rhs.referred_type):nullptr);
 
   return *this;
 }
@@ -77,14 +77,33 @@ operator=(Type&&  rhs) noexcept
 
   element_number = rhs.element_number;
 
-  source_type = std::move(rhs.source_type);
+  referred_type = std::move(rhs.referred_type);
 
   return *this;
 }
 
 
+bool
+Type::
+operator==(const Type&  rhs) const
+{
+  return(to_string() == rhs.to_string());
+}
+
+
+
+
 bool  Type::operator==(TypeKind  k) const{return(kind == k);}
 bool  Type::operator!=(TypeKind  k) const{return(kind != k);}
+
+
+Type::
+operator bool() const
+{
+  return(kind == TypeKind::null);
+}
+
+
 
 
 void
@@ -97,7 +116,7 @@ reset(TypeKind  k, bool  c)
 
   element_number = 1;
 
-  source_type.reset();
+  referred_type.reset();
 }
 
 
@@ -111,7 +130,7 @@ reset(TypePointer&&  ptr, bool  c)
 
   element_number = 1;
 
-  source_type.reset(new Type(std::move(ptr.type)));
+  referred_type.reset(new Type(std::move(ptr.type)));
 }
 
 
@@ -125,12 +144,7 @@ reset(TypeReference&&  ref, bool  c)
 
   element_number = 1;
 
-  source_type.reset(new Type(std::move(ref.type)));
-
-if(!source_type)
-{
-report;
-}
+  referred_type.reset(new Type(std::move(ref.type)));
 }
 
 
@@ -144,7 +158,7 @@ reset(TypeArray&&  arr, bool  c)
 
   element_number = arr.element_number;
 
-  source_type.reset(new Type(std::move(arr.type)));
+  referred_type.reset(new Type(std::move(arr.type)));
 }
 
 
@@ -164,10 +178,9 @@ get_size() const
       case(TypeKind::pointer): return 4;
 
       case(TypeKind::reference):
-        return source_type->get_size();
-
+        return referred_type->get_size();
       case(TypeKind::array):
-        return source_type->get_size()*element_number;
+        return referred_type->get_size()*element_number;
     }
 
 
@@ -175,59 +188,56 @@ get_size() const
 }
 
 
-
-
-Type
+size_t
 Type::
-compile_dereference(Context&  ctx) const
+get_object_size() const
 {
-    switch(kind)
+    if(kind == TypeKind::reference)
     {
-      case(TypeKind::int8  ):
-        ctx.push("  ld8;\n");
-        break;
-      case(TypeKind::uint8 ):
-        ctx.push("  ld8u;\n");
-        break;
-      case(TypeKind::int16 ):
-        ctx.push("  ld16;\n");
-        break;
-      case(TypeKind::uint16):
-        ctx.push("  ld16u;\n");
-        break;
-      case(TypeKind::int32 ):
-      case(TypeKind::pointer):
-      case(TypeKind::array):
-        ctx.push("  ld32;\n");
-        break;
+      return 4;
     }
 
 
-  return *this;
+  return get_size();
 }
 
 
-Type
+
+
+size_t
 Type::
-compile_assign(Context&  ctx) const
+get_alignment_size() const
 {
     switch(kind)
     {
       case(TypeKind::int8  ):
-      case(TypeKind::uint8 ):
-        ctx.push("  st8;\n");
-        break;
+      case(TypeKind::uint8 ): return 1;
       case(TypeKind::int16 ):
-      case(TypeKind::uint16):
-        ctx.push("  st16;\n");
-        break;
+      case(TypeKind::uint16): return 2;
       case(TypeKind::int32 ):
-        ctx.push("  st32;\n");
-        break;
+      case(TypeKind::pointer): return 4;
+
+      case(TypeKind::reference):
+      case(TypeKind::array):
+        return referred_type->get_alignment_size();
     }
 
 
-  return Type(TypeKind::int32);
+  return 0;
+}
+
+
+size_t
+Type::
+get_object_alignment_size() const
+{
+    if(kind == TypeKind::reference)
+    {
+      return 4;
+    }
+
+
+  return get_alignment_size();
 }
 
 
@@ -259,13 +269,13 @@ snprint(char*  s, size_t  n) const
 
       case(TypeKind::array):
         {
-            if(!source_type)
+            if(!referred_type)
             {
               report;
             }
 
 
-          auto  res = source_type->snprint(s,n);
+          auto  res = referred_type->snprint(s,n);
 
           s += res;
           n -= res;
@@ -275,13 +285,13 @@ snprint(char*  s, size_t  n) const
         break;
       case(TypeKind::pointer):
         {
-            if(!source_type)
+            if(!referred_type)
             {
               report;
             }
 
 
-          auto  res = source_type->snprint(s,n);
+          auto  res = referred_type->snprint(s,n);
 
           s += res;
           n -= res;
@@ -291,13 +301,13 @@ snprint(char*  s, size_t  n) const
         break;
       case(TypeKind::reference):
         {
-            if(!source_type)
+            if(!referred_type)
             {
               report;
             }
 
 
-          auto  res = source_type->snprint(s,n);
+          auto  res = referred_type->snprint(s,n);
 
           s += res;
           n -= res;
@@ -340,7 +350,7 @@ void
 Type::
 read(const mkf::Node&  src)
 {
-  source_type.reset();
+  referred_type.reset();
 
   std::string  s;
 
@@ -348,193 +358,6 @@ read(const mkf::Node&  src)
 
 
   *this = make_type(s.data());
-}
-
-
-
-
-namespace{
-void
-skip_spaces(const char*&  p)
-{
-    while(isspace(*p))
-    {
-      ++p;
-    }
-}
-
-
-int
-scan_typename(const char*&  src, char*  dst, int  bufn)
-{
-  skip_spaces(src);
-
-    if(bufn > 1)
-    {
-      int  res = 0;
-
-      int  c = *src;
-
-        if(isalpha(c) || (c == '_'))
-        {
-          *dst++ = c;
-
-           ++src;
-          --bufn;
-           ++res;
-
-            for(;;)
-            {
-                if(bufn == 1)
-                {
-                  break;
-                }
-
-
-              c = *src;
-
-                if(!isalnum(c) && (c != '_'))
-                {
-                  break;
-                }
-
-
-              *dst++ = c;
-
-               ++src;
-              --bufn;
-               ++res;
-            }
-
-
-          *dst = 0;
-
-          return res;
-        }
-    }
-
-
-  return 0;
-}
-
-
-int
-scan_array_size(const char*&  src)
-{
-  int  i = 0;
-
-  skip_spaces(src);
-
-    for(;;)
-    {
-      int  c = *src;
-
-        if(isdigit(c))
-        {
-          i *= 10;
-
-          i += c-'0';
-
-          ++src;
-        }
-
-      else
-        {
-          skip_spaces(src);
-
-            if(*src == ']')
-            {
-              ++src;
-
-              break;
-            }
-
-
-          throw;
-        }
-    }
-
-
-  return i;
-}
-
-
-Type
-make(int  n, const char*  str)
-{
-    switch(n)
-    {
-      case(3):
-        if(std::strcmp(str,"int") == 0){return Type(TypeKind::int32);}
-        break;
-      case(4):
-             if(std::strcmp(str,"void") == 0){return Type(TypeKind::void_);}
-        else if(std::strcmp(str,"int8") == 0){return Type(TypeKind::int8);}
-        break;
-      case(5):
-             if(std::strcmp(str,"uint8") == 0){return Type(TypeKind::uint8);}
-        else if(std::strcmp(str,"int16") == 0){return Type(TypeKind::int16);}
-        else if(std::strcmp(str,"int32") == 0){return Type(TypeKind::int32);}
-        break;
-      case(6):
-          if(std::strcmp(str,"uint16") == 0){return Type(TypeKind::uint16);}
-        break;
-    }
-
-
-  return Type();
-}
-
-
-}
-
-
-Type
-make_type(const char*  s)
-{
-  char  buf[256];
-
-  int  res = scan_typename(s,buf,sizeof(buf));
-
-  Type  t = make(res,buf);
-
-    for(;;)
-    {
-      skip_spaces(s);
-
-        if(*s == '*')
-        {
-          ++s;
-
-          t.reset(TypePointer(std::move(t)));
-        }
-
-      else
-        if(*s == '&')
-        {
-          ++s;
-
-          t.reset(TypeReference(std::move(t)));
-        }
-
-      else
-        if(*s == '[')
-        {
-          ++s;
-
-          auto  n = scan_array_size(s);
-
-          t.reset(TypeArray(std::move(t),n));
-        }
-
-      else
-        {
-          break;
-        }
-    }
-
-
-  return std::move(t);
 }
 
 

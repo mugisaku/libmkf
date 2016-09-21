@@ -16,7 +16,8 @@ block(nullptr),
 do_block_count(0),
 branchnode_count(0),
 static_object_count(0)
-{}
+{
+}
 
 
 
@@ -35,7 +36,7 @@ append(Declaration&&  decl)
 
           ptr = &block->declaration_list.back();
 
-          ptr->index = static_object_count++;
+          ptr->offset = static_object_count++;
         }
 
       else
@@ -44,9 +45,31 @@ append(Declaration&&  decl)
 
           ptr = &block->declaration_list.back();
 
-          ptr->index = function->local_object_size;
+            if(ptr->kind == DeclarationKind::variable)
+            {
+              auto&  size = function->local_object_size;
 
-          function->local_object_size += ptr->get_size();
+              auto&  type = ptr->data.var->type;
+
+                switch(type.get_object_alignment_size())
+                {
+              case(0):
+              case(1):
+                  break;
+              case(2):
+                  size +=  1;
+                  size &= ~1;
+                  break;
+              case(4):
+                  size +=  3;
+                  size &= ~3;
+                  break;
+                }
+
+
+              ptr->offset = size                          ;
+                            size += type.get_object_size();
+            }
         }
     }
 

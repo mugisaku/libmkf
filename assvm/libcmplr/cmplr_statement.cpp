@@ -213,7 +213,7 @@ compile(Context&  ctx) const
 
               if(t == TypeKind::reference)
               {
-                ctx.push("  ld;\n");
+                t.referred_type->compile_dereference(ctx);
               }
           }
 
@@ -264,7 +264,7 @@ compile(Context&  ctx) const
 
               if(t == TypeKind::reference)
               {
-                ctx.push("  ld;\n");
+                t.referred_type->compile_dereference(ctx);
               }
           }
 

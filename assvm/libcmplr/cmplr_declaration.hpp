@@ -58,7 +58,7 @@ Declaration
 
   DeclarationKind  kind;
 
-  int  index;
+  size_t  offset;
 
   union Data{
     const Parameter*  par;
@@ -71,7 +71,7 @@ Declaration
 
 
   Declaration();
-  Declaration(const Parameter&  par, int  i);
+  Declaration(const Parameter&  par, size_t  off);
   Declaration(const mkf::Node&  src, PreContext&  prectx);
   Declaration(const Declaration&   rhs)=delete;
   Declaration(      Declaration&&  rhs) noexcept;
@@ -87,7 +87,7 @@ Declaration
   const std::string&  get_name() const;
 
   void  reset(Type&&  type, std::string&&  name, expression::Node*  initexpr=nullptr);
-  void  reset(const Parameter&  par, int  i);
+  void  reset(const Parameter&  par, size_t  off=0);
   void  reset(Function*  fn);
 
   expression::FoldResult  fold(FoldContext&  ctx) const;

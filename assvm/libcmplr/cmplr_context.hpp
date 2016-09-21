@@ -38,6 +38,8 @@ Context: public FoldContext
   void  push(const char*  fmt, ...);
   void  push_definition(const char*  fmt, ...);
 
+  void  push_psh(int  v, const char*  fmt="", ...);
+  void  push_definition_psh(int  v, const char*  fmt="", ...);
 
 };
 

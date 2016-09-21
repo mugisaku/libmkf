@@ -19,6 +19,7 @@ TypeKind
   unknown,
   void_,
 
+  bool_,
   int8,
   uint8,
   int16,
@@ -56,7 +57,7 @@ Type
 
   int  element_number;
 
-  std::unique_ptr<Type>  source_type;
+  std::unique_ptr<Type>  referred_type;
 
 
   Type(TypeKind  k=TypeKind::null, bool  c=false);
@@ -73,12 +74,27 @@ Type
   bool  operator==(TypeKind  k) const;
   bool  operator!=(TypeKind  k) const;
 
+  bool  operator==(const Type&  rhs) const;
+
+  operator bool() const;
+
   void  reset(TypeKind  k=TypeKind::null, bool  c=false);
   void  reset(TypePointer&&    ptr, bool  c=false);
   void  reset(TypeReference&&  ref, bool  c=false);
   void  reset(TypeArray&&      arr, bool  c=false);
 
   size_t  get_size() const;
+  size_t  get_object_size() const;
+  size_t  get_alignment_size() const;
+  size_t  get_object_alignment_size() const;
+
+  bool  is_reinterpretable(const Type&  target) const;
+
+  bool  is_convertable_implicitly(const Type&  target) const;
+  bool  is_convertable_implicitly_to_pointer(TypeKind  target_kind) const;
+  bool  is_convertable_implicitly_to_reference(TypeKind  target_kind) const;
+  bool  is_convertable_implicitly_to_integer() const;
+  bool  is_convertable_implicitly_to_boolean() const;
 
   int  snprint(char*  s, size_t  n) const;
 
@@ -86,6 +102,8 @@ Type
 
   void  print(FILE*  f=stdout) const;
 
+  Type  compile_convert(const Type&  target, Context&  ctx) const;
+  Type  compile_reinterpret(const Type&  target, Context&  ctx) const;
   Type  compile_dereference(Context&  ctx) const;
   Type  compile_assign(Context&  ctx) const;
 

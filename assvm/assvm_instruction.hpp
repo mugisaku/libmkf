@@ -49,11 +49,10 @@ Opecode
   psh16u,
   psh32,
 
-  arg,
-
   pshpc,
   pshbp,
   pshsp,
+  pshtm,
 
   pop,
   dup,
@@ -61,6 +60,7 @@ Opecode
   updpc,
   updbp,
   updsp,
+  updtm,
 
   ld8,
   ld8u,
@@ -71,11 +71,13 @@ Opecode
   st16,
   st32,
 
+  sx8,
+  sx16,
+  tr8,
+  tr16,
+
   brz,
   brnz,
-
-  cal,
-  ret,
 
   prn,
 

@@ -96,7 +96,7 @@ object_declaration = ['static']:['const']:type:identifier:["=":object_initializa
 object_initialization = expression|array_literal|string_literal;
 
 
-type = type_kind/*:{"*"|array_size}:["&"]*/;
+type = type_kind:{"*"|array_size}:["&"];
 
 
 type_kind = 

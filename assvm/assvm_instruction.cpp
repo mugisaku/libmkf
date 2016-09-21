@@ -46,13 +46,14 @@ get_string(Opecode  op)
       case(Opecode::psh16): return "psh16";
       case(Opecode::psh16u): return "psh16u";
       case(Opecode::psh32): return "psh32";
-      case(Opecode::arg): return "arg";
       case(Opecode::pshpc): return "pshpc";
       case(Opecode::pshbp): return "pshbp";
       case(Opecode::pshsp): return "pshsp";
+      case(Opecode::pshtm): return "pshtm";
       case(Opecode::updpc): return "updpc";
       case(Opecode::updbp): return "updbp";
       case(Opecode::updsp): return "updsp";
+      case(Opecode::updtm): return "updtm";
       case(Opecode::pop): return "pop";
       case(Opecode::dup): return "dup";
       case(Opecode::ld8): return "ld8";
@@ -63,8 +64,10 @@ get_string(Opecode  op)
       case(Opecode::st8): return "st8";
       case(Opecode::st16): return "st16";
       case(Opecode::st32): return "st32";
-      case(Opecode::cal): return "cal";
-      case(Opecode::ret): return "ret";
+      case(Opecode::sx8): return "sx8";
+      case(Opecode::sx16): return "sx16";
+      case(Opecode::tr8): return "tr8";
+      case(Opecode::tr16): return "tr16";
       case(Opecode::prn): return "prn";
     }
 

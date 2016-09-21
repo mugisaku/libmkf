@@ -345,7 +345,7 @@ compile(Context&  ctx) const
 
               if(t == TypeKind::reference)
               {
-                t = t.source_type->compile_dereference(ctx);
+                t = t.referred_type->compile_dereference(ctx);
               }
           }
 
@@ -355,7 +355,10 @@ compile(Context&  ctx) const
         return Type(TypeKind::argument_list);
         break;
       case(OperandKind::integer):
-        ctx.push("  psh32  %d;//int\n",data.i);
+             if(data.i <= 0x00FF){ctx.push("  psh8u   %d;//即値\n",data.i);}
+        else if(data.i <= 0xFFFF){ctx.push("  psh16u  %d;//即値\n",data.i);}
+        else                     {ctx.push("  psh32   %d;//即値\n",data.i);}
+
         return Type(TypeKind::int32);
         break;
     }

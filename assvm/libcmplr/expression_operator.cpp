@@ -50,7 +50,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
 
     if(l_type == TypeKind::reference)
     {
-      l_type = l_type.source_type->compile_dereference(ctx);
+      l_type = l_type.referred_type->compile_dereference(ctx);
     }
 
 
@@ -65,7 +65,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
           }
 
 
-        return Type(*l_type.source_type);
+        return Type(*l_type.referred_type);
         break;
       case(Operator('!')): ctx.push("  lnot;\n");break;
       case(Operator('~')): ctx.push("  bnot;\n");break;
@@ -87,7 +87,7 @@ compile_arithmetic(const Node&  l, const Node&  r, const BinaryOperator&  op, Co
 
     if(l_type == TypeKind::reference)
     {
-      l_type = l_type.source_type->compile_dereference(ctx);
+      l_type = l_type.referred_type->compile_dereference(ctx);
     }
 
 
@@ -95,7 +95,7 @@ compile_arithmetic(const Node&  l, const Node&  r, const BinaryOperator&  op, Co
 
     if(r_type == TypeKind::reference)
     {
-      r_type = r_type.source_type->compile_dereference(ctx);
+      r_type = r_type.referred_type->compile_dereference(ctx);
     }
 
 
@@ -143,14 +143,15 @@ compile_assign(const Node&  l, const Node&  r, const BinaryOperator&  op, Contex
     }
 
 
-  ctx.push("  dup;//代入\n");
   ctx.push("  dup;//\n");
+
+  l_type = l_type.referred_type->compile_dereference(ctx);
 
   auto  r_type = r.compile(ctx);
 
     if(r_type == TypeKind::reference)
     {
-      r_type = r_type.source_type->compile_dereference(ctx);
+      r_type = r_type.referred_type->compile_dereference(ctx);
     }
 
 

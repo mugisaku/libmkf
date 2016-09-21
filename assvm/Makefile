@@ -71,6 +71,9 @@ CMPLR_OBJ =                                      \
   libcmplr/expression_element.o                  \
   libcmplr/expression_operator.o                 \
   libcmplr/cmplr_type.o                          \
+  libcmplr/cmplr_type__make.o                    \
+  libcmplr/cmplr_type__is.o                      \
+  libcmplr/cmplr_type__compile.o                 \
   libcmplr/cmplr_parameter.o                     \
   libcmplr/cmplr_signature.o                     \
   libcmplr/cmplr_function.o                      \

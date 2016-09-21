@@ -26,8 +26,6 @@ Parameter
 
   Type  compile(const Declaration&  decl, Context&  ctx) const;
 
-  void  compile_definition(const Declaration&  decl, Context&  ctx) const;
-
   void  print(FILE*  f=stdout) const;
 
   void  read(const mkf::Node&  src);

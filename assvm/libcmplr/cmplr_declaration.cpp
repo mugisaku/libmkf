@@ -10,23 +10,25 @@ Declaration::
 Declaration():
 storage_kind(StorageKind::null),
 kind(DeclarationKind::null),
-index(0)
+offset(0)
 {
 }
 
 
 Declaration::
-Declaration(const Parameter&  par, int  i):
+Declaration(const Parameter&  par, size_t  off):
 storage_kind(StorageKind::null),
 kind(DeclarationKind::null)
 {
-  reset(par,i);
+  reset(par,off);
 }
 
 
 Declaration::
 Declaration(const mkf::Node&  src, PreContext&  prectx):
-kind(DeclarationKind::null)
+storage_kind(StorageKind::null),
+kind(DeclarationKind::null),
+offset(0)
 {
   read(src,prectx);
 }
@@ -34,7 +36,9 @@ kind(DeclarationKind::null)
 
 Declaration::
 Declaration(Declaration&&  rhs) noexcept:
-kind(DeclarationKind::null)
+storage_kind(StorageKind::null),
+kind(DeclarationKind::null),
+offset(0)
 {
   *this = std::move(rhs);
 }
@@ -62,7 +66,7 @@ operator=(Declaration&&  rhs) noexcept
 
   data = rhs.data;
 
-  index = rhs.index;
+  offset = rhs.offset;
 
 
   return *this;
@@ -187,13 +191,15 @@ reset(Function*  fn)
 
 void
 Declaration::
-reset(const Parameter&  par, int  i)
+reset(const Parameter&  par, size_t  off)
 {
   clear();
 
   storage_kind = StorageKind::local;
 
   kind = DeclarationKind::parameter;
+
+  offset = off;
 
   data.par = &par;
 }
@@ -258,7 +264,6 @@ compile_definition(Context&  ctx) const
         data.con->compile_definition(*this,ctx);
         break;
       case(DeclarationKind::parameter):
-        data.par->compile_definition(*this,ctx);
         break;
     }
 }
@@ -272,28 +277,28 @@ print(FILE*  f) const
 {
     switch(storage_kind)
     {
-      case(StorageKind::local_static):
-        fprintf(f,"static ");
-      case(StorageKind::local):
-      case(StorageKind::global):
-        break;
+  case(StorageKind::local_static):
+      fprintf(f,"static ");
+  case(StorageKind::local):
+  case(StorageKind::global):
+      break;
     }
 
 
     switch(kind)
     {
-      case(DeclarationKind::function):
-        data.fn->print(f);
-        break;
-      case(DeclarationKind::variable):
-        data.var->print(f);
-        break;
-      case(DeclarationKind::constant):
-        data.con->print(f);
-        break;
-      case(DeclarationKind::parameter):
-        data.par->print(f);
-        break;
+  case(DeclarationKind::function):
+      data.fn->print(f);
+      break;
+  case(DeclarationKind::variable):
+      data.var->print(f);
+      break;
+  case(DeclarationKind::constant):
+      data.con->print(f);
+      break;
+  case(DeclarationKind::parameter):
+      data.par->print(f);
+      break;
     }
 }
 

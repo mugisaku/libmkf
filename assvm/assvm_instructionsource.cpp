@@ -46,6 +46,10 @@ read_opecode(const mkf::Node&  src)
       else if(nd == "st8"){return Opecode::st8;}
       else if(nd == "st16"){return Opecode::st16;}
       else if(nd == "st32"){return Opecode::st32;}
+      else if(nd == "sx8"){return Opecode::sx8;}
+      else if(nd == "sx16"){return Opecode::sx16;}
+      else if(nd == "tr8"){return Opecode::tr8;}
+      else if(nd == "tr16"){return Opecode::tr16;}
       else if(nd == "eq"){return Opecode::eq;}
       else if(nd == "neq"){return Opecode::neq;}
       else if(nd == "lt"){return Opecode::lt;}
@@ -62,16 +66,15 @@ read_opecode(const mkf::Node&  src)
       else if(nd == "psh16u"){return Opecode::psh16u;}
       else if(nd == "psh32"){return Opecode::psh32;}
       else if(nd == "dup"){return Opecode::dup;}
-      else if(nd == "arg"){return Opecode::arg;}
+      else if(nd == "pop"){return Opecode::pop;}
       else if(nd == "pshpc"){return Opecode::pshpc;}
       else if(nd == "pshbp"){return Opecode::pshbp;}
       else if(nd == "pshsp"){return Opecode::pshsp;}
+      else if(nd == "pshtm"){return Opecode::pshtm;}
       else if(nd == "updpc"){return Opecode::updpc;}
       else if(nd == "updbp"){return Opecode::updbp;}
       else if(nd == "updsp"){return Opecode::updsp;}
-      else if(nd == "pop"){return Opecode::pop;}
-      else if(nd == "cal"){return Opecode::cal;}
-      else if(nd == "ret"){return Opecode::ret;}
+      else if(nd == "updtm"){return Opecode::updtm;}
       else if(nd == "prn"){return Opecode::prn;}
       else {report;throw;}
 

@@ -47,8 +47,10 @@ opecode =
   'st8'|
   'st16'|
   'st32'|
-  'cal'|
-  'ret'|
+  'sx8'|
+  'sx16'|
+  'tr8'|
+  'tr16'|
   'prn'|
   'pshz'|
   'psh8'|
@@ -57,15 +59,14 @@ opecode =
   'psh16u'|
   'psh32'|
   'dup'|
-  'arg'|
   'pshpc'|
   'pshbp'|
   'pshsp'|
-  'pshlp'|
-  'pshlv'|
+  'pshtm'|
   'updpc'|
   'updbp'|
   'updsp'|
+  'updtm'|
   'pop';
 
 
