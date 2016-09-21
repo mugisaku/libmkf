@@ -26,9 +26,9 @@ initexpr(initexpr_)
 void
 compile_local(const Declaration&  decl, const std::string&  name, Context&  ctx)
 {
-  ctx.push("  pshbp       ;//**********************************//\n");
+  ctx.push("  pshbp        ;//*********************************//\n");
   ctx.push("  psh16u %6d;//ローカル変数%sのアドレスを読み出し//\n",decl.offset,name.data());
-  ctx.push("  sub         ;//**********************************//\n");
+  ctx.push("  sub          ;//*********************************//\n");
 }
 
 

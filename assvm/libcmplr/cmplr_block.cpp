@@ -118,16 +118,16 @@ compile(Context&  ctx) const
         break;
       case(BlockKind::if_):
         ctx.push("_FUNC%s_IF%04dxxxx:\n",name,index>>16);
-        condition->compile(ctx);
+
         ctx.push("  psh16u _FUNC%s_IF%08d_END;\n",name,index);
+        condition->compile(ctx);
         ctx.push("  brz;\n");
         break;
       case(BlockKind::else_):
           if(condition)
           {
-            condition->compile(ctx);
-
             ctx.push("  psh16u _FUNC%s_IF%08d;\n",name,index);
+            condition->compile(ctx);
             ctx.push("  brz;\n");
           }
         break;

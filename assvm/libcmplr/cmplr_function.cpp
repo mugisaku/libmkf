@@ -61,10 +61,10 @@ compile_definition(Context&  ctx) const
 
     if(local_object_size)
     {
-      ctx.push("  pshsp       ;//****************************//\n");
+      ctx.push("  pshsp        ;//****************************//\n");
       ctx.push("  psh16u %6d;//                            //\n",local_object_size);
-      ctx.push("  sub         ;//ローカルオブジェクト領域確保//\n");
-      ctx.push("  updsp       ;//****************************//\n");
+      ctx.push("  sub          ;//ローカルオブジェクト領域確保//\n");
+      ctx.push("  updsp        ;//****************************//\n");
     }
 
 
