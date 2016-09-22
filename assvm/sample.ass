@@ -18,6 +18,14 @@ xorshift()
 
 
 function
+int
+add(int  a, int  b)
+{
+  return a+b;
+}
+
+
+function
 void
 main(int8  a,  int32  d,  int8  a,  int16  b, int8  a,  int16  b, int8  c,  int8  c,  int8  c,  int32  d)
 {
@@ -27,7 +35,7 @@ main(int8  a,  int32  d,  int8  a,  int16  b, int8  a,  int16  b, int8  c,  int8
 
     do
     {
-      i += 1;
+      i = add(i,1);
 
       print i;
 

@@ -119,29 +119,29 @@ Type
 Type::
 compile_dereference(Context&  ctx) const
 {
-    switch(kind)
+    switch(referred_type->kind)
     {
-      case(TypeKind::int8  ):
-        ctx.push("  ld8;\n");
-        break;
-      case(TypeKind::uint8 ):
-        ctx.push("  ld8u;\n");
-        break;
-      case(TypeKind::int16 ):
-        ctx.push("  ld16;\n");
-        break;
-      case(TypeKind::uint16):
-        ctx.push("  ld16u;\n");
-        break;
-      case(TypeKind::int32 ):
-      case(TypeKind::pointer):
-      case(TypeKind::array):
-        ctx.push("  ld32;\n");
-        break;
+  case(TypeKind::int8  ):
+      ctx.push("  ld8;\n");
+      break;
+  case(TypeKind::uint8 ):
+      ctx.push("  ld8u;\n");
+      break;
+  case(TypeKind::int16 ):
+      ctx.push("  ld16;\n");
+      break;
+  case(TypeKind::uint16):
+      ctx.push("  ld16u;\n");
+      break;
+  case(TypeKind::int32 ):
+      ctx.push("  ld32;\n");
+      break;
+  default:
+      return Type();
     }
 
 
-  return *this;
+  return Type(*referred_type);
 }
 
 

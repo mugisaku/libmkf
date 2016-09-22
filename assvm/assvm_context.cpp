@@ -13,8 +13,8 @@ Context::
 Context(const Program&  prog, Memory&  mem, const FileSet*  fset):
 memory(mem),
 pc(prog.main_entry_point),
-bp(Memory::size-(word_size*2)),
-sp(Memory::size-(word_size  )),
+bp(Memory::size-(word_size  )),
+sp(Memory::size-(word_size*2)),
 state(0)
 {
     if(fset)
@@ -116,7 +116,7 @@ step()
 
     if(fileset.out && test_flag(display_flag))
     {
-      fprintf(fileset.out,"[pc] %6d, [bp] %6d, [sp] %6d, ",pc,bp,sp);
+      fprintf(fileset.out,"[pc] 0x%05X, [bp] 0x%05X, [sp] 0x%05X, ",pc,bp,sp);
     }
 
 
@@ -125,6 +125,8 @@ step()
     if(fileset.out && test_flag(display_flag))
     {
       fprintf(fileset.out,"[opcode] %s\n",get_string(op));
+
+      fflush(fileset.out);
     }
 
 
@@ -285,10 +287,46 @@ step()
   case(Opecode::brz ): {  auto   v = pop();  auto  p = pop();  if(!v){pc = p;}};break;
   case(Opecode::brnz): {  auto   v = pop();  auto  p = pop();  if( v){pc = p;}};break;
 
+  case(Opecode::cal):
+    {
+//       NEW_BP
+//       NEW_SP
+//          |
+//|    |    |    |
+//|[BP]|[PC]|[??]|[??]
+//|    |    |    |
+      auto  p = pop();
+
+      push(bp);
+      push(pc);
+
+      pc = p;
+
+           sp -= word_size;
+      bp = sp             ;
+//printf("BP = 0x%05X,PC = 0x%05X,SP = 0x%05X\n",bp,pc,sp);
+//set_flag(halted_flag);
+    } break;
+  case(Opecode::ret):
+    {
+      tm = pop();
+
+      auto  ret_adr = memory.get32(bp+(word_size  ));
+      auto  old_bp  = memory.get32(bp+(word_size*2));
+//printf("BP = 0x%05X,PC = 0x%05X\n",old_bp,ret_adr);
+//set_flag(halted_flag);
+      pc = ret_adr;
+
+      sp = bp+(word_size*3);
+
+      bp = old_bp;
+    } break;
   case(Opecode::prn):
         if(fileset.err)
         {
           fprintf(fileset.err,"[PRNint] value=%12d, address=%12d\n",get_top(),sp);
+
+          fflush(fileset.err);
         }
       break;
     }

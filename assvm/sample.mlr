@@ -1,16 +1,32 @@
+sub:
+  pshbp;
+  psh8 12;
+  add;
+  ld32;
+  dup;
+  ld32;
+  psh8 2;
+  add;
+  st32;
+  ret;
 main:
-pshsp;
-psh8 32;
-sub;
-updsp;
-pshbp;
-psh8 0;
-sub;
-dup;
-dup;
-psh8 -1;
-st32;
-ld16u;
-prn;
-hlt;
+  pshbp;
+  psh8 32;
+  st32;
+loop:
+  psh8 end;
+  pshbp;
+  ld32;
+  prn;
+  psh8 120;
+  lt;
+  brz;
+  pshbp;
+  psh8 sub;
+  cal;
+  pop;
+  psh8 loop;
+  updpc;
+end:
+  hlt;
 

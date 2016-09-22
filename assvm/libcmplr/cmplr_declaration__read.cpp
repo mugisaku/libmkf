@@ -70,7 +70,7 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "const")
         {
-          type.constant = true;
+          type.set_constant();
         }
 
       else

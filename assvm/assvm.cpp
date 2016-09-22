@@ -104,13 +104,6 @@ execute(std::string&&  s, bool  disp, const FileSet*  fs)
 
       assvm::Program  prog(*root);
 
-        if(fs && fs->out)
-        {
-//          prog.print(fs->out);
-//fs->flush_all();
-        }
-
-
       auto  mem = new assvm::Memory;
 
       assvm::Context  ctx(prog,*mem,fs);
@@ -177,6 +170,8 @@ main(int  argc, char**  argv)
           fputc(c,fs.out);
         }
 
+
+      fflush(fs.out);
 
       execute(std::move(s),disp_flag,&fs);
     }

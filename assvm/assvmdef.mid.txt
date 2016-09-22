@@ -39,6 +39,8 @@ opecode =
   'bxor'|
   'brz'|
   'brnz'|
+  'cal'|
+  'ret'|
   'ld8'|
   'ld8u'|
   'ld16'|

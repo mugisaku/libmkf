@@ -59,6 +59,8 @@ read_opecode(const mkf::Node&  src)
       else if(nd == "hlt"){return Opecode::hlt;}
       else if(nd == "brz"){return Opecode::brz;}
       else if(nd == "brnz"){return Opecode::brnz;}
+      else if(nd == "cal"){return Opecode::cal;}
+      else if(nd == "ret"){return Opecode::ret;}
       else if(nd == "pshz"){return Opecode::pshz;}
       else if(nd == "psh8"){return Opecode::psh8;}
       else if(nd == "psh8u"){return Opecode::psh8u;}

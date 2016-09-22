@@ -325,26 +325,26 @@ compile(Context&  ctx) const
 {
     switch(element.kind)
     {
-      case(ElementKind::null):
-        return left->compile(ctx);
-        break;
-      case(ElementKind::operand):
-        return element.data.operand.compile(ctx);
-        break;
-      case(ElementKind::unary_operator):
-        {
-          UnaryOperator  op(element.data.operator_);
+  case(ElementKind::null):
+      return left->compile(ctx);
+      break;
+  case(ElementKind::operand):
+      return element.data.operand.compile(ctx);
+      break;
+  case(ElementKind::unary_operator):
+      {
+        UnaryOperator  op(element.data.operator_);
 
-          return expression::compile(*left,op,ctx);
-        }
-        break;
-      case(ElementKind::binary_operator):
-        {
-          BinaryOperator  op(element.data.operator_);
+        return expression::compile(*left,op,ctx);
+      }
+      break;
+  case(ElementKind::binary_operator):
+      {
+        BinaryOperator  op(element.data.operator_);
 
-          return expression::compile(*left,*right,op,ctx);
-        }
-        break;
+        return expression::compile(*left,*right,op,ctx);
+      }
+      break;
     }
 
 

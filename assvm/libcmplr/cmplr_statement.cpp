@@ -213,7 +213,7 @@ compile(Context&  ctx) const
 
               if(t == TypeKind::reference)
               {
-                t.referred_type->compile_dereference(ctx);
+                t.compile_dereference(ctx);
               }
           }
 
@@ -264,12 +264,17 @@ compile(Context&  ctx) const
 
               if(t == TypeKind::reference)
               {
-                t.referred_type->compile_dereference(ctx);
+                t.compile_dereference(ctx);
               }
+
+
+            ctx.push("  updtm;//返り値を積む\n");
+            ctx.push("  pshbp  ;//****//\n");
+            ctx.push("  psh8u 4;//    //\n");
+            ctx.push("  sub    ;//復帰//\n");
+            ctx.push("  ld32   ;//    //\n");
+            ctx.push("  updpc  ;//****//\n");
           }
-
-
-        ctx.push("  ret;\n");
         break;
       case(StatementKind::expression):
         data.expr->compile(ctx);

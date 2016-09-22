@@ -43,12 +43,9 @@ TypeKind
 
 
 struct Context;
-struct TypePointer;
-struct TypeReference;
-struct TypeArray;
 
 
-struct
+class
 Type
 {
   TypeKind  kind;
@@ -60,10 +57,8 @@ Type
   std::unique_ptr<Type>  referred_type;
 
 
-  Type(TypeKind  k=TypeKind::null, bool  c=false);
-  Type(TypePointer&&    ptr, bool  c=false);
-  Type(TypeReference&&  ref, bool  c=false);
-  Type(TypeArray&&      arr, bool  c=false);
+public:
+  Type(TypeKind  k=TypeKind::null, Type*  referred=nullptr, int  n=1);
   Type(const Type&   rhs)         ;
   Type(      Type&&  rhs) noexcept;
 
@@ -78,10 +73,18 @@ Type
 
   operator bool() const;
 
-  void  reset(TypeKind  k=TypeKind::null, bool  c=false);
-  void  reset(TypePointer&&    ptr, bool  c=false);
-  void  reset(TypeReference&&  ref, bool  c=false);
-  void  reset(TypeArray&&      arr, bool  c=false);
+  bool  test_constant() const;
+
+  void    set_constant();
+  void  unset_constant();
+
+  const Type*  get_referred_type() const;
+
+  int  get_element_number() const;
+
+  void  change_element_number(int  n);
+
+  void  reset(TypeKind  k=TypeKind::null, Type*  referred=nullptr, int  n=1);
 
   size_t  get_size() const;
   size_t  get_object_size() const;
@@ -109,43 +112,12 @@ Type
 
   void  read(const mkf::Node&  src);
 
-};
 
+  Type*  duplicate() const;
 
-struct
-TypePointer
-{
-  Type  type;
-
-  TypePointer(TypeKind  k=TypeKind::null, bool   c=false): type(k,c){};
-  TypePointer(const Type&   t): type(t){};
-  TypePointer(      Type&&  t): type(std::move(t)){};
-
-};
-
-
-struct
-TypeReference
-{
-  Type  type;
-
-  TypeReference(TypeKind  k=TypeKind::null, bool   c=false): type(k,c){};
-  TypeReference(const Type&   t): type(t){};
-  TypeReference(      Type&&  t): type(std::move(t)){};
-
-};
-
-
-struct
-TypeArray
-{
-  Type  type;
-
-  int  element_number;
-
-  TypeArray(TypeKind  k, int  n, bool   c=false): type(k,c), element_number(n){};
-  TypeArray(const Type&   t, int  n): type(t), element_number(n){};
-  TypeArray(      Type&&  t, int  n): type(std::move(t)), element_number(n){};
+  Type  make_pointer() const;
+  Type  make_reference() const;
+  Type  make_array(int  n=1) const;
 
 };
 

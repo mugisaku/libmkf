@@ -79,6 +79,8 @@ Opecode
   brz,
   brnz,
 
+  cal,
+  ret,
   prn,
 
 };

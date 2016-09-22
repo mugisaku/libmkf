@@ -159,7 +159,7 @@ reset(Type&&  type, std::string&&  name, expression::Node*  initexpr)
 {
   clear();
 
-    if(type.constant)
+    if(type.test_constant())
     {
       kind = DeclarationKind::constant;
 

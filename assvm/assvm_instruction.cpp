@@ -40,6 +40,8 @@ get_string(Opecode  op)
       case(Opecode::hlt): return "hlt";
       case(Opecode::brz): return "brz";
       case(Opecode::brnz): return "brnz";
+      case(Opecode::cal): return "cal";
+      case(Opecode::ret): return "ret";
       case(Opecode::pshz): return "pshz";
       case(Opecode::psh8): return "psh8";
       case(Opecode::psh8u): return "psh8u";

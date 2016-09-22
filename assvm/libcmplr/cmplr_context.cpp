@@ -71,21 +71,21 @@ namespace{
 void
 append_psh(std::string&  buf, int  v)
 {
-  const char*  fmt = "  pshz;";
+  const char*  fmt = "  pshz       ;";
 
     if(v < 0)
     {
-      const char*  dfmt = (v <= std::numeric_limits<int8_t>::min() )? "  psh8 %6d;":
-                          (v <= std::numeric_limits<int16_t>::min())? "  psh16 %6d;":
-                                                                      "  psh32 %6d;";
+      fmt = (v <= std::numeric_limits<int8_t>::min() )? "  psh8  %6d;":
+            (v <= std::numeric_limits<int16_t>::min())? "  psh16 %6d;":
+                                                        "  psh32 %6d;";
     }
 
   else
     if(v > 0)
     {
-      const char*  dfmt = (v <= std::numeric_limits<uint8_t>::max() )? "  psh8u %6d;":
-                          (v <= std::numeric_limits<uint16_t>::max())? "  psh16u %6d;":
-                                                                       "  psh32 %6d;";
+      fmt = (v <= std::numeric_limits<uint8_t>::max() )? "  psh8u  %6d;":
+            (v <= std::numeric_limits<uint16_t>::max())? "  psh16u %6d;":
+                                                         "  psh32  %6d;";
     }
 
 
@@ -94,8 +94,6 @@ append_psh(std::string&  buf, int  v)
   snprintf(s,sizeof(s),fmt,v);
 
   buf.append(s);
-
-  buf.push_back('\n');
 }
 }
 

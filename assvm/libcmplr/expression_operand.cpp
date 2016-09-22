@@ -314,53 +314,51 @@ compile(Context&  ctx) const
 {
     switch(kind)
     {
-      case(OperandKind::string):
-        return Type(TypeKind::pointer);
-        break;
-      case(OperandKind::identifier):
+  case(OperandKind::string):
+      return Type(TypeKind::pointer);
+      break;
+  case(OperandKind::identifier):
+    {
+      auto  decl = ctx.find_declaration(*data.s);
+
+        if(!decl)
         {
-          auto  decl = ctx.find_declaration(*data.s);
+          printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
+                 ctx.function->signature.name.data(),data.s->data());
 
-            if(!decl)
-            {
-              printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
-                     ctx.function->signature.name.data(),data.s->data());
-
-              throw;
-            }
-
-
-          return decl->compile(ctx);
+          throw;
         }
-        break;
-      case(OperandKind::expression):
-        return data.nd->compile(ctx);
-        break;
-      case(OperandKind::subscript):
-        break;
-      case(OperandKind::argument_list):
-          for(auto  it = data.ndls->crbegin();  it != data.ndls->crend();  ++it)
-          {
-            auto  t = it->compile(ctx);
-
-              if(t == TypeKind::reference)
-              {
-                t = t.referred_type->compile_dereference(ctx);
-              }
-          }
 
 
-        ctx.push("  psh8u %d;//引数個数\n",data.ndls->size());
+      return decl->compile(ctx);
+    } break;
+  case(OperandKind::expression):
+      return data.nd->compile(ctx);
+      break;
+  case(OperandKind::subscript):
+      break;
+  case(OperandKind::argument_list):
+    {
+        for(auto  it = data.ndls->crbegin();  it != data.ndls->crend();  ++it)
+        {
+          auto  t = it->compile(ctx);
 
-        return Type(TypeKind::argument_list);
-        break;
-      case(OperandKind::integer):
-             if(data.i <= 0x00FF){ctx.push("  psh8u   %d;//即値\n",data.i);}
-        else if(data.i <= 0xFFFF){ctx.push("  psh16u  %d;//即値\n",data.i);}
-        else                     {ctx.push("  psh32   %d;//即値\n",data.i);}
+            if(t == TypeKind::reference)
+            {
+              t = t.compile_dereference(ctx);
+            }
+        }
 
-        return Type(TypeKind::int32);
-        break;
+
+      return Type(TypeKind::argument_list,nullptr,data.ndls->size());
+    } break;
+  case(OperandKind::integer):
+           if(data.i <= 0x00FF){ctx.push("  psh8u   %d;//即値\n",data.i);}
+      else if(data.i <= 0xFFFF){ctx.push("  psh16u  %d;//即値\n",data.i);}
+      else                     {ctx.push("  psh32   %d;//即値\n",data.i);}
+
+      return Type(TypeKind::int32);
+      break;
     }
 
 

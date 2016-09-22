@@ -50,7 +50,7 @@ compile(const Declaration&  decl, Context&  ctx) const
     }
 
 
-  return Type(TypeReference(type));
+  return type.make_reference();
 }
 
 
@@ -69,7 +69,7 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
 
               if(t == TypeKind::reference)
               {
-                t = t.referred_type->compile_dereference(ctx);
+                t = t.compile_dereference(ctx);
               }
 
 

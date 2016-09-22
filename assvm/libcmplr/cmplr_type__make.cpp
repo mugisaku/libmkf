@@ -142,6 +142,34 @@ make(int  n, const char*  str)
 }
 
 
+
+
+Type
+Type::
+make_pointer() const
+{
+  return Type(TypeKind::pointer,duplicate());
+}
+
+
+Type
+Type::
+make_reference() const
+{
+  return Type(TypeKind::reference,duplicate());
+}
+
+
+Type
+Type::
+make_array(int  n) const
+{
+  return Type(TypeKind::array,duplicate(),n);
+}
+
+
+
+
 Type
 make_type(const char*  s)
 {
@@ -149,7 +177,7 @@ make_type(const char*  s)
 
   int  res = scan_typename(s,buf,sizeof(buf));
 
-  Type  t = make(res,buf);
+  auto  t = make(res,buf);
 
     for(;;)
     {
@@ -159,7 +187,7 @@ make_type(const char*  s)
         {
           ++s;
 
-          t.reset(TypePointer(std::move(t)));
+          t = t.make_pointer();
         }
 
       else
@@ -167,7 +195,7 @@ make_type(const char*  s)
         {
           ++s;
 
-          t.reset(TypeReference(std::move(t)));
+          t = t.make_reference();
         }
 
       else
@@ -175,9 +203,7 @@ make_type(const char*  s)
         {
           ++s;
 
-          auto  n = scan_array_size(s);
-
-          t.reset(TypeArray(std::move(t),n));
+          t = t.make_array(scan_array_size(s));
         }
 
       else

@@ -50,7 +50,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
 
     if(l_type == TypeKind::reference)
     {
-      l_type = l_type.referred_type->compile_dereference(ctx);
+      l_type = l_type.compile_dereference(ctx);
     }
 
 
@@ -65,7 +65,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
           }
 
 
-        return Type(*l_type.referred_type);
+        return l_type.make_reference();
         break;
       case(Operator('!')): ctx.push("  lnot;\n");break;
       case(Operator('~')): ctx.push("  bnot;\n");break;
@@ -73,7 +73,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
     }
 
 
-  return Type(TypeKind::int32,l_type.constant);
+  return Type(TypeKind::int32);
 }
 
 
@@ -87,7 +87,7 @@ compile_arithmetic(const Node&  l, const Node&  r, const BinaryOperator&  op, Co
 
     if(l_type == TypeKind::reference)
     {
-      l_type = l_type.referred_type->compile_dereference(ctx);
+      l_type = l_type.compile_dereference(ctx);
     }
 
 
@@ -95,7 +95,7 @@ compile_arithmetic(const Node&  l, const Node&  r, const BinaryOperator&  op, Co
 
     if(r_type == TypeKind::reference)
     {
-      r_type = r_type.referred_type->compile_dereference(ctx);
+      r_type = r_type.compile_dereference(ctx);
     }
 
 
@@ -123,10 +123,10 @@ compile_arithmetic(const Node&  l, const Node&  r, const BinaryOperator&  op, Co
     }
 
 
-  const bool  flag = ((l_type.constant) &&
-                      (r_type.constant));
+  const bool  flag = (l_type.test_constant() &&
+                      r_type.test_constant());
 
-  return Type(TypeKind::int32,flag);
+  return Type();
 }
 
 
@@ -145,13 +145,13 @@ compile_assign(const Node&  l, const Node&  r, const BinaryOperator&  op, Contex
 
   ctx.push("  dup;//\n");
 
-  l_type = l_type.referred_type->compile_dereference(ctx);
+  l_type = l_type.compile_dereference(ctx);
 
   auto  r_type = r.compile(ctx);
 
     if(r_type == TypeKind::reference)
     {
-      r_type = r_type.referred_type->compile_dereference(ctx);
+      r_type = r_type.compile_dereference(ctx);
     }
 
 
@@ -187,10 +187,39 @@ compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx
         break;
       case(Operator('(',')')):
         {
-          auto  rk = r.compile(ctx);
-          auto  lk = l.compile(ctx);
+          auto  r_type = r.compile(ctx);
 
-          ctx.push("  cal;\n");
+            if(r_type != TypeKind::argument_list)
+            {
+              printf("実引数のリストではありません\n");
+
+              throw;
+            }
+
+
+          auto  l_type = l.compile(ctx);
+
+            if(l_type != TypeKind::function)
+            {
+              printf("関数ではありません\n");
+
+              throw;
+            }
+
+
+          ctx.push("  pshbp   ;//********************//\n");
+          ctx.push("  psh8u 12;//                    //\n");
+          ctx.push("  sub     ;//                    //\n");
+          ctx.push("  ld32    ;//                    //\n");
+          ctx.push("  pshbp   ;//                    //\n");
+          ctx.push("  psh8u  8;//関数呼び出しの後始末//\n");
+          ctx.push("  sub     ;//                    //\n");
+          ctx.push("  ld32    ;//                    //\n");
+          ctx.push("  updbp   ;//                    //\n");
+          ctx.push("  updsp   ;//                    //\n");
+          ctx.push("  pshtm   ;//********************//\n");
+
+          return *l_type.get_referred_type();
         }
         break;
       case(Operator('[',']')):

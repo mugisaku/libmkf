@@ -7,30 +7,10 @@
 
 
 Type::
-Type(TypeKind  k, bool  c)
+Type(TypeKind  k, Type*  referred, int  n):
+constant(false)
 {
-  reset(k,c);
-}
-
-
-Type::
-Type(TypePointer&&  ptr, bool  c)
-{
-  reset(std::move(ptr),c);
-}
-
-
-Type::
-Type(TypeReference&&  ref, bool  c)
-{
-  reset(std::move(ref),c);
-}
-
-
-Type::
-Type(TypeArray&&  arr, bool  c)
-{
-  reset(std::move(arr),c);
+  reset(k,referred,n);
 }
 
 
@@ -60,7 +40,7 @@ operator=(const Type&  rhs)
 
   element_number = rhs.element_number;
 
-  referred_type.reset(rhs.referred_type? new Type(*rhs.referred_type):nullptr);
+  referred_type.reset(rhs.referred_type? rhs.referred_type->duplicate():nullptr);
 
   return *this;
 }
@@ -106,59 +86,68 @@ operator bool() const
 
 
 
+bool
+Type::
+test_constant() const
+{
+  return constant;
+}
+
+
+void    Type::set_constant(){constant =  true;}
+void  Type::unset_constant(){constant = false;}
+
+
+const Type*  Type::get_referred_type() const{return referred_type.get();}
+
+
+int
+Type::
+get_element_number() const
+{
+  return element_number;
+}
+
+
 void
 Type::
-reset(TypeKind  k, bool  c)
+change_element_number(int  n)
+{
+  element_number = n;
+}
+
+
+Type*
+Type::
+duplicate() const
+{
+  return new Type(*this);
+}
+
+
+void
+Type::
+reset(TypeKind  k, Type*  referred, int  n)
 {
   kind = k;
 
-  constant = c;
+  element_number = n;
 
-  element_number = 1;
-
-  referred_type.reset();
-}
-
-
-void
-Type::
-reset(TypePointer&&  ptr, bool  c)
-{
-  kind = TypeKind::pointer;
-
-  constant = c;
-
-  element_number = 1;
-
-  referred_type.reset(new Type(std::move(ptr.type)));
-}
+    switch(k)
+    {
+  case(TypeKind::pointer):
+  case(TypeKind::reference):
+  case(TypeKind::array):
+        if(!referred)
+        {
+          referred = new Type;
+        }
+      break;
+  default:;
+    }
 
 
-void
-Type::
-reset(TypeReference&&  ref, bool  c)
-{
-  kind = TypeKind::reference;
-
-  constant = c;
-
-  element_number = 1;
-
-  referred_type.reset(new Type(std::move(ref.type)));
-}
-
-
-void
-Type::
-reset(TypeArray&&  arr, bool  c)
-{
-  kind = TypeKind::array;
-
-  constant = c;
-
-  element_number = arr.element_number;
-
-  referred_type.reset(new Type(std::move(arr.type)));
+  referred_type.reset(referred);
 }
 
 
@@ -260,6 +249,9 @@ snprint(char*  s, size_t  n) const
 
     switch(kind)
     {
+      case(TypeKind::null ): return a+snprintf(s,n,"NULL");break;
+      case(TypeKind::undefined): return a+snprintf(s,n,"UNDEFINED");break;
+      case(TypeKind::function): return a+snprintf(s,n,"function");break;
       case(TypeKind::void_ ): return a+snprintf(s,n,"void");break;
       case(TypeKind::int8  ): return a+snprintf(s,n,"int8");break;
       case(TypeKind::uint8 ): return a+snprintf(s,n,"uint8");break;

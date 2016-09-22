@@ -42,9 +42,14 @@ Type
 Function::
 compile(Context&  ctx) const
 {
-  ctx.push("  pshui16 %s;\n",signature.name.data());
+  ctx.push("  pshsp;//*************//\n");
+  ctx.push("  updtm;//\n");
+  ctx.push("  pshbp;//\n");
+  ctx.push("  pshtm;//関数呼び出し//\n");
+  ctx.push("  psh16u %s;\n",signature.name.data());
+  ctx.push("  cal;//**************//\n");
 
-  return Type(TypeKind::function);
+  return Type(TypeKind::function,signature.type.duplicate());
 }
 
 
@@ -196,6 +201,9 @@ read(const mkf::Node&  src, PreContext&  prectx)
       cur.advance();
     }
 
+
+  local_object_size +=  3;
+  local_object_size &= ~3;
 
   prectx.function = fn;
 }
