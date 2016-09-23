@@ -13,10 +13,10 @@ Variable()
 
 
 Variable::
-Variable(Type&&  t, std::string&&  nam, expression::Node*  initexpr_):
+Variable(Type&&  t, std::string&&  nam, Initializer&&  init):
 type(std::move(t)),
 name(std::move(nam)),
-initexpr(initexpr_)
+initializer(std::move(init))
 {
 }
 
@@ -61,11 +61,12 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
     switch(decl.storage_kind)
     {
       case(StorageKind::local):
-          if(initexpr)
+          if(initializer)
           {
             compile_local(decl,name,ctx);
 
-            auto  t = initexpr->compile(ctx);
+/*
+            auto  t = initializer->compile(ctx);
 
               if(t == TypeKind::reference)
               {
@@ -74,8 +75,10 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
 
 
             type.make_reference().compile_assign(ctx);
+*/
           }
         break;
+/*
       case(StorageKind::local_static):
         {
           int   i = 0;
@@ -128,6 +131,7 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
           ctx.push_definition("data i32 {%d};\n",i);
         }
         break;
+*/
     }
 }
 
@@ -140,11 +144,11 @@ print(FILE*  f) const
 
   fprintf(f,"  %s",name.data());
 
-    if(initexpr)
+    if(initializer)
     {
       fprintf(f," = ");
 
-      initexpr->print(f);
+      initializer.print(f);
     }
 }
 

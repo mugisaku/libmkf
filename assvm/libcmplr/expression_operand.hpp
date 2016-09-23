@@ -30,6 +30,19 @@ ArgumentList
 };
 
 
+struct
+ExpressionList
+{
+  NodeList*  node_list;
+
+  constexpr ExpressionList(NodeList*  ls): node_list(ls){}
+
+};
+
+
+struct Initializer;
+
+
 namespace expression{
 
 
@@ -41,6 +54,7 @@ OperandKind
   string,
   identifier,
   expression,
+  expression_list,
   argument_list,
   subscript,
 
@@ -93,7 +107,9 @@ Operand
   Operand(const Identifier&  id);
   Operand(unsigned long  i);
   Operand(Node*  nd);
+  Operand(Initializer&&  init);
   Operand(const ArgumentList&  args);
+  Operand(const ExpressionList&  exprs);
   Operand(const Subscript&  subsc);
   Operand(const mkf::Node&  src, PreContext&  prectx);
   Operand(const Operand&  rhs);
@@ -110,7 +126,9 @@ Operand
   void  reset(std::string*  s);
   void  reset(const Identifier&  id);
   void  reset(Node*  nd);
+  void  reset(Initializer&&  init);
   void  reset(const ArgumentList&  args);
+  void  reset(const ExpressionList&  exprs);
   void  reset(const Subscript&  subsc);
 
   void  print(FILE*  f=stdout) const;
@@ -120,8 +138,10 @@ Operand
   Type  compile(Context&  ctx) const;
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
-  void  read_integer_literal(const mkf::Node&  src);
-  void  read_character_literal(const mkf::Node&  src);
+
+  static unsigned int    read_integer_literal(const mkf::Node&  src);
+  static int           read_character_literal(const mkf::Node&  src);
+  static std::string      read_string_literal(const mkf::Node&  src);
 
 };
 

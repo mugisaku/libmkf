@@ -3,6 +3,7 @@
 #include"expression_node.hpp"
 #include"cmplr_declaration.hpp"
 #include"cmplr_function.hpp"
+#include"cmplr_initializer.hpp"
 #include<cstring>
 #include<string>
 #include<vector>
@@ -52,6 +53,14 @@ Operand(Node*  nd):
 kind(OperandKind::null)
 {
   reset(nd);
+}
+
+
+Operand::
+Operand(Initializer&&  init):
+kind(OperandKind::null)
+{
+  reset(std::move(init));
 }
 
 
@@ -238,6 +247,39 @@ reset(Node*  nd)
   kind = OperandKind::expression;
 
   data.nd = nd;
+}
+
+
+void
+Operand::
+reset(Initializer&&  init)
+{
+  clear();
+
+    switch(init.kind)
+    {
+  case(InitializerKind::expression):
+      init.kind = InitializerKind::null;
+
+      kind = OperandKind::expression;
+
+      data.nd = init.data.nd;
+      break;
+  case(InitializerKind::expression_list):
+      init.kind = InitializerKind::null;
+
+      kind = OperandKind::expression_list;
+
+      data.ndls = init.data.ndls;
+      break;
+  case(InitializerKind::string):
+      init.kind = InitializerKind::null;
+
+      kind = OperandKind::string;
+
+      data.s = init.data.s;
+      break;
+    }
 }
 
 
@@ -449,29 +491,19 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "integer_literal")
         {
-          read_integer_literal(nd);
+          reset(read_integer_literal(nd));
         }
 
       else
         if(nd == "string_literal")
         {
-          auto  s = new std::string;
-
-          nd.collect_characters(*s);
-
-          reset(s);
-        }
-
-      else
-        if(nd == "array_literal")
-        {
-//          reset(Array(new NodeList(Node::read_list(nd,prectx))));
+          reset(new std::string(read_string_literal(nd)));
         }
 
       else
         if(nd == "character_literal")
         {
-          read_character_literal(nd);
+          reset(read_character_literal(nd));
         }
 
       else

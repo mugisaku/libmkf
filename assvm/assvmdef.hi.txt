@@ -91,9 +91,9 @@ parameter = type:[identifier];
 
 
 
-object_declaration = ['static']:['const']:type:identifier:["=":object_initialization];
+object_declaration = ['static']:['const']:type:identifier:["=":initializer];
 
-object_initialization = expression|array_literal|string_literal;
+initializer = expression|expression_list|string_literal;
 
 
 type = type_kind:{"*"|array_size}:["&"];
@@ -114,7 +114,7 @@ type_kind =
 array_size = "[":[expression]:"]";
 
 
-array_literal = "[":[expression:{",":expression}]:"]";
+expression_list = "{":[initializer:{",":initializer}]:"}";
 
 
 
@@ -179,8 +179,8 @@ identifier = ("_"|CTYPE_alpha):{"_"|CTYPE_alnum};
 
 
 
-character_literal = "\'": string_element :"\'";
-   string_literal = "\"":{string_element}:"\"";
+      character_literal = "\'": string_element :"\'";
+noskip   string_literal = "\"":{string_element}:"\"";
 
 
 string_element =
@@ -195,9 +195,7 @@ string_element =
 
 
 normal_character =
-          " "|
   CTYPE_alnum|
-CTYPE_unicode|
           "!"|
           "#"|
           "$"|
@@ -225,12 +223,7 @@ CTYPE_unicode|
           "_"|
           ","|
           "."|
-          "/"|
-              null_character   |
-              newline_character|
-            backslash_character|
-         single_quote_character|
-         double_quote_character;
+          "/";
 
 
 null_character         = "\\0";

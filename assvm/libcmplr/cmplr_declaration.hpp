@@ -7,7 +7,6 @@
 #include"cmplr_foldcontext.hpp"
 #include"cmplr_type.hpp"
 #include"cmplr_parameter.hpp"
-#include"cmplr_variable.hpp"
 #include"expression_foldresult.hpp"
 
 

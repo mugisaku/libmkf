@@ -4,8 +4,7 @@
 
 #include<string>
 #include"cmplr_type.hpp"
-#include<string>
-#include<memory>
+#include"cmplr_initializer.hpp"
 
 
 
@@ -26,11 +25,11 @@ Variable
 
   std::string  name;
 
-  std::unique_ptr<expression::Node>  initexpr;
+  Initializer  initializer;
 
 
   Variable();
-  Variable(Type&&  t, std::string&&  nam, expression::Node*  initexpr_=nullptr);
+  Variable(Type&&  t, std::string&&  nam, Initializer&&  init=Initializer());
 
   Type  compile(const Declaration&  decl, Context&  ctx) const;
 

@@ -5,7 +5,7 @@
 
 
 namespace{
-unsigned long
+unsigned int
 read_decimal_literal(const mkf::Node&  base)
 {
   std::string  s;
@@ -16,7 +16,7 @@ read_decimal_literal(const mkf::Node&  base)
 }
 
 
-unsigned long
+unsigned int
 read_hex_literal(const mkf::Node&  base)
 {
   std::string  s;
@@ -27,10 +27,10 @@ read_hex_literal(const mkf::Node&  base)
 }
 
 
-unsigned long
+unsigned int
 read_binary_literal(const mkf::Node&  base)
 {
-  unsigned long  i = 0;
+  unsigned int  i = 0;
 
   mkf::Cursor  cur(base);
 
@@ -58,7 +58,7 @@ read_binary_literal(const mkf::Node&  base)
 
 
 
-void
+unsigned int
 expression::Operand::
 read_integer_literal(const mkf::Node&  base)
 {
@@ -68,13 +68,16 @@ read_integer_literal(const mkf::Node&  base)
     {
       auto&  nd = cur.get();
 
-           if(nd == "decimal_literal"){reset(read_decimal_literal(nd));}
-      else if(nd == "hex_literal"    ){reset(read_hex_literal(nd));}
-      else if(nd == "binary_literal" ){reset(read_binary_literal(nd));}
+           if(nd == "decimal_literal"){return read_decimal_literal(nd);}
+      else if(nd == "hex_literal"    ){return read_hex_literal(nd);}
+      else if(nd == "binary_literal" ){return read_binary_literal(nd);}
 
 
       cur.advance();
     }
+
+
+  return 0;
 }
 
 

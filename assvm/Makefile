@@ -66,7 +66,7 @@ OBJ +=                        \
 CMPLR_OBJ =                                      \
   libcmplr/expression_node.o                     \
   libcmplr/expression_operand.o                  \
-  libcmplr/expression_operand__read_character.o  \
+  libcmplr/expression_operand__read_string.o     \
   libcmplr/expression_operand__read_integer.o    \
   libcmplr/expression_element.o                  \
   libcmplr/expression_operator.o                 \
@@ -77,6 +77,7 @@ CMPLR_OBJ =                                      \
   libcmplr/cmplr_parameter.o                     \
   libcmplr/cmplr_signature.o                     \
   libcmplr/cmplr_function.o                      \
+  libcmplr/cmplr_initializer.o                   \
   libcmplr/cmplr_variable.o                      \
   libcmplr/cmplr_constant.o                      \
   libcmplr/cmplr_declaration.o                   \

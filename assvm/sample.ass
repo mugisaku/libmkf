@@ -29,7 +29,7 @@ function
 void
 main()
 {
-  int8  i = 127;
+  int8[4]  i = {1,2,3,4};
 
   int  n = 0;
 

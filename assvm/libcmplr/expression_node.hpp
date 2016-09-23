@@ -51,7 +51,7 @@ Node
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
 
-  static std::vector<Node>  read_list(const mkf::Node&  src, PreContext&  prectx);
+  static NodeList  read_list(const mkf::Node&  src, PreContext&  prectx);
 
 };
 

@@ -1,5 +1,6 @@
 #include"expression_node.hpp"
 #include"expression_operator.hpp"
+#include"cmplr_initializer.hpp"
 #include"cmplr_precontext.hpp"
 
 
@@ -441,6 +442,43 @@ read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls
 }
 
 
+NodeList
+read_objinit(const mkf::Node&  src, PreContext&  prectx)
+{
+  NodeList  ndls;
+
+  mkf::Cursor  cur(src);
+
+    while(!cur.test_ended())
+    {
+      auto&  nd = cur.get();
+
+        if(nd == "expression")
+        {
+          ndls.emplace_back(nd,prectx);
+        }
+
+      else
+        if(nd == "expression_list")
+        {
+          ndls.emplace_back(nd,prectx);
+        }
+
+      else
+        if(nd == "string_literal")
+        {
+          ndls.emplace_back(nd,prectx);
+        }
+
+
+      cur.advance();
+    }
+
+
+  return std::move(ndls);
+}
+
+
 }
 
 
@@ -479,11 +517,11 @@ read(const mkf::Node&  base, PreContext&  prectx)
 }
 
 
-std::vector<Node>
+NodeList
 Node::
 read_list(const mkf::Node&  src, PreContext&  prectx)
 {
-  std::vector<Node>  ndls;
+  NodeList  ndls;
 
   mkf::Cursor  cur(src);
 
@@ -491,9 +529,9 @@ read_list(const mkf::Node&  src, PreContext&  prectx)
     {
       auto&  nd = cur.get();
 
-        if(nd == "expression")
+        if(nd == "initializer")
         {
-          ndls.emplace_back(nd,prectx);
+          ndls.emplace_back(Operand(Initializer(nd,prectx)));
         }
 
 

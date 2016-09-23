@@ -1,5 +1,6 @@
 #include"cmplr_precontext.hpp"
 #include"cmplr_declaration.hpp"
+#include"cmplr_variable.hpp"
 #include"cmplr_function.hpp"
 #include"cmplr_block.hpp"
 #include"cmplr_globalscope.hpp"
