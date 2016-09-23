@@ -42,12 +42,22 @@ Type
 Function::
 compile(Context&  ctx) const
 {
-  ctx.push("  pshsp;//*************//\n");
-  ctx.push("  updtm;//\n");
-  ctx.push("  pshbp;//\n");
-  ctx.push("  pshtm;//関数呼び出し//\n");
+  ctx.push("  //******************//\n");
+  ctx.push("  //関数の呼び出し始め//\n");
+  ctx.push("  //******************//\n");
+
   ctx.push("  psh16u %s;\n",signature.name.data());
-  ctx.push("  cal;//**************//\n");
+  ctx.push("  cal      ;\n");
+  ctx.push("  pshsp    ;\n");
+  ctx.push("  psh8u %3d;\n",4*signature.parameter_list.size());
+  ctx.push("  add      ;\n");
+  ctx.push("  updsp    ;\n");
+  ctx.push("  pshtm    ;\n");
+
+  ctx.push("  //********************//\n");
+  ctx.push("  //関数の呼び出し終わり//\n");
+  ctx.push("  //********************//\n");
+
 
   return Type(TypeKind::function,signature.type.duplicate());
 }
@@ -160,8 +170,8 @@ read(const mkf::Node&  src, PreContext&  prectx)
 
           size_t  offset = 0;
 
+          offset += 4;//
           offset += 4;//リターンアドレス
-          offset += 4;//スタックアドレス
           offset += 4;//ベースアドレス
 
           auto  it = prmls.crbegin();
@@ -170,27 +180,9 @@ read(const mkf::Node&  src, PreContext&  prectx)
             {
               auto&  prm = *it++;
 
-              auto&  type = prm.type;
-
-                switch(type.get_object_alignment_size())
-                {
-              case(0):
-              case(1):
-                  break;
-              case(2):
-                  offset +=  1;
-                  offset &= ~1;
-                  break;
-              case(4):
-                  offset +=  3;
-                  offset &= ~3;
-                  break;
-                }
-
-
               blk->declaration_list.emplace_back(prm,offset);
 
-              offset += type.get_object_size();
+              offset += 4;
             }
 
 

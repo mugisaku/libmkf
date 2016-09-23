@@ -145,7 +145,11 @@ compile_assign(const Node&  l, const Node&  r, const BinaryOperator&  op, Contex
 
   ctx.push("  dup;//\n");
 
-  l_type = l_type.compile_dereference(ctx);
+    if(op != Operator('='))
+    {
+      l_type.compile_dereference(ctx);
+    }
+
 
   auto  r_type = r.compile(ctx);
 
@@ -191,7 +195,9 @@ compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx
 
             if(r_type != TypeKind::argument_list)
             {
-              printf("実引数のリストではありません\n");
+              r_type.print();
+
+              printf("\n実引数のリストではありません\n");
 
               throw;
             }
@@ -201,23 +207,13 @@ compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx
 
             if(l_type != TypeKind::function)
             {
-              printf("関数ではありません\n");
+              l_type.print();
+
+              printf("\n関数ではありません\n");
 
               throw;
             }
 
-
-          ctx.push("  pshbp   ;//********************//\n");
-          ctx.push("  psh8u 12;//                    //\n");
-          ctx.push("  sub     ;//                    //\n");
-          ctx.push("  ld32    ;//                    //\n");
-          ctx.push("  pshbp   ;//                    //\n");
-          ctx.push("  psh8u  8;//関数呼び出しの後始末//\n");
-          ctx.push("  sub     ;//                    //\n");
-          ctx.push("  ld32    ;//                    //\n");
-          ctx.push("  updbp   ;//                    //\n");
-          ctx.push("  updsp   ;//                    //\n");
-          ctx.push("  pshtm   ;//********************//\n");
 
           return *l_type.get_referred_type();
         }

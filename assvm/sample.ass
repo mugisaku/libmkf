@@ -27,9 +27,9 @@ add(int  a, int  b)
 
 function
 void
-main(int8  a,  int32  d,  int8  a,  int16  b, int8  a,  int16  b, int8  c,  int8  c,  int8  c,  int32  d)
+main()
 {
-  int8  i = 125;
+  int8  i = 127;
 
   int  n = 0;
 
@@ -41,7 +41,7 @@ main(int8  a,  int32  d,  int8  a,  int16  b, int8  a,  int16  b, int8  c,  int8
 
       n += 1;
 
-        if(n > 4)
+        if(n > 5)
         {
           break;
         }

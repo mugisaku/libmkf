@@ -306,6 +306,11 @@ step()
       bp = sp             ;
 //printf("BP = 0x%05X,PC = 0x%05X,SP = 0x%05X\n",bp,pc,sp);
 //set_flag(halted_flag);
+
+        if(fileset.out && test_flag(display_flag))
+        {
+          fprintf(fileset.out,"\n\n<--\n");
+        }
     } break;
   case(Opecode::ret):
     {
@@ -317,9 +322,14 @@ step()
 //set_flag(halted_flag);
       pc = ret_adr;
 
-      sp = bp+(word_size*3);
+      sp = bp+(word_size*4);
 
       bp = old_bp;
+
+        if(fileset.out && test_flag(display_flag))
+        {
+          fprintf(fileset.out,"-->\n\n\n");
+        }
     } break;
   case(Opecode::prn):
         if(fileset.err)

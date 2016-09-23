@@ -26,7 +26,9 @@ TypeKind
   uint16,
   int32,
 
+  undefined_reference,
   reference,
+  undefined_pointer,
   pointer,
   array,
 
@@ -74,6 +76,8 @@ public:
   operator bool() const;
 
   bool  test_constant() const;
+
+  TypeKind  get_kind() const;
 
   void    set_constant();
   void  unset_constant();

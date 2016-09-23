@@ -21,6 +21,14 @@ kind(StatementKind::null)
 
 
 Statement::
+Statement(Return  ret):
+kind(StatementKind::return_)
+{
+  data.expr = ret.expr;
+}
+
+
+Statement::
 Statement(const mkf::Node&  src, PreContext&  prectx):
 kind(StatementKind::null)
 {
@@ -268,12 +276,7 @@ compile(Context&  ctx) const
               }
 
 
-            ctx.push("  updtm;//返り値を積む\n");
-            ctx.push("  pshbp  ;//****//\n");
-            ctx.push("  psh8u 4;//    //\n");
-            ctx.push("  sub    ;//復帰//\n");
-            ctx.push("  ld32   ;//    //\n");
-            ctx.push("  updpc  ;//****//\n");
+            ctx.push("  ret;\n");
           }
         break;
       case(StatementKind::expression):

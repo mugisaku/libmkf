@@ -50,6 +50,16 @@ Print
 
 
 struct
+Return
+{
+  expression::Node*  expr;
+
+  constexpr Return(expression::Node*  expr_=nullptr): expr(expr_){}
+
+};
+
+
+struct
 Continue
 {
   Continue(){}
@@ -99,6 +109,7 @@ Statement
 
    Statement();
    Statement(const Block*  blk);
+   Statement(Return  ret);
    Statement(const mkf::Node&  src, PreContext&  prectx);
    Statement(const Statement&)=delete;
    Statement(      Statement&&  rhs) noexcept;

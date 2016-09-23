@@ -155,8 +155,9 @@ main(int  argc, char**  argv)
               auto  f = fopen("__tree.txt","wb");
 
               auto  g = get_global(opt,f);
-
+fprintf(fs.out,"/*\n");
               g.print(fs.out);
+fprintf(fs.out,"*/\n");
 
               s = g.compile();
 

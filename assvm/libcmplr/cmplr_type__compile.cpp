@@ -149,7 +149,7 @@ Type
 Type::
 compile_assign(Context&  ctx) const
 {
-    switch(kind)
+    switch(referred_type->kind)
     {
       case(TypeKind::int8  ):
       case(TypeKind::uint8 ):

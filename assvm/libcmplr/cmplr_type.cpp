@@ -86,6 +86,14 @@ operator bool() const
 
 
 
+TypeKind
+Type::
+get_kind() const
+{
+  return kind;
+}
+
+
 bool
 Type::
 test_constant() const
@@ -140,8 +148,14 @@ reset(TypeKind  k, Type*  referred, int  n)
   case(TypeKind::array):
         if(!referred)
         {
-          referred = new Type;
+          printf("参照する型がありません\n");
+
+          throw;
         }
+      break;
+  case(TypeKind::undefined_pointer):
+  case(TypeKind::undefined_reference):
+      referred = new Type;
       break;
   default:;
     }
@@ -259,6 +273,12 @@ snprint(char*  s, size_t  n) const
       case(TypeKind::uint16): return a+snprintf(s,n,"uint16");break;
       case(TypeKind::int32 ): return a+snprintf(s,n,"int32");break;
 
+      case(TypeKind::argument_list):
+        return a+snprintf(s,n,"ARGS");
+        break;
+      case(TypeKind::array_literal):
+        return a+snprintf(s,n,"ARRAY");
+        break;
       case(TypeKind::array):
         {
             if(!referred_type)

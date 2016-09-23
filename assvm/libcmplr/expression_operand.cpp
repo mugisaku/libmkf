@@ -339,14 +339,26 @@ compile(Context&  ctx) const
       break;
   case(OperandKind::argument_list):
     {
-        for(auto  it = data.ndls->crbegin();  it != data.ndls->crend();  ++it)
+        if(data.ndls->size())
         {
-          auto  t = it->compile(ctx);
+          ctx.push("  //************//\n");
+          ctx.push("  //引数積み始め//\n");
+          ctx.push("  //************//\n");
 
-            if(t == TypeKind::reference)
+            for(auto  it = data.ndls->crbegin();  it != data.ndls->crend();  ++it)
             {
-              t = t.compile_dereference(ctx);
+              auto  t = it->compile(ctx);
+
+                if(t == TypeKind::reference)
+                {
+                  t = t.compile_dereference(ctx);
+                }
             }
+
+
+          ctx.push("  //**************//\n");
+          ctx.push("  //引数積み終わり//\n");
+          ctx.push("  //**************//\n");
         }
 
 
@@ -372,34 +384,45 @@ print(FILE*  f) const
 {
     switch(kind)
     {
-      case(OperandKind::string):
-        fprintf(f,"\"%s\"",data.s->data());
-        break;
-      case(OperandKind::identifier):
-        fprintf(f,"%s",data.s->data());
-        break;
-      case(OperandKind::expression):
-        data.nd->print(f);
-        break;
-      case(OperandKind::subscript):
-        fprintf(f,"[");
-        data.nd->print(f);
-        fprintf(f,"]");
-        break;
-      case(OperandKind::argument_list):
-        fprintf(f,"(");
+  case(OperandKind::string):
+      fprintf(f,"\"%s\"",data.s->data());
+      break;
+  case(OperandKind::identifier):
+      fprintf(f,"%s",data.s->data());
+      break;
+  case(OperandKind::expression):
+      data.nd->print(f);
+      break;
+  case(OperandKind::subscript):
+      fprintf(f,"[");
+      data.nd->print(f);
+      fprintf(f,"]");
+      break;
+  case(OperandKind::argument_list):
+    {
+      fprintf(f,"<");
 
-          for(auto&  arg: *data.ndls)
-          {
-            arg.print(f);
+      auto   it = data.ndls->cbegin();
+      auto  end = data.ndls->cend();
 
-            fprintf(f,",");
-          }
-        fprintf(f,")");
-        break;
-      case(OperandKind::integer):
-        fprintf(f,"%lu",data.i);
-        break;
+        
+        if(it != end)
+        {
+          it++->print(f);
+
+            if(it != end)
+            {
+              fprintf(f,",");
+
+              it++->print(f);
+            }
+        }
+
+      fprintf(f,">");
+    } break;
+  case(OperandKind::integer):
+      fprintf(f,"%lu",data.i);
+      break;
     }
 }
 

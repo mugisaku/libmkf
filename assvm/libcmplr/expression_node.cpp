@@ -419,7 +419,7 @@ read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls
         {
           ls.emplace_back(BinaryOperator('(',')'));
 
-          ArgumentList  args(new NodeList(Node::read_list(base,prectx)));
+          ArgumentList  args(new NodeList(Node::read_list(nd,prectx)));
 
           ls.emplace_back(Operand(args));
         }

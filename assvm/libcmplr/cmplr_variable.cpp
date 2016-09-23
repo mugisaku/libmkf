@@ -73,7 +73,7 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
               }
 
 
-            type.compile_assign(ctx);
+            type.make_reference().compile_assign(ctx);
           }
         break;
       case(StorageKind::local_static):
