@@ -20,6 +20,8 @@ TypeKind
   void_,
 
   bool_,
+  char_,
+
   int8,
   uint8,
   int16,

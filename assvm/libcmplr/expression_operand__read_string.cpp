@@ -1,11 +1,12 @@
 #include"expression_operand.hpp"
+#include"libpp/pp_utf8chunk.hpp"
 #include<cstdlib>
 
 
 
 
 namespace{
-int
+char16_t
 read_string_element(const mkf::Node&  base)
 {
   mkf::Cursor  cur(base);
@@ -14,13 +15,15 @@ read_string_element(const mkf::Node&  base)
     {
       auto&  nd = cur.get();
 
-           if(nd == " "                     ){return ' ';}
-      else if(nd == "null_character"        ){return 0;}
-      else if(nd == "newline_character"     ){return '\n';}
-      else if(nd == "backslash_character"   ){return '\\';}
-      else if(nd == "single_quote_character"){return '\'';}
-      else if(nd == "double_quote_character"){return '\"';}
+           if(nd == " "                     ){return u' ';}
+      else if(nd == "CTYPE_unicode"         ){return nd.character.unicode;}
+      else if(nd == "null_character"        ){return u'\0';}
+      else if(nd == "newline_character"     ){return u'\n';}
+      else if(nd == "backslash_character"   ){return u'\\';}
+      else if(nd == "single_quote_character"){return u'\'';}
+      else if(nd == "double_quote_character"){return u'\"';}
       else if(nd == "normal_character"      ){return nd.character.unicode;}
+      else {return nd.character.unicode;}
 
 
       cur.advance();
@@ -34,7 +37,7 @@ read_string_element(const mkf::Node&  base)
 
 
 
-int
+char16_t
 expression::Operand::
 read_character_literal(const mkf::Node&  base)
 {
@@ -58,11 +61,11 @@ read_character_literal(const mkf::Node&  base)
 }
 
 
-std::string
+std::u16string
 expression::Operand::
 read_string_literal(const mkf::Node&  base)
 {
-  std::string  s;
+  std::u16string  s;
 
   mkf::Cursor  cur(base);
 

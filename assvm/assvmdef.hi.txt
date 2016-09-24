@@ -67,17 +67,17 @@ expression = unary_operand:{binary_operator:unary_operand};
 unary_operand = {unary_operator}:operand:[subscript|argument_list];
 
 operand =
-               'null'|
-               'true'|
-              'false'|
- ("(":expression:")")|
-           identifier|
-      integer_literal|
-    character_literal;
+                'null'|
+                'true'|
+               'false'|
+  ("(":expression:")")|
+            identifier|
+       integer_literal|
+     character_literal;
 
 
-subscript     = "[":expression:"]";
-argument_list = "(":[expression:{",":expression}]:")";
+subscript     = "[":[initializer]:"]";
+argument_list = "(":[initializer:{",":initializer}]:")";
 
 
 
@@ -93,7 +93,10 @@ parameter = type:[identifier];
 
 object_declaration = ['static']:['const']:type:identifier:["=":initializer];
 
-initializer = expression|expression_list|string_literal;
+initializer = 
+         expression|
+    expression_list|
+     string_literal;
 
 
 type = type_kind:{"*"|array_size}:["&"];
@@ -101,6 +104,7 @@ type = type_kind:{"*"|array_size}:["&"];
 
 type_kind = 
   'void'|
+  'char'|
   'int8'|
   'uint8'|
   'int16'|
@@ -179,8 +183,9 @@ identifier = ("_"|CTYPE_alpha):{"_"|CTYPE_alnum};
 
 
 
-      character_literal = "\'": string_element :"\'";
-noskip   string_literal = "\"":{string_element}:"\"";
+character_literal = "\'":string_element:"\'";
+
+noskip  string_literal = "\"":{string_element}:"\"";
 
 
 string_element =

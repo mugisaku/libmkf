@@ -155,22 +155,22 @@ get_name() const
 
 void
 Declaration::
-reset(Type&&  type, std::string&&  name, expression::Node*  initexpr)
+reset(Variable*  var)
 {
   clear();
 
-    if(type.test_constant())
+    if(var->type.test_constant())
     {
       kind = DeclarationKind::constant;
 
-      data.con = new Constant(std::move(type),std::move(name),initexpr);
+      data.con = nullptr;
     }
 
   else
     {
       kind = DeclarationKind::variable;
 
-      data.var = new Variable(std::move(type),std::move(name),initexpr);
+      data.var = var;
     }
 }
 

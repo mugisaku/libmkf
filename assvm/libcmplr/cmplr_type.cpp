@@ -175,6 +175,7 @@ get_size() const
     {
       case(TypeKind::int8  ):
       case(TypeKind::uint8 ): return 1;
+      case(TypeKind::char_ ):
       case(TypeKind::int16 ):
       case(TypeKind::uint16): return 2;
       case(TypeKind::int32 ):
@@ -215,6 +216,7 @@ get_alignment_size() const
     {
       case(TypeKind::int8  ):
       case(TypeKind::uint8 ): return 1;
+      case(TypeKind::char_ ):
       case(TypeKind::int16 ):
       case(TypeKind::uint16): return 2;
       case(TypeKind::int32 ):
@@ -267,6 +269,7 @@ snprint(char*  s, size_t  n) const
       case(TypeKind::undefined): return a+snprintf(s,n,"UNDEFINED");break;
       case(TypeKind::function): return a+snprintf(s,n,"function");break;
       case(TypeKind::void_ ): return a+snprintf(s,n,"void");break;
+      case(TypeKind::char_ ): return a+snprintf(s,n,"char");break;
       case(TypeKind::int8  ): return a+snprintf(s,n,"int8");break;
       case(TypeKind::uint8 ): return a+snprintf(s,n,"uint8");break;
       case(TypeKind::int16 ): return a+snprintf(s,n,"int16");break;

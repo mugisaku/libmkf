@@ -442,43 +442,6 @@ read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls
 }
 
 
-NodeList
-read_objinit(const mkf::Node&  src, PreContext&  prectx)
-{
-  NodeList  ndls;
-
-  mkf::Cursor  cur(src);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "expression")
-        {
-          ndls.emplace_back(nd,prectx);
-        }
-
-      else
-        if(nd == "expression_list")
-        {
-          ndls.emplace_back(nd,prectx);
-        }
-
-      else
-        if(nd == "string_literal")
-        {
-          ndls.emplace_back(nd,prectx);
-        }
-
-
-      cur.advance();
-    }
-
-
-  return std::move(ndls);
-}
-
-
 }
 
 
@@ -531,7 +494,13 @@ read_list(const mkf::Node&  src, PreContext&  prectx)
 
         if(nd == "initializer")
         {
-          ndls.emplace_back(Operand(Initializer(nd,prectx)));
+          Initializer  init(nd,prectx);
+
+          Operand  opr(std::move(init));
+
+          Element  el(std::move(opr));
+
+          ndls.emplace_back(std::move(el));
         }
 
 

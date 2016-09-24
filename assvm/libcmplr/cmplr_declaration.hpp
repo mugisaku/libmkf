@@ -85,7 +85,7 @@ Declaration
 
   const std::string&  get_name() const;
 
-  void  reset(Type&&  type, std::string&&  name, expression::Node*  initexpr=nullptr);
+  void  reset(Variable*  var);
   void  reset(const Parameter&  par, size_t  off=0);
   void  reset(Function*  fn);
 
@@ -99,7 +99,6 @@ Declaration
   void  read(const mkf::Node&  src, PreContext&  prectx);
 
   void  read_object_declaration(const mkf::Node&  src, PreContext&  prectx);
-  expression::Node*  read_object_initialization(const mkf::Node&  src, PreContext&  prectx);
 
 };
 

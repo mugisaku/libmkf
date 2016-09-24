@@ -5,7 +5,7 @@
 
 
 namespace{
-unsigned int
+uint32_t
 read_decimal_literal(const mkf::Node&  base)
 {
   std::string  s;
@@ -16,7 +16,7 @@ read_decimal_literal(const mkf::Node&  base)
 }
 
 
-unsigned int
+uint32_t
 read_hex_literal(const mkf::Node&  base)
 {
   std::string  s;
@@ -27,10 +27,10 @@ read_hex_literal(const mkf::Node&  base)
 }
 
 
-unsigned int
+uint32_t
 read_binary_literal(const mkf::Node&  base)
 {
-  unsigned int  i = 0;
+  uint32_t  i = 0;
 
   mkf::Cursor  cur(base);
 
@@ -58,7 +58,7 @@ read_binary_literal(const mkf::Node&  base)
 
 
 
-unsigned int
+uint32_t
 expression::Operand::
 read_integer_literal(const mkf::Node&  base)
 {

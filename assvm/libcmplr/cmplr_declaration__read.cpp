@@ -50,7 +50,7 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
 
   std::string  name;
 
-  expression::Node*  expr = nullptr;
+  Initializer  init;
 
     while(!cur.test_ended())
     {
@@ -74,9 +74,9 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
         }
 
       else
-        if(nd == "object_initialization")
+        if(nd == "initializer")
         {
-          expr = read_object_initialization(nd,prectx);
+          init.read(nd,prectx);
         }
 
       else
@@ -90,44 +90,9 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
     }
 
 
-  reset(std::move(type),std::move(name),expr);
-}
-
-
-
-expression::Node*
-Declaration::
-read_object_initialization(const mkf::Node&  src, PreContext&  prectx)
-{
-  expression::Node*  expr = nullptr;
-
-  mkf::Cursor  cur(src);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "expression")
-        {
-          expr = new expression::Node(nd,prectx);
-        }
-
-      else
-        if(nd == "array_literal")
-        {
-        }
-
-      else
-        if(nd == "string_literal")
-        {
-        }
-
-
-      cur.advance();
-    }
-
-
-  return expr;
+  reset(new Variable(std::move(type),
+                     std::move(name),
+                     std::move(init)));
 }
 
 

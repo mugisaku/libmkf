@@ -4,6 +4,7 @@
 #include"cmplr_declaration.hpp"
 #include"cmplr_function.hpp"
 #include"cmplr_initializer.hpp"
+#include"libpp/pp_utf8chunk.hpp"
 #include<cstring>
 #include<string>
 #include<vector>
@@ -25,15 +26,7 @@ kind(OperandKind::null)
 
 
 Operand::
-Operand(std::string*  s):
-kind(OperandKind::null)
-{
-  reset(s);
-}
-
-
-Operand::
-Operand(const Identifier&  id):
+Operand(std::string*  id):
 kind(OperandKind::null)
 {
   reset(id);
@@ -41,10 +34,26 @@ kind(OperandKind::null)
 
 
 Operand::
-Operand(unsigned long  i):
+Operand(std::u16string*  s):
+kind(OperandKind::null)
+{
+  reset(s);
+}
+
+
+Operand::
+Operand(uint32_t  i):
 kind(OperandKind::null)
 {
   reset(i);
+}
+
+
+Operand::
+Operand(char16_t  c):
+kind(OperandKind::null)
+{
+  reset(c);
 }
 
 
@@ -124,8 +133,10 @@ operator=(const Operand&  rhs)
     switch(kind)
     {
       case(OperandKind::string):
+        data.s = new std::u16string(*rhs.data.s);
+        break;
       case(OperandKind::identifier):
-        data.s = new std::string(*rhs.data.s);
+        data.id = new std::string(*rhs.data.id);
         break;
       case(OperandKind::argument_list):
         data.ndls = new NodeList(*rhs.data.ndls);
@@ -136,6 +147,9 @@ operator=(const Operand&  rhs)
         break;
       case(OperandKind::integer):
         data.i = rhs.data.i;
+        break;
+      case(OperandKind::character):
+        data.c = rhs.data.c;
         break;
     }
 
@@ -153,24 +167,7 @@ operator=(Operand&&  rhs) noexcept
   kind = rhs.kind                    ;
          rhs.kind = OperandKind::null;
 
-    switch(kind)
-    {
-      case(OperandKind::string):
-      case(OperandKind::identifier):
-        data.s = rhs.data.s;
-        break;
-      case(OperandKind::argument_list):
-        data.ndls = rhs.data.ndls;
-        break;
-      case(OperandKind::expression):
-      case(OperandKind::subscript):
-        data.nd = rhs.data.nd;
-        break;
-      case(OperandKind::integer):
-        data.i = rhs.data.i;
-        break;
-    }
-
+  data = rhs.data;
 
   return *this;
 }
@@ -182,8 +179,10 @@ clear()
 {
     switch(kind)
     {
-      case(OperandKind::string):
       case(OperandKind::identifier):
+        delete data.id;
+        break;
+      case(OperandKind::string):
         delete data.s;
         break;
       case(OperandKind::argument_list):
@@ -194,6 +193,7 @@ clear()
         delete data.nd;
         break;
       case(OperandKind::integer):
+      case(OperandKind::character):
         break;
     }
 
@@ -204,7 +204,7 @@ clear()
 
 void
 Operand::
-reset(unsigned long  i)
+reset(uint32_t  i)
 {
   clear();
 
@@ -216,7 +216,19 @@ reset(unsigned long  i)
 
 void
 Operand::
-reset(std::string*  s)
+reset(char16_t  c)
+{
+  clear();
+
+  kind = OperandKind::character;
+
+  data.c = c;
+}
+
+
+void
+Operand::
+reset(std::u16string*  s)
 {
   clear();
 
@@ -228,13 +240,13 @@ reset(std::string*  s)
 
 void
 Operand::
-reset(const Identifier&  id)
+reset(std::string*  id)
 {
   clear();
 
   kind = OperandKind::identifier;
 
-  data.s = id.s;
+  data.id = id;
 }
 
 
@@ -319,12 +331,12 @@ fold(FoldContext&  ctx) const
         break;
       case(OperandKind::identifier):
         {
-          auto  decl = ctx.find_declaration(*data.s);
+          auto  decl = ctx.find_declaration(*data.id);
 
             if(!decl)
             {
               printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
-                     ctx.function->signature.name.data(),data.s->data());
+                     ctx.function->signature.name.data(),data.id->data());
 
               throw;
             }
@@ -361,12 +373,12 @@ compile(Context&  ctx) const
       break;
   case(OperandKind::identifier):
     {
-      auto  decl = ctx.find_declaration(*data.s);
+      auto  decl = ctx.find_declaration(*data.id);
 
         if(!decl)
         {
           printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
-                 ctx.function->signature.name.data(),data.s->data());
+                 ctx.function->signature.name.data(),data.id->data());
 
           throw;
         }
@@ -406,6 +418,13 @@ compile(Context&  ctx) const
 
       return Type(TypeKind::argument_list,nullptr,data.ndls->size());
     } break;
+  case(OperandKind::character):
+           if(data.i <= 0x00FF){ctx.push("  psh8u   %d;//即値\n",data.i);}
+      else if(data.i <= 0xFFFF){ctx.push("  psh16u  %d;//即値\n",data.i);}
+      else                     {ctx.push("  psh32   %d;//即値\n",data.i);}
+
+      return Type(TypeKind::char_);
+      break;
   case(OperandKind::integer):
            if(data.i <= 0x00FF){ctx.push("  psh8u   %d;//即値\n",data.i);}
       else if(data.i <= 0xFFFF){ctx.push("  psh16u  %d;//即値\n",data.i);}
@@ -426,11 +445,22 @@ print(FILE*  f) const
 {
     switch(kind)
     {
+  case(OperandKind::character):
+      fprintf(f,"\'%s\'",pp::UTF8Chunk(data.c).codes);
+      break;
   case(OperandKind::string):
-      fprintf(f,"\"%s\"",data.s->data());
+      fprintf(f,"\"");
+
+        for(auto  c: *data.s)
+        {
+          fprintf(f,"%s",pp::UTF8Chunk(c).codes);
+        }
+
+
+      fprintf(f,"\"");
       break;
   case(OperandKind::identifier):
-      fprintf(f,"%s",data.s->data());
+      fprintf(f,"%s",data.id->data());
       break;
   case(OperandKind::expression):
       data.nd->print(f);
@@ -447,12 +477,11 @@ print(FILE*  f) const
       auto   it = data.ndls->cbegin();
       auto  end = data.ndls->cend();
 
-        
         if(it != end)
         {
           it++->print(f);
 
-            if(it != end)
+            while(it != end)
             {
               fprintf(f,",");
 
@@ -463,7 +492,7 @@ print(FILE*  f) const
       fprintf(f,">");
     } break;
   case(OperandKind::integer):
-      fprintf(f,"%lu",data.i);
+      fprintf(f,"%u",data.i);
       break;
     }
 }
@@ -485,7 +514,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
 
           nd.collect_characters(*s);
 
-          reset(Identifier(s));
+          reset(s);
         }
 
       else
@@ -497,7 +526,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "string_literal")
         {
-          reset(new std::string(read_string_literal(nd)));
+          reset(new std::u16string(read_string_literal(nd)));
         }
 
       else
@@ -523,13 +552,13 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "true")
         {
-          reset(1UL);
+          reset(UINT32_C(0));
         }
 
       else
         if(nd == "false")
         {
-          reset(0UL);
+          reset(UINT32_C(0));
         }
 
 

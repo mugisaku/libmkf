@@ -28,7 +28,7 @@ Initializer
   union Data{
     expression::Node*  nd;
     NodeList*          ndls;
-    std::string*        s;
+    std::u16string*       s;
 
   } data;
 
@@ -36,7 +36,7 @@ Initializer
    Initializer();
    Initializer(expression::Node*  nd);
    Initializer(NodeList*  ndls);
-   Initializer(std::string*  s);
+   Initializer(std::u16string*  s);
    Initializer(const mkf::Node&  src, PreContext&  prectx);
    Initializer(const Initializer&   rhs);
    Initializer(      Initializer&&  rhs) noexcept;
@@ -52,7 +52,7 @@ Initializer
 
   void  reset(expression::Node*  nd);
   void  reset(NodeList*  ndls);
-  void  reset(std::string*  s);
+  void  reset(std::u16string*  s);
 
   void  print(FILE*  f=stdout) const;
 

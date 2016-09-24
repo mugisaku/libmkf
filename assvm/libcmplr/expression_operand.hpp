@@ -50,6 +50,8 @@ enum class
 OperandKind
 {
   null,
+
+  character,
   integer,
   string,
   identifier,
@@ -63,16 +65,6 @@ OperandKind
 
 struct Element;
 struct Node;
-
-
-struct
-Identifier
-{
-  std::string*  s;
-
-  constexpr Identifier(std::string*  s_): s(s_){};
-
-};
 
 
 struct
@@ -91,9 +83,12 @@ Operand
   OperandKind  kind;
 
   union Data{
-    unsigned long  i;
+    uint32_t  i;
 
-    std::string*  s;
+    char16_t  c;
+
+    std::string*  id;
+    std::u16string*  s;
 
     Node*  nd;
 
@@ -103,9 +98,10 @@ Operand
 
 
   Operand();
-  Operand(std::string*  s);
-  Operand(const Identifier&  id);
-  Operand(unsigned long  i);
+  Operand(std::string*  id);
+  Operand(char16_t  c);
+  Operand(std::u16string*  s);
+  Operand(uint32_t  i);
   Operand(Node*  nd);
   Operand(Initializer&&  init);
   Operand(const ArgumentList&  args);
@@ -122,9 +118,10 @@ Operand
 
   void  clear();
 
-  void  reset(unsigned long  i);
-  void  reset(std::string*  s);
-  void  reset(const Identifier&  id);
+  void  reset(uint32_t  i);
+  void  reset(char16_t  c);
+  void  reset(std::string*  id);
+  void  reset(std::u16string*  s);
   void  reset(Node*  nd);
   void  reset(Initializer&&  init);
   void  reset(const ArgumentList&  args);
@@ -139,9 +136,9 @@ Operand
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
 
-  static unsigned int    read_integer_literal(const mkf::Node&  src);
-  static int           read_character_literal(const mkf::Node&  src);
-  static std::string      read_string_literal(const mkf::Node&  src);
+  static uint32_t          read_integer_literal(const mkf::Node&  src);
+  static char16_t        read_character_literal(const mkf::Node&  src);
+  static std::u16string     read_string_literal(const mkf::Node&  src);
 
 };
 

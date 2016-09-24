@@ -1,6 +1,7 @@
 #include"cmplr_initializer.hpp"
 #include"expression_node.hpp"
 #include"expression_operand.hpp"
+#include"libpp/pp_utf8chunk.hpp"
 
 
 
@@ -29,7 +30,7 @@ kind(InitializerKind::null)
 
 
 Initializer::
-Initializer(std::string*  s):
+Initializer(std::u16string*  s):
 kind(InitializerKind::null)
 {
   reset(s);
@@ -86,7 +87,7 @@ operator=(const Initializer&   rhs)
       data.ndls = new NodeList(*rhs.data.ndls);
       break;
   case(InitializerKind::string):
-      data.s = new std::string(*rhs.data.s);
+      data.s = new std::u16string(*rhs.data.s);
       break;
     }
 
@@ -165,7 +166,7 @@ reset(NodeList*  ndls)
 
 void
 Initializer::
-reset(std::string*  s)
+reset(std::u16string*  s)
 {
   clear();
 
@@ -198,7 +199,15 @@ print(FILE*  f) const
       fprintf(f,"}");
       break;
   case(InitializerKind::string):
-      fprintf(f,"\"%s\"",data.s->data());
+      fprintf(f,"\"");
+
+        for(auto  c: *data.s)
+        {
+          fprintf(f,"%s",pp::UTF8Chunk(c).codes);
+        }
+
+
+      fprintf(f,"\"");
       break;
     }
 }
@@ -230,7 +239,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "string_literal")
         {
-          reset(new std::string(expression::Operand::read_string_literal(nd)));
+          reset(new std::u16string(expression::Operand::read_string_literal(nd)));
         }
 
 

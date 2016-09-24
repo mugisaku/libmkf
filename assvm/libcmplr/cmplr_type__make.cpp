@@ -122,7 +122,8 @@ make(int  n, const char*  str)
         break;
       case(4):
              if(std::strcmp(str,"void") == 0){return Type(TypeKind::void_);}
-        else if(std::strcmp(str,"int8") == 0){return Type(TypeKind::int8);}
+        else if(std::strcmp(str,"int8") == 0){return Type(TypeKind::int8 );}
+        else if(std::strcmp(str,"char") == 0){return Type(TypeKind::char_);}
         break;
       case(5):
              if(std::strcmp(str,"uint8") == 0){return Type(TypeKind::uint8);}
