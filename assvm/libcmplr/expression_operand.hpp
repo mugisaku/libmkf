@@ -51,12 +51,14 @@ OperandKind
 {
   null,
 
+  initializer,
+
+  nullptr_,
+  boolean,
+  string,
   character,
   integer,
-  string,
   identifier,
-  expression,
-  expression_list,
   argument_list,
   subscript,
 
@@ -85,14 +87,18 @@ Operand
   union Data{
     uint32_t  i;
 
+    bool  b;
+
     char16_t  c;
 
-    std::string*  id;
+    std::string*    id;
     std::u16string*  s;
 
     Node*  nd;
 
     NodeList*  ndls;
+
+    Initializer*  init;
 
   } data;
 
@@ -100,12 +106,12 @@ Operand
   Operand();
   Operand(std::string*  id);
   Operand(char16_t  c);
-  Operand(std::u16string*  s);
   Operand(uint32_t  i);
-  Operand(Node*  nd);
-  Operand(Initializer&&  init);
+  Operand(nullptr_t  nul);
+  Operand(bool  b);
+  Operand(std::u16string*  s);
+  Operand(Initializer*  init);
   Operand(const ArgumentList&  args);
-  Operand(const ExpressionList&  exprs);
   Operand(const Subscript&  subsc);
   Operand(const mkf::Node&  src, PreContext&  prectx);
   Operand(const Operand&  rhs);
@@ -120,12 +126,12 @@ Operand
 
   void  reset(uint32_t  i);
   void  reset(char16_t  c);
-  void  reset(std::string*  id);
+  void  reset(nullptr_t  nul);
+  void  reset(bool  b);
   void  reset(std::u16string*  s);
-  void  reset(Node*  nd);
-  void  reset(Initializer&&  init);
+  void  reset(std::string*  id);
+  void  reset(Initializer*  init);
   void  reset(const ArgumentList&  args);
-  void  reset(const ExpressionList&  exprs);
   void  reset(const Subscript&  subsc);
 
   void  print(FILE*  f=stdout) const;

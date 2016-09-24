@@ -34,14 +34,6 @@ kind(OperandKind::null)
 
 
 Operand::
-Operand(std::u16string*  s):
-kind(OperandKind::null)
-{
-  reset(s);
-}
-
-
-Operand::
 Operand(uint32_t  i):
 kind(OperandKind::null)
 {
@@ -58,18 +50,34 @@ kind(OperandKind::null)
 
 
 Operand::
-Operand(Node*  nd):
+Operand(nullptr_t  nul):
 kind(OperandKind::null)
 {
-  reset(nd);
+  reset(nul);
 }
 
 
 Operand::
-Operand(Initializer&&  init):
+Operand(bool  b):
 kind(OperandKind::null)
 {
-  reset(std::move(init));
+  reset(b);
+}
+
+
+Operand::
+Operand(std::u16string*  s):
+kind(OperandKind::null)
+{
+  reset(s);
+}
+
+
+Operand::
+Operand(Initializer*  init):
+kind(OperandKind::null)
+{
+  reset(init);
 }
 
 
@@ -132,25 +140,33 @@ operator=(const Operand&  rhs)
 
     switch(kind)
     {
-      case(OperandKind::string):
-        data.s = new std::u16string(*rhs.data.s);
-        break;
-      case(OperandKind::identifier):
-        data.id = new std::string(*rhs.data.id);
-        break;
-      case(OperandKind::argument_list):
-        data.ndls = new NodeList(*rhs.data.ndls);
-        break;
-      case(OperandKind::expression):
-      case(OperandKind::subscript):
-        data.nd = new Node(*rhs.data.nd);
-        break;
-      case(OperandKind::integer):
-        data.i = rhs.data.i;
-        break;
-      case(OperandKind::character):
-        data.c = rhs.data.c;
-        break;
+  case(OperandKind::nullptr_):
+      data.nd = new expression::Node(*rhs.data.nd);
+      break;
+  case(OperandKind::boolean):
+      data.b = rhs.data.b;
+      break;
+  case(OperandKind::string):
+      data.s = new std::u16string(*rhs.data.s);
+      break;
+  case(OperandKind::initializer):
+      data.init = new Initializer(*rhs.data.init);
+      break;
+  case(OperandKind::identifier):
+      data.id = new std::string(*rhs.data.id);
+      break;
+  case(OperandKind::argument_list):
+      data.ndls = new NodeList(*rhs.data.ndls);
+      break;
+  case(OperandKind::subscript):
+      data.nd = new Node(*rhs.data.nd);
+      break;
+  case(OperandKind::integer):
+      data.i = rhs.data.i;
+      break;
+  case(OperandKind::character):
+      data.c = rhs.data.c;
+      break;
     }
 
 
@@ -179,22 +195,24 @@ clear()
 {
     switch(kind)
     {
-      case(OperandKind::identifier):
-        delete data.id;
-        break;
-      case(OperandKind::string):
-        delete data.s;
-        break;
-      case(OperandKind::argument_list):
-        delete data.ndls;
-        break;
-      case(OperandKind::expression):
-      case(OperandKind::subscript):
-        delete data.nd;
-        break;
-      case(OperandKind::integer):
-      case(OperandKind::character):
-        break;
+  case(OperandKind::identifier):
+      delete data.id;
+      break;
+  case(OperandKind::string):
+      delete data.s;
+      break;
+  case(OperandKind::initializer):
+      delete data.init;
+      break;
+  case(OperandKind::argument_list):
+      delete data.ndls;
+      break;
+  case(OperandKind::subscript):
+      delete data.nd;
+      break;
+  case(OperandKind::integer):
+  case(OperandKind::character):
+      break;
     }
 
 
@@ -228,18 +246,6 @@ reset(char16_t  c)
 
 void
 Operand::
-reset(std::u16string*  s)
-{
-  clear();
-
-  kind = OperandKind::string;
-
-  data.s = s;
-}
-
-
-void
-Operand::
 reset(std::string*  id)
 {
   clear();
@@ -252,46 +258,47 @@ reset(std::string*  id)
 
 void
 Operand::
-reset(Node*  nd)
+reset(nullptr_t  nul)
 {
   clear();
 
-  kind = OperandKind::expression;
-
-  data.nd = nd;
+  kind = OperandKind::nullptr_;
 }
 
 
 void
 Operand::
-reset(Initializer&&  init)
+reset(bool  b)
 {
   clear();
 
-    switch(init.kind)
-    {
-  case(InitializerKind::expression):
-      init.kind = InitializerKind::null;
+  kind = OperandKind::boolean;
 
-      kind = OperandKind::expression;
+  data.b = b;
+}
 
-      data.nd = init.data.nd;
-      break;
-  case(InitializerKind::expression_list):
-      init.kind = InitializerKind::null;
 
-      kind = OperandKind::expression_list;
+void
+Operand::
+reset(std::u16string*  s)
+{
+  clear();
 
-      data.ndls = init.data.ndls;
-      break;
-  case(InitializerKind::string):
-      init.kind = InitializerKind::null;
+  kind = OperandKind::string;
 
-      kind = OperandKind::string;
+  data.s = s;
+}
 
-      data.s = init.data.s;
-      break;
-    }
+
+void
+Operand::
+reset(Initializer*  init)
+{
+  clear();
+
+  kind = OperandKind::initializer;
+
+  data.init = init;
 }
 
 
@@ -327,8 +334,6 @@ fold(FoldContext&  ctx) const
 {
     switch(kind)
     {
-      case(OperandKind::string):
-        break;
       case(OperandKind::identifier):
         {
           auto  decl = ctx.find_declaration(*data.id);
@@ -344,9 +349,6 @@ fold(FoldContext&  ctx) const
 
           return decl->fold(ctx);
         }
-        break;
-      case(OperandKind::expression):
-        return data.nd->fold(ctx);
         break;
       case(OperandKind::subscript):
         break;
@@ -368,9 +370,6 @@ compile(Context&  ctx) const
 {
     switch(kind)
     {
-  case(OperandKind::string):
-      return Type(TypeKind::pointer);
-      break;
   case(OperandKind::identifier):
     {
       auto  decl = ctx.find_declaration(*data.id);
@@ -386,8 +385,8 @@ compile(Context&  ctx) const
 
       return decl->compile(ctx);
     } break;
-  case(OperandKind::expression):
-      return data.nd->compile(ctx);
+  case(OperandKind::initializer):
+      return data.init->compile(ctx);
       break;
   case(OperandKind::subscript):
       break;
@@ -448,6 +447,12 @@ print(FILE*  f) const
   case(OperandKind::character):
       fprintf(f,"\'%s\'",pp::UTF8Chunk(data.c).codes);
       break;
+  case(OperandKind::initializer):
+      data.init->print(f);
+      break;
+  case(OperandKind::identifier):
+      fprintf(f,"%s",data.id->data());
+      break;
   case(OperandKind::string):
       fprintf(f,"\"");
 
@@ -458,12 +463,6 @@ print(FILE*  f) const
 
 
       fprintf(f,"\"");
-      break;
-  case(OperandKind::identifier):
-      fprintf(f,"%s",data.id->data());
-      break;
-  case(OperandKind::expression):
-      data.nd->print(f);
       break;
   case(OperandKind::subscript):
       fprintf(f,"[");
@@ -493,6 +492,12 @@ print(FILE*  f) const
     } break;
   case(OperandKind::integer):
       fprintf(f,"%u",data.i);
+      break;
+  case(OperandKind::nullptr_):
+      fprintf(f,"nullptr");
+      break;
+  case(OperandKind::boolean):
+      fprintf(f,"%s",data.b? "true":"false");
       break;
     }
 }
@@ -524,12 +529,6 @@ read(const mkf::Node&  src, PreContext&  prectx)
         }
 
       else
-        if(nd == "string_literal")
-        {
-          reset(new std::u16string(read_string_literal(nd)));
-        }
-
-      else
         if(nd == "character_literal")
         {
           reset(read_character_literal(nd));
@@ -540,25 +539,39 @@ read(const mkf::Node&  src, PreContext&  prectx)
         {
           auto  expr = new Node(nd,prectx);
 
-          reset(expr);
+          reset(new Initializer(expr));
         }
 
       else
-        if(nd == "null")
+        if(nd == "initializer_list")
         {
-          clear();
+          auto  ls = new NodeList(Node::read_list(nd,prectx));
+
+          reset(new Initializer(ls));
+        }
+
+      else
+        if(nd == "string_literal")
+        {
+          reset(new std::u16string(read_string_literal(nd)));
+        }
+
+      else
+        if(nd == "nullptr")
+        {
+          reset(nullptr);
         }
 
       else
         if(nd == "true")
         {
-          reset(UINT32_C(0));
+          reset(true);
         }
 
       else
         if(nd == "false")
         {
-          reset(UINT32_C(0));
+          reset(false);
         }
 
 

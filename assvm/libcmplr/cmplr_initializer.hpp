@@ -3,9 +3,13 @@
 
 
 #include"mkf_node.hpp"
+#include"cmplr_type.hpp"
 #include"expression_node.hpp"
 
 
+
+
+struct Context;
 
 
 enum class
@@ -14,8 +18,7 @@ InitializerKind
   null,
 
   expression,
-  expression_list,
-  string,
+  initializer_list,
 
 };
 
@@ -28,7 +31,6 @@ Initializer
   union Data{
     expression::Node*  nd;
     NodeList*          ndls;
-    std::u16string*       s;
 
   } data;
 
@@ -36,7 +38,6 @@ Initializer
    Initializer();
    Initializer(expression::Node*  nd);
    Initializer(NodeList*  ndls);
-   Initializer(std::u16string*  s);
    Initializer(const mkf::Node&  src, PreContext&  prectx);
    Initializer(const Initializer&   rhs);
    Initializer(      Initializer&&  rhs) noexcept;
@@ -52,7 +53,8 @@ Initializer
 
   void  reset(expression::Node*  nd);
   void  reset(NodeList*  ndls);
-  void  reset(std::u16string*  s);
+
+  Type  compile(Context&  ctx) const;
 
   void  print(FILE*  f=stdout) const;
 

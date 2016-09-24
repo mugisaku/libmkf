@@ -3,6 +3,7 @@
 #include"cmplr_function.hpp"
 #include"expression_node.hpp"
 #include"cmplr_declaration.hpp"
+#include"cmplr_initializer.hpp"
 
 
 
@@ -176,9 +177,9 @@ read_return_statement(const mkf::Node&  src, PreContext&  prectx)
     {
       auto&  nd = cur.get();
 
-        if(nd == "expression")
+        if(nd == "initializer")
         {
-          data.expr = new expression::Node(nd,prectx);
+          data.init = new Initializer(nd,prectx);
 
           kind = StatementKind::return_;
         }

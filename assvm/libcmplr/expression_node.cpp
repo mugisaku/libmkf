@@ -494,9 +494,7 @@ read_list(const mkf::Node&  src, PreContext&  prectx)
 
         if(nd == "initializer")
         {
-          Initializer  init(nd,prectx);
-
-          Operand  opr(std::move(init));
+          Operand  opr(new Initializer(nd,prectx));
 
           Element  el(std::move(opr));
 

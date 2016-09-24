@@ -192,8 +192,6 @@ read(const mkf::Node&  src, PreContext&  prectx)
     }
 
 
-  statement_list.emplace_back(Return());
-
   prectx.block = block;
 }
 

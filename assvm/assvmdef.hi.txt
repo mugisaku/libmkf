@@ -31,7 +31,7 @@ control_statement =
 
 
 
-print_statement = 'print':expression;
+print_statement = 'print':initializer;
 
 
 enum_declaration = 'enum':"{":enumerator:{",":enumerator}:"}";
@@ -43,7 +43,7 @@ enumerator = identifier:["=":expression];
 break_statement    =    'break':[";"];
 continue_statement = 'continue':[";"];
 label_statement    = identifier:":";
-return_statement   = 'return':[expression]:[";"];
+return_statement   = 'return':[initializer]:[";"];
 
 
 
@@ -67,17 +67,18 @@ expression = unary_operand:{binary_operator:unary_operand};
 unary_operand = {unary_operator}:operand:[subscript|argument_list];
 
 operand =
-                'null'|
+             'nullptr'|
                 'true'|
                'false'|
   ("(":expression:")")|
+      initializer_list|
             identifier|
        integer_literal|
-     character_literal;
+     character_literal|
+        string_literal;
 
 
-subscript     = "[":[initializer]:"]";
-argument_list = "(":[initializer:{",":initializer}]:")";
+subscript = "[":[expression]:"]";
 
 
 
@@ -95,30 +96,31 @@ object_declaration = ['static']:['const']:type:identifier:["=":initializer];
 
 initializer = 
          expression|
-    expression_list|
-     string_literal;
+   initializer_list;
 
 
 type = type_kind:{"*"|array_size}:["&"];
 
 
 type_kind = 
-  'void'|
-  'char'|
-  'int8'|
-  'uint8'|
-  'int16'|
-  'uint16'|
-  'int32'|
-  'int';
+     'void'|
+     'null'|
+     'bool'|
+     'char'|
+     'int8'|
+    'uint8'|
+    'int16'|
+   'uint16'|
+    'int32'|
+      'int';
 
 
 
 
 array_size = "[":[expression]:"]";
 
-
-expression_list = "{":[initializer:{",":initializer}]:"}";
+   argument_list = "(":[initializer:{",":initializer}]:")";
+initializer_list = "{":[initializer:{",":initializer}]:"}";
 
 
 

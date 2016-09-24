@@ -17,6 +17,7 @@
 
 struct Block;
 struct PreContext;
+struct Initializer;
 
 
 enum class
@@ -42,9 +43,9 @@ StatementKind
 struct
 Print
 {
-  expression::Node*  expr;
+  Initializer*  init;
 
-  constexpr Print(expression::Node*  expr_): expr(expr_){}
+  constexpr Print(Initializer*  init_): init(init_){}
 
 };
 
@@ -52,9 +53,9 @@ Print
 struct
 Return
 {
-  expression::Node*  expr;
+  Initializer*  init;
 
-  constexpr Return(expression::Node*  expr_=nullptr): expr(expr_){}
+  constexpr Return(Initializer*  init_=nullptr): init(init_){}
 
 };
 
@@ -84,7 +85,6 @@ Halt
 
 
 struct Function;
-struct BlockChain;
 
 
 struct
@@ -102,7 +102,9 @@ Statement
 
     std::string*            id;
     BranchNode*          brand;
+
     expression::Node*     expr;
+    Initializer*          init;
 
   } data;
 

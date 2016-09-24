@@ -85,6 +85,8 @@ compile_definition(Context&  ctx) const
 
   block->compile(ctx);
 
+  ctx.push("  ret;\n");
+
   ctx.entry_list.emplace_back(Entry{this,std::move(ctx.current_content)});
 
   ctx.current_content.clear();

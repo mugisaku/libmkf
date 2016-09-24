@@ -3,6 +3,7 @@
 #include"cmplr_function.hpp"
 #include"expression_node.hpp"
 #include"cmplr_declaration.hpp"
+#include"cmplr_initializer.hpp"
 
 
 
@@ -51,9 +52,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "expression")
         {
-          auto  expr = new expression::Node(nd,prectx);
-
-          reset(expr);
+          reset(new expression::Node(nd,prectx));
         }
 
 
@@ -68,15 +67,15 @@ read_print_statement(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
-  expression::Node*  expr = nullptr;
+  Initializer*  init = nullptr;
 
     while(!cur.test_ended())
     {
       auto&  nd = cur.get();
 
-        if(nd == "expression")
+        if(nd == "initializer")
         {
-          expr = new expression::Node(nd,prectx);
+          init = new Initializer(nd,prectx);
         }
 
 
@@ -84,7 +83,7 @@ read_print_statement(const mkf::Node&  src, PreContext&  prectx)
     }
 
 
-  reset(Print(expr));
+  reset(Print(init));
 }
 
 

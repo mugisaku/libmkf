@@ -65,8 +65,7 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
           {
             compile_local(decl,name,ctx);
 
-/*
-            auto  t = initializer->compile(ctx);
+            auto  t = initializer.compile(ctx);
 
               if(t == TypeKind::reference)
               {
@@ -75,19 +74,18 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
 
 
             type.make_reference().compile_assign(ctx);
-*/
           }
         break;
-/*
       case(StorageKind::local_static):
         {
           int   i = 0;
 
-            if(initexpr)
+            if(initializer)
             {
+/*
               FoldContext  folctx(ctx.globalscope);
 
-              auto  res = initexpr->fold(folctx);
+              auto  res = initializer.fold(folctx);
 
                 if(!res.folded)
                 {
@@ -98,6 +96,7 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
 
 
               i = res.value;
+*/
             }
 
 
@@ -109,11 +108,12 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
         {
           int   i = 0;
 
-            if(initexpr)
+            if(initializer)
             {
+/*
               FoldContext  folctx(ctx.globalscope);
 
-              auto  res = initexpr->fold(folctx);
+              auto  res = initializer.fold(folctx);
 
                 if(!res.folded)
                 {
@@ -124,6 +124,7 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
 
 
               i = res.value;
+*/
             }
 
 
@@ -131,7 +132,6 @@ compile_definition(const Declaration&  decl, Context&  ctx) const
           ctx.push_definition("data i32 {%d};\n",i);
         }
         break;
-*/
     }
 }
 

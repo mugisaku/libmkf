@@ -19,6 +19,8 @@ TypeKind
   unknown,
   void_,
 
+
+  nullptr_,
   bool_,
   char_,
 

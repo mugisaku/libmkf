@@ -30,14 +30,6 @@ kind(InitializerKind::null)
 
 
 Initializer::
-Initializer(std::u16string*  s):
-kind(InitializerKind::null)
-{
-  reset(s);
-}
-
-
-Initializer::
 Initializer(const mkf::Node&  src, PreContext&  prectx):
 kind(InitializerKind::null)
 {
@@ -83,11 +75,8 @@ operator=(const Initializer&   rhs)
   case(InitializerKind::expression):
       data.nd = new expression::Node(*rhs.data.nd);
       break;
-  case(InitializerKind::expression_list):
+  case(InitializerKind::initializer_list):
       data.ndls = new NodeList(*rhs.data.ndls);
-      break;
-  case(InitializerKind::string):
-      data.s = new std::u16string(*rhs.data.s);
       break;
     }
 
@@ -127,17 +116,16 @@ clear()
   case(InitializerKind::expression):
       delete data.nd;
       break;
-  case(InitializerKind::expression_list):
+  case(InitializerKind::initializer_list):
       delete data.ndls;
-      break;
-  case(InitializerKind::string):
-      delete data.s;
       break;
     }
 
 
   kind = InitializerKind::null;
 }
+
+
 
 
 void
@@ -158,22 +146,35 @@ reset(NodeList*  ndls)
 {
   clear();
 
-  kind = InitializerKind::expression_list;
+  kind = InitializerKind::initializer_list;
 
   data.ndls = ndls;
 }
 
 
-void
+
+
+Type
 Initializer::
-reset(std::u16string*  s)
+compile(Context&  ctx) const
 {
-  clear();
+    switch(kind)
+    {
+  case(InitializerKind::expression):
+      return data.nd->compile(ctx);
+      break;
+  case(InitializerKind::initializer_list):
+        for(auto&  nd: *data.ndls)
+        {
+        }
+      break;
+    }
 
-  kind = InitializerKind::string;
 
-  data.s = s;
+  return Type();
 }
+
+
 
 
 void
@@ -185,7 +186,7 @@ print(FILE*  f) const
   case(InitializerKind::expression):
       data.nd->print(f);
       break;
-  case(InitializerKind::expression_list):
+  case(InitializerKind::initializer_list):
       fprintf(f,"{");
 
         for(auto&  nd: *data.ndls)
@@ -197,17 +198,6 @@ print(FILE*  f) const
 
 
       fprintf(f,"}");
-      break;
-  case(InitializerKind::string):
-      fprintf(f,"\"");
-
-        for(auto  c: *data.s)
-        {
-          fprintf(f,"%s",pp::UTF8Chunk(c).codes);
-        }
-
-
-      fprintf(f,"\"");
       break;
     }
 }
@@ -231,15 +221,9 @@ read(const mkf::Node&  src, PreContext&  prectx)
         }
 
       else
-        if(nd == "expression_list")
+        if(nd == "initializer_list")
         {
           reset(new NodeList(expression::Node::read_list(nd,prectx)));
-        }
-
-      else
-        if(nd == "string_literal")
-        {
-          reset(new std::u16string(expression::Operand::read_string_literal(nd)));
         }
 
 

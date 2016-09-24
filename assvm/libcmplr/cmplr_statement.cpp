@@ -1,6 +1,7 @@
 #include"cmplr_statement.hpp"
 #include"cmplr_block.hpp"
 #include"cmplr_declaration.hpp"
+#include"cmplr_initializer.hpp"
 
 
 
@@ -24,7 +25,7 @@ Statement::
 Statement(Return  ret):
 kind(StatementKind::return_)
 {
-  data.expr = ret.expr;
+  data.init = ret.init;
 }
 
 
@@ -92,8 +93,10 @@ clear()
         delete data.brand;
         break;
       case(StatementKind::return_):
-      case(StatementKind::expression):
       case(StatementKind::print):
+        delete data.init;
+        break;
+      case(StatementKind::expression):
         delete data.expr;
         break;
       default:
@@ -183,7 +186,7 @@ reset(const Print&  prn)
 
   kind = StatementKind::print;
 
-  data.expr = prn.expr;
+  data.init = prn.init;
 }
 
 
@@ -215,9 +218,9 @@ compile(Context&  ctx) const
         data.decl->compile_definition(ctx);
         break;
       case(StatementKind::print):
-          if(data.expr)
+          if(data.init)
           {
-            auto  t = data.expr->compile(ctx);
+            auto  t = data.init->compile(ctx);
 
               if(t == TypeKind::reference)
               {
@@ -228,7 +231,7 @@ compile(Context&  ctx) const
 
         ctx.push("  prn;\n");
 
-          if(data.expr)
+          if(data.init)
           {
             ctx.push("  pop;\n");
           }
@@ -266,9 +269,9 @@ compile(Context&  ctx) const
         break;
         break;
       case(StatementKind::return_):
-          if(data.expr)
+          if(data.init)
           {
-            auto  t = data.expr->compile(ctx);
+            auto  t = data.init->compile(ctx);
 
               if(t == TypeKind::reference)
               {
@@ -313,9 +316,9 @@ print(FILE*  f) const
       case(StatementKind::print):
         fprintf(f,"print ");
 
-          if(data.expr)
+          if(data.init)
           {
-            data.expr->print(f);
+            data.init->print(f);
           }
         break;
       case(StatementKind::break_):
@@ -327,9 +330,9 @@ print(FILE*  f) const
       case(StatementKind::return_):
         fprintf(f,"return ");
 
-          if(data.expr)
+          if(data.init)
           {
-            data.expr->print(f);
+            data.init->print(f);
           }
         break;
       case(StatementKind::expression):
