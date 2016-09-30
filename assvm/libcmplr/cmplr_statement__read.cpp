@@ -3,7 +3,6 @@
 #include"cmplr_function.hpp"
 #include"expression_node.hpp"
 #include"cmplr_declaration.hpp"
-#include"cmplr_initializer.hpp"
 
 
 
@@ -20,7 +19,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
 
         if(nd == "declaration")
         {
-          reset(prectx.append(Declaration(nd,prectx)));
+          reset(prectx.append_declaration(Declaration(nd,prectx)));
         }
 
       else
@@ -67,23 +66,18 @@ read_print_statement(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
-  Initializer*  init = nullptr;
-
     while(!cur.test_ended())
     {
       auto&  nd = cur.get();
 
-        if(nd == "initializer")
+        if(nd == "value")
         {
-          init = new Initializer(nd,prectx);
+          reset(Print(new Value(nd,prectx)));
         }
 
 
       cur.advance();
     }
-
-
-  reset(Print(init));
 }
 
 

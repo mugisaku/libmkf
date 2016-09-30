@@ -44,7 +44,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
         }
 
 
-      return Type(TypeKind::int32);
+      return Type(typesystem::I32());
     }
 
 
@@ -73,7 +73,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
     }
 
 
-  return Type(TypeKind::int32);
+  return Type(typesystem::I32());
 }
 
 
@@ -122,9 +122,6 @@ compile_arithmetic(const Node&  l, const Node&  r, const BinaryOperator&  op, Co
       default:;
     }
 
-
-  const bool  flag = (l_type.test_constant() &&
-                      r_type.test_constant());
 
   return Type();
 }
@@ -215,7 +212,7 @@ compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx
             }
 
 
-          return *l_type.get_referred_type();
+//          return *l_type.get_referred_type();
         }
         break;
       case(Operator('[',']')):
@@ -267,84 +264,116 @@ compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx
 
 
 
-FoldResult
-fold(const FoldResult&  l, const UnaryOperator&   op)
+Value
+get_value(const Node&  l, const UnaryOperator&   op, PreContext&  prectx)
 {
-    if(op == Operator('*'))
-    {
-      return FoldResult();
-    }
+  auto  l_value = l.get_value(prectx);
 
-
-    if(l.folded)
+    if(op == Operator('&'))
     {
-        switch(op)
+        if(l_value.change_reference_to_pointer())
         {
-          case(Operator('!')): return FoldResult(!l.value);break;
-          case(Operator('~')): return FoldResult(~l.value);break;
-          case(Operator('-')): return FoldResult(-l.value);break;
+          printf("参照でないオブジェクトのアドレスを取得しようとしました\n");
+
+          throw;
         }
+
+
+      return l_value;
     }
 
 
-  return FoldResult();
-}
-
-
-FoldResult
-fold(const Node&  l, const UnaryOperator&   op, FoldContext&  ctx)
-{
-  return fold(l.fold(ctx),op);
-}
-
-
-FoldResult
-fold(const FoldResult&  l, const FoldResult&  r, const BinaryOperator&  op)
-{
-    if(!l.folded ||
-       !r.folded)
+    if(l_value.type == TypeKind::reference)
     {
-      return FoldResult();
+      l_value.dereference();
     }
 
 
-  const int&  lv = l.value;
-  const int&  rv = r.value;
+/*
+    switch(op)
+    {
+      case(Operator('*')):
+          if(l_type != TypeKind::pointer)
+          {
+            printf("ポインタでないオブジェクトを参照しようとしました\n");
 
+            throw;
+          }
+
+
+        return l_type.make_reference();
+        break;
+      case(Operator('!')): ctx.push("  lnot;\n");break;
+      case(Operator('~')): ctx.push("  bnot;\n");break;
+      case(Operator('-')): ctx.push("  neg ;\n");break;
+    }
+*/
+
+
+  return Value();
+}
+
+
+Value
+get_value(const Node&  l, const Node&  r, const BinaryOperator&  op, PreContext&  prectx)
+{
+/*
     switch(op)
     {
       case(Operator('.')):
         break;
       case(Operator('(',')')):
         {
-/*
-          auto  rk = r.compile(ctx);
-          auto  lk = l.compile(ctx);
-*/
+          auto  r_type = r.compile(ctx);
+
+            if(r_type != TypeKind::argument_list)
+            {
+              r_type.print();
+
+              printf("\n実引数のリストではありません\n");
+
+              throw;
+            }
+
+
+          auto  l_type = l.compile(ctx);
+
+            if(l_type != TypeKind::function)
+            {
+              l_type.print();
+
+              printf("\n関数ではありません\n");
+
+              throw;
+            }
+
+
+//          return *l_type.get_referred_type();
         }
         break;
       case(Operator('[',']')):
         break;
 
 
-      case(Operator('*'    )): return FoldResult(lv* rv);
-      case(Operator('/'    )): return FoldResult(lv/ rv);
-      case(Operator('%'    )): return FoldResult(lv% rv);
-      case(Operator('+'    )): return FoldResult(lv+ rv);
-      case(Operator('-'    )): return FoldResult(lv- rv);
-      case(Operator('<','<')): return FoldResult(lv<<rv);
-      case(Operator('>','>')): return FoldResult(lv>>rv);
-      case(Operator('<'    )): return FoldResult(lv< rv);
-      case(Operator('<','=')): return FoldResult(lv<=rv);
-      case(Operator('>'    )): return FoldResult(lv> rv);
-      case(Operator('>','=')): return FoldResult(lv>=rv);
-      case(Operator('=','=')): return FoldResult(lv==rv);
-      case(Operator('!','=')): return FoldResult(lv!=rv);
-      case(Operator('&'    )): return FoldResult(lv& rv);
-      case(Operator('|'    )): return FoldResult(lv| rv);
-      case(Operator('^'    )): return FoldResult(lv^ rv);
-      case(Operator('&','&')): return FoldResult(lv&&rv);
-      case(Operator('|','|')): return FoldResult(lv||rv);
+      case(Operator('*')): 
+      case(Operator('/')):
+      case(Operator('%')):
+      case(Operator('+')):
+      case(Operator('-')):
+      case(Operator('<','<')):
+      case(Operator('>','>')):
+      case(Operator('<')    ):
+      case(Operator('<','=')):
+      case(Operator('>')    ):
+      case(Operator('>','=')):
+      case(Operator('=','=')):
+      case(Operator('!','=')):
+      case(Operator('&')):
+      case(Operator('|')):
+      case(Operator('^')):
+      case(Operator('&','&')):
+      case(Operator('|','|')):
+        return compile_arithmetic(l,r,op,ctx);
         break;
 
       case(Operator('<','<','=')):
@@ -358,19 +387,15 @@ fold(const FoldResult&  l, const FoldResult&  r, const BinaryOperator&  op)
       case(Operator('|','=')):
       case(Operator('^','=')):
       case(Operator('=')    ):
+        return compile_assign(l,r,op,ctx);
         break;
+
       default:;
     }
+*/
 
 
-  return FoldResult();
-}
-
-
-FoldResult
-fold(const Node&  l, const Node&  r, const BinaryOperator&  op, FoldContext&  ctx)
-{
-  return fold(l.fold(ctx),r.fold(ctx),op);
+  return Value();
 }
 
 

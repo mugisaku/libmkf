@@ -17,8 +17,8 @@ List
 
     ListElement*  next;
 
-    ListElement(const T&   dat): data(         (dat)), next(nullptr){}
-    ListElement(      T&&  dat): data(std::move(dat)), next(nullptr){}
+    ListElement(const T&   dat) noexcept: data(         (dat)), next(nullptr){}
+    ListElement(      T&&  dat) noexcept: data(std::move(dat)), next(nullptr){}
   };
 
 
@@ -26,13 +26,13 @@ List
   ListElement*   last;
 
 public:
-   List(           ): first(nullptr){}
-   List(List&&  rhs): first(nullptr){}
+   List(           ) noexcept: first(nullptr){}
+   List(List&&  rhs) noexcept: first(nullptr){}
 
   virtual ~List(){clear();}
 
 
-  List&  operator=(List&&  rhs)
+  List&  operator=(List&&  rhs) noexcept
   {
     clear();
 

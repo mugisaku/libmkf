@@ -43,7 +43,7 @@ Function
 
   size_t  local_object_size;
 
-  std::unique_ptr<Block>  block;
+  std::shared_ptr<Block>  block;
 
   Function();
   Function(const mkf::Node&  src, PreContext&  prectx);

@@ -12,7 +12,7 @@
 
 Context::
 Context(GlobalScope&  g):
-FoldContext(g),
+PreContext(g),
 control_block(nullptr)
 {
 }

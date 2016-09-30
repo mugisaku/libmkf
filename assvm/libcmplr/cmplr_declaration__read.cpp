@@ -1,7 +1,5 @@
 #include"cmplr_declaration.hpp"
 #include"cmplr_function.hpp"
-#include"cmplr_variable.hpp"
-#include"cmplr_constant.hpp"
 
 
 
@@ -10,7 +8,7 @@ void
 Declaration::
 read(const mkf::Node&  src, PreContext&  prectx)
 {
-  clear();
+  value.clear();
 
   mkf::Cursor  cur(src);
 
@@ -46,12 +44,6 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
-  Type  type;
-
-  std::string  name;
-
-  Initializer  init;
-
     while(!cur.test_ended())
     {
       auto&  nd = cur.get();
@@ -64,19 +56,19 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "type")
         {
-          type.read(nd);
+          value.type.read(nd);
         }
 
       else
         if(nd == "const")
         {
-          type.set_constant();
+//          type.set_constant();
         }
 
       else
-        if(nd == "initializer")
+        if(nd == "value")
         {
-          init.read(nd,prectx);
+          value.read(nd,prectx);
         }
 
       else
@@ -88,11 +80,6 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
 
       cur.advance();
     }
-
-
-  reset(new Variable(std::move(type),
-                     std::move(name),
-                     std::move(init)));
 }
 
 

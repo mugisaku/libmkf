@@ -2,16 +2,8 @@
 #define CMPLR_PARAMETER_HPP_INCLUDED
 
 
-#include"cmplr_type.hpp"
-#include"mkf_node.hpp"
+#include"typesystem_element.hpp"
 #include<string>
-#include<vector>
-
-
-
-
-struct Declaration;
-struct Context;
 
 
 struct
@@ -21,19 +13,15 @@ Parameter
 
   std::string  name;
 
-  Parameter(                     );
-  Parameter(const mkf::Node&  src);
-
-  Type  compile(const Declaration&  decl, Context&  ctx) const;
-
-  void  print(FILE*  f=stdout) const;
+  Parameter(const mkf::Node&  src){read(src);}
 
   void  read(const mkf::Node&  src);
+
+  void  print(FILE*  f=stdout) const;
 
 };
 
 
-using ParameterList = std::vector<Parameter>;
 
 
 #endif

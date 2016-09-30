@@ -3,7 +3,6 @@
 #include"expression_node.hpp"
 #include"cmplr_declaration.hpp"
 #include"cmplr_function.hpp"
-#include"cmplr_initializer.hpp"
 #include"libpp/pp_utf8chunk.hpp"
 #include<cstring>
 #include<string>
@@ -74,10 +73,18 @@ kind(OperandKind::null)
 
 
 Operand::
-Operand(Initializer*  init):
+Operand(Node*  nd):
 kind(OperandKind::null)
 {
-  reset(init);
+  reset(nd);
+}
+
+
+Operand::
+Operand(ValueList*  vals):
+kind(OperandKind::null)
+{
+  reset(vals);
 }
 
 
@@ -149,14 +156,15 @@ operator=(const Operand&  rhs)
   case(OperandKind::string):
       data.s = new std::u16string(*rhs.data.s);
       break;
-  case(OperandKind::initializer):
-      data.init = new Initializer(*rhs.data.init);
+  case(OperandKind::expression):
+      data.nd = new Node(*rhs.data.nd);
+      break;
+  case(OperandKind::value_list):
+  case(OperandKind::argument_list):
+      data.vals = new ValueList(*rhs.data.vals);
       break;
   case(OperandKind::identifier):
       data.id = new std::string(*rhs.data.id);
-      break;
-  case(OperandKind::argument_list):
-      data.ndls = new NodeList(*rhs.data.ndls);
       break;
   case(OperandKind::subscript):
       data.nd = new Node(*rhs.data.nd);
@@ -201,11 +209,12 @@ clear()
   case(OperandKind::string):
       delete data.s;
       break;
-  case(OperandKind::initializer):
-      delete data.init;
+  case(OperandKind::expression):
+      delete data.nd;
       break;
+  case(OperandKind::value_list):
   case(OperandKind::argument_list):
-      delete data.ndls;
+      delete data.vals;
       break;
   case(OperandKind::subscript):
       delete data.nd;
@@ -292,13 +301,25 @@ reset(std::u16string*  s)
 
 void
 Operand::
-reset(Initializer*  init)
+reset(Node*  nd)
 {
   clear();
 
-  kind = OperandKind::initializer;
+  kind = OperandKind::expression;
 
-  data.init = init;
+  data.nd = nd;
+}
+
+
+void
+Operand::
+reset(ValueList*  vals)
+{
+  clear();
+
+  kind = OperandKind::value_list;
+
+  data.vals = vals;
 }
 
 
@@ -310,7 +331,7 @@ reset(const ArgumentList&  args)
 
   kind = OperandKind::argument_list;
 
-  data.ndls = args.node_list;
+  data.vals = args.value_list;
 }
 
 
@@ -328,39 +349,59 @@ reset(const Subscript&  subsc)
 
 
 
-FoldResult
+Value
 Operand::
-fold(FoldContext&  ctx) const
+get_value(PreContext&  prectx) const
 {
     switch(kind)
     {
-      case(OperandKind::identifier):
+  case(OperandKind::identifier):
+    {
+      auto  decl = prectx.find_declaration(*data.id);
+
+        if(!decl)
         {
-          auto  decl = ctx.find_declaration(*data.id);
+          printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
+                 prectx.function->signature.name.data(),data.id->data());
 
-            if(!decl)
-            {
-              printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
-                     ctx.function->signature.name.data(),data.id->data());
-
-              throw;
-            }
-
-
-          return decl->fold(ctx);
+          throw;
         }
-        break;
-      case(OperandKind::subscript):
-        break;
-      case(OperandKind::argument_list):
-        break;
-      case(OperandKind::integer):
-        return FoldResult(data.i);
-        break;
+
+
+      return Value(*decl);
+    } break;
+  case(OperandKind::expression):
+      return data.nd->get_value(prectx);
+      break;
+  case(OperandKind::value_list):
+      break;
+  case(OperandKind::subscript):
+      break;
+  case(OperandKind::argument_list):
+    {
+        if(data.vals->size())
+        {
+
+            for(auto  it = data.vals->crbegin();  it != data.vals->crend();  ++it)
+            {
+            }
+        }
+
+
+    } break;
+  case(OperandKind::character):
+      return Value(Type(typesystem::ConstChar()),data.i);
+      break;
+  case(OperandKind::integer):
+      return Value(Type(typesystem::ConstI32()),data.i);
+      break;
+  case(OperandKind::boolean):
+      return Value(Type(typesystem::ConstBool()),data.i);
+      break;
     }
 
 
-  return FoldResult();
+  return Value();
 }
 
 
@@ -385,26 +426,28 @@ compile(Context&  ctx) const
 
       return decl->compile(ctx);
     } break;
-  case(OperandKind::initializer):
-      return data.init->compile(ctx);
+  case(OperandKind::expression):
+      return data.nd->compile(ctx);
+      break;
+  case(OperandKind::value_list):
       break;
   case(OperandKind::subscript):
       break;
   case(OperandKind::argument_list):
     {
-        if(data.ndls->size())
+        if(data.vals->size())
         {
           ctx.push("  //************//\n");
           ctx.push("  //引数積み始め//\n");
           ctx.push("  //************//\n");
 
-            for(auto  it = data.ndls->crbegin();  it != data.ndls->crend();  ++it)
+            for(auto  it = data.vals->crbegin();  it != data.vals->crend();  ++it)
             {
-              auto  t = it->compile(ctx);
+              auto  v = it->compile(ctx);
 
-                if(t == TypeKind::reference)
+                if(v.type == TypeKind::reference)
                 {
-                  t = t.compile_dereference(ctx);
+//                  t = t.compile_dereference(ctx);
                 }
             }
 
@@ -415,21 +458,21 @@ compile(Context&  ctx) const
         }
 
 
-      return Type(TypeKind::argument_list,nullptr,data.ndls->size());
+      return Type(TypeKind::argument_list);
     } break;
   case(OperandKind::character):
            if(data.i <= 0x00FF){ctx.push("  psh8u   %d;//即値\n",data.i);}
       else if(data.i <= 0xFFFF){ctx.push("  psh16u  %d;//即値\n",data.i);}
       else                     {ctx.push("  psh32   %d;//即値\n",data.i);}
 
-      return Type(TypeKind::char_);
+      return Type(typesystem::ConstChar());
       break;
   case(OperandKind::integer):
            if(data.i <= 0x00FF){ctx.push("  psh8u   %d;//即値\n",data.i);}
       else if(data.i <= 0xFFFF){ctx.push("  psh16u  %d;//即値\n",data.i);}
       else                     {ctx.push("  psh32   %d;//即値\n",data.i);}
 
-      return Type(TypeKind::int32);
+      return Type(typesystem::ConstI32());
       break;
     }
 
@@ -447,8 +490,21 @@ print(FILE*  f) const
   case(OperandKind::character):
       fprintf(f,"\'%s\'",pp::UTF8Chunk(data.c).codes);
       break;
-  case(OperandKind::initializer):
-      data.init->print(f);
+  case(OperandKind::expression):
+      data.nd->print(f);
+      break;
+  case(OperandKind::value_list):
+      fprintf(f,"{");
+
+        for(auto&  v: *data.vals)
+        {
+          v.print(f);
+
+          fprintf(f,",");
+        }
+
+
+      fprintf(f,"}");
       break;
   case(OperandKind::identifier):
       fprintf(f,"%s",data.id->data());
@@ -473,8 +529,8 @@ print(FILE*  f) const
     {
       fprintf(f,"<");
 
-      auto   it = data.ndls->cbegin();
-      auto  end = data.ndls->cend();
+      auto   it = data.vals->cbegin();
+      auto  end = data.vals->cend();
 
         if(it != end)
         {
@@ -537,17 +593,13 @@ read(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "expression")
         {
-          auto  expr = new Node(nd,prectx);
-
-          reset(new Initializer(expr));
+          reset(new Node(nd,prectx));
         }
 
       else
-        if(nd == "initializer_list")
+        if(nd == "value_list")
         {
-          auto  ls = new NodeList(Node::read_list(nd,prectx));
-
-          reset(new Initializer(ls));
+          reset(new ValueList(Value::read_list(nd,prectx)));
         }
 
       else

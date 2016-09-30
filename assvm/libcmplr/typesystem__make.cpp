@@ -1,9 +1,11 @@
-#include"cmplr_type.hpp"
-#include"cmplr_context.hpp"
+#include"typesystem_element.hpp"
 #include<cctype>
 #include<cstring>
 
 
+
+
+namespace typesystem{
 
 
 namespace{
@@ -118,20 +120,27 @@ make(int  n, const char*  str)
     switch(n)
     {
       case(3):
-        if(std::strcmp(str,"int") == 0){return Type(TypeKind::int32);}
+        if(std::strcmp(str,"int") == 0){return Type(I32());}
         break;
       case(4):
-             if(std::strcmp(str,"void") == 0){return Type(TypeKind::void_);}
-        else if(std::strcmp(str,"int8") == 0){return Type(TypeKind::int8 );}
-        else if(std::strcmp(str,"char") == 0){return Type(TypeKind::char_);}
+             if(std::strcmp(str,"void") == 0){return Type(Void());}
+        else if(std::strcmp(str,"int8") == 0){return Type(I8());}
+        else if(std::strcmp(str,"char") == 0){return Type(Char());}
+        else if(std::strcmp(str,"bool") == 0){return Type(Bool());}
+        else if(std::strcmp(str,"enum") == 0){return Type(Enum());}
         break;
       case(5):
-             if(std::strcmp(str,"uint8") == 0){return Type(TypeKind::uint8);}
-        else if(std::strcmp(str,"int16") == 0){return Type(TypeKind::int16);}
-        else if(std::strcmp(str,"int32") == 0){return Type(TypeKind::int32);}
+             if(std::strcmp(str,"uint8") == 0){return Type(U8());}
+        else if(std::strcmp(str,"int16") == 0){return Type(I16());}
+        else if(std::strcmp(str,"int32") == 0){return Type(I32());}
+        else if(std::strcmp(str,"union") == 0){return Type(Union());}
         break;
       case(6):
-          if(std::strcmp(str,"uint16") == 0){return Type(TypeKind::uint16);}
+             if(std::strcmp(str,"uint16") == 0){return Type(U16());}
+        else if(std::strcmp(str,"struct") == 0){return Type(Struct());}
+        break;
+      case(7):
+          if(std::strcmp(str,"nullptr") == 0){return Type(Nullptr());}
         break;
     }
 
@@ -146,26 +155,26 @@ make(int  n, const char*  str)
 
 
 Type
-Type::
+Element::
 make_pointer() const
 {
-  return Type(TypeKind::pointer,duplicate());
+  return Type(Pointer(duplicate()));
 }
 
 
 Type
-Type::
+Element::
 make_reference() const
 {
-  return Type(TypeKind::reference,duplicate());
+  return Type(Pointer(duplicate()),true);
 }
 
 
 Type
-Type::
+Element::
 make_array(int  n) const
 {
-  return Type(TypeKind::array,duplicate(),n);
+  return Type(Array(duplicate(),n));
 }
 
 
@@ -215,6 +224,10 @@ make_type(const char*  s)
 
 
   return std::move(t);
+}
+
+
+
 }
 
 

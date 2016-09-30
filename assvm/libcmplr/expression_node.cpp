@@ -1,6 +1,5 @@
 #include"expression_node.hpp"
 #include"expression_operator.hpp"
-#include"cmplr_initializer.hpp"
 #include"cmplr_precontext.hpp"
 
 
@@ -284,39 +283,36 @@ create_tree(std::list<Node*>&&  ls)
 
 
 
-FoldResult
+Value
 Node::
-fold(FoldContext&  ctx) const
+get_value(PreContext&  prectx) const
 {
     switch(element.kind)
     {
-      case(ElementKind::null):
-          if(left)
-          {
-            return left->fold(ctx);
-          }
-        break;
-      case(ElementKind::operand):
-        return element.data.operand.fold(ctx);
-        break;
-      case(ElementKind::unary_operator):
-        {
-          UnaryOperator  op(element.data.operator_);
+  case(ElementKind::null):
+      return left->get_value(prectx);
+      break;
+  case(ElementKind::operand):
+      return element.data.operand.get_value(prectx);
+      break;
+  case(ElementKind::unary_operator):
+      {
+        UnaryOperator  op(element.data.operator_);
 
-          return expression::fold(*left,op,ctx);
-        }
-        break;
-      case(ElementKind::binary_operator):
-        {
-          BinaryOperator  op(element.data.operator_);
+        return expression::get_value(*left,op,prectx);
+      }
+      break;
+  case(ElementKind::binary_operator):
+      {
+        BinaryOperator  op(element.data.operator_);
 
-          return expression::fold(*left,*right,op,ctx);
-        }
-        break;
+        return expression::get_value(*left,*right,op,prectx);
+      }
+      break;
     }
 
 
-  return FoldResult();
+  return Value();
 }
 
 
@@ -415,27 +411,6 @@ read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls
           ls.emplace_back(Operand(nd,prectx));
         }
 
-      else
-        if(nd == "argument_list")
-        {
-          ls.emplace_back(BinaryOperator('(',')'));
-
-          ArgumentList  args(new NodeList(Node::read_list(nd,prectx)));
-
-          ls.emplace_back(Operand(args));
-        }
-
-      else
-        if(nd == "subscript")
-        {
-          report;
-        }
-
-      else
-        {
-          report;
-        }
-
 
       cur.advance();
     }
@@ -477,36 +452,6 @@ read(const mkf::Node&  base, PreContext&  prectx)
   auto  rpn = to_rpn(std::move(ls));
 
   left = create_tree(std::move(rpn));
-}
-
-
-NodeList
-Node::
-read_list(const mkf::Node&  src, PreContext&  prectx)
-{
-  NodeList  ndls;
-
-  mkf::Cursor  cur(src);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "initializer")
-        {
-          Operand  opr(new Initializer(nd,prectx));
-
-          Element  el(std::move(opr));
-
-          ndls.emplace_back(std::move(el));
-        }
-
-
-      cur.advance();
-    }
-
-
-  return std::move(ndls);
 }
 
 

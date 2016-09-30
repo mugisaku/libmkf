@@ -3,12 +3,13 @@
 
 
 #include<cstring>
-#include"cmplr_declaration.hpp"
-#include"cmplr_type.hpp"
-#include"expression_foldresult.hpp"
+#include"cmplr_value.hpp"
+#include"typesystem_element.hpp"
 
 
-struct FoldContext;
+
+
+struct PreContext;
 struct Context;
 
 
@@ -81,8 +82,8 @@ BinaryOperator(const char*  s): Operator(s){}
 Type  compile(const Node&  l                , const UnaryOperator&   op, Context&  ctx);
 Type  compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx);
 
-FoldResult  fold(const Node&  l                , const UnaryOperator&   op, FoldContext&  ctx);
-FoldResult  fold(const Node&  l, const Node&  r, const BinaryOperator&  op, FoldContext&  ctx);
+Value  get_value(const Node&  l                , const UnaryOperator&   op, PreContext&  prectx);
+Value  get_value(const Node&  l, const Node&  r, const BinaryOperator&  op, PreContext&  prectx);
 
 
 }

@@ -175,8 +175,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
-  auto  block = prectx.block       ;
-                prectx.block = this;
+  prectx.block_stack.emplace_back(this);
 
     while(!cur.test_ended())
     {
@@ -192,7 +191,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
     }
 
 
-  prectx.block = block;
+  prectx.block_stack.pop_back();
 }
 
 

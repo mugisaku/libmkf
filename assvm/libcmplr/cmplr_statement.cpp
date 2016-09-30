@@ -1,7 +1,6 @@
 #include"cmplr_statement.hpp"
 #include"cmplr_block.hpp"
 #include"cmplr_declaration.hpp"
-#include"cmplr_initializer.hpp"
 
 
 
@@ -25,7 +24,7 @@ Statement::
 Statement(Return  ret):
 kind(StatementKind::return_)
 {
-  data.init = ret.init;
+  data.val = ret.v;
 }
 
 
@@ -34,6 +33,14 @@ Statement(const mkf::Node&  src, PreContext&  prectx):
 kind(StatementKind::null)
 {
   read(src,prectx);
+}
+
+
+Statement::
+Statement(const Statement&  rhs):
+kind(StatementKind::null)
+{
+  *this = rhs;
 }
 
 
@@ -52,6 +59,43 @@ Statement::
 }
 
 
+
+
+Statement&
+Statement::
+operator=(const Statement&  rhs)
+{
+  clear();
+
+  kind = rhs.kind;
+
+    switch(kind)
+    {
+  case(StatementKind::null):
+  case(StatementKind::halt):
+  case(StatementKind::break_):
+  case(StatementKind::continue_):
+  case(StatementKind::declaration):
+  case(StatementKind::block):
+    data = rhs.data;
+    break;
+  case(StatementKind::branchnode):
+    data.brand = new BranchNode(*rhs.data.brand);
+    break;
+  case(StatementKind::return_):
+  case(StatementKind::print):
+      data.val = new Value(*rhs.data.val);
+      break;
+  case(StatementKind::expression):
+      data.expr = new expression::Node(*rhs.data.expr);
+      break;
+  default:
+      report;
+    }
+
+
+  return *this;
+}
 
 
 Statement&
@@ -94,7 +138,7 @@ clear()
         break;
       case(StatementKind::return_):
       case(StatementKind::print):
-        delete data.init;
+        delete data.val;
         break;
       case(StatementKind::expression):
         delete data.expr;
@@ -186,7 +230,7 @@ reset(const Print&  prn)
 
   kind = StatementKind::print;
 
-  data.init = prn.init;
+  data.val = prn.v;
 }
 
 
@@ -218,9 +262,9 @@ compile(Context&  ctx) const
         data.decl->compile_definition(ctx);
         break;
       case(StatementKind::print):
-          if(data.init)
+          if(data.expr)
           {
-            auto  t = data.init->compile(ctx);
+            auto  t = data.expr->compile(ctx);
 
               if(t == TypeKind::reference)
               {
@@ -231,7 +275,7 @@ compile(Context&  ctx) const
 
         ctx.push("  prn;\n");
 
-          if(data.init)
+          if(data.expr)
           {
             ctx.push("  pop;\n");
           }
@@ -269,9 +313,9 @@ compile(Context&  ctx) const
         break;
         break;
       case(StatementKind::return_):
-          if(data.init)
+          if(data.expr)
           {
-            auto  t = data.init->compile(ctx);
+            auto  t = data.expr->compile(ctx);
 
               if(t == TypeKind::reference)
               {
@@ -316,9 +360,9 @@ print(FILE*  f) const
       case(StatementKind::print):
         fprintf(f,"print ");
 
-          if(data.init)
+          if(data.val)
           {
-            data.init->print(f);
+            data.val->print(f);
           }
         break;
       case(StatementKind::break_):
@@ -330,9 +374,9 @@ print(FILE*  f) const
       case(StatementKind::return_):
         fprintf(f,"return ");
 
-          if(data.init)
+          if(data.val)
           {
-            data.init->print(f);
+            data.val->print(f);
           }
         break;
       case(StatementKind::expression):

@@ -31,7 +31,7 @@ control_statement =
 
 
 
-print_statement = 'print':initializer;
+print_statement = 'print':literal;
 
 
 enum_declaration = 'enum':"{":enumerator:{",":enumerator}:"}";
@@ -43,7 +43,7 @@ enumerator = identifier:["=":expression];
 break_statement    =    'break':[";"];
 continue_statement = 'continue':[";"];
 label_statement    = identifier:":";
-return_statement   = 'return':[initializer]:[";"];
+return_statement   = 'return':[value]:[";"];
 
 
 
@@ -71,7 +71,7 @@ operand =
                 'true'|
                'false'|
   ("(":expression:")")|
-      initializer_list|
+            value_list|
             identifier|
        integer_literal|
      character_literal|
@@ -92,11 +92,11 @@ parameter = type:[identifier];
 
 
 
-object_declaration = ['static']:['const']:type:identifier:["=":initializer];
+object_declaration = ['static']:['const']:type:identifier:["=":value];
 
-initializer = 
-         expression|
-   initializer_list;
+value = 
+  expression|
+  value_list;
 
 
 type = type_kind:{"*"|array_size}:["&"];
@@ -119,8 +119,8 @@ type_kind =
 
 array_size = "[":[expression]:"]";
 
-   argument_list = "(":[initializer:{",":initializer}]:")";
-initializer_list = "{":[initializer:{",":initializer}]:"}";
+argument_list = "(":[value:{",":value}]:")";
+   value_list = "{":[value:{",":value}]:"}";
 
 
 

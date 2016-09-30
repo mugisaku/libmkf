@@ -4,19 +4,16 @@
 
 #include<string>
 #include<vector>
-#include"cmplr_foldcontext.hpp"
-#include"cmplr_type.hpp"
-#include"cmplr_parameter.hpp"
-#include"expression_foldresult.hpp"
+#include"typesystem_element.hpp"
+#include"cmplr_value.hpp"
 
 
 
 
 struct Context;
 struct PreContext;
-struct Variable;
-struct Constant;
 struct Function;
+struct Parameter;
 
 
 namespace expression{
@@ -37,59 +34,28 @@ StorageKind
 };
 
 
-enum class
-DeclarationKind
-{
-  null,
-
-  function,
-  variable,
-  constant,
-  parameter,
-
-};
-
-
 struct
 Declaration
 {
   StorageKind  storage_kind;
 
-  DeclarationKind  kind;
-
   size_t  offset;
 
-  union Data{
-    const Parameter*  par;
+  std::string  name;
 
-    Function*    fn;
-    Variable*   var;
-    Constant*   con;
-
-  } data;
-
+  Value  value;
 
   Declaration();
-  Declaration(const Parameter&  par, size_t  off);
+  Declaration(const Parameter&  para, size_t  off=0);
   Declaration(const mkf::Node&  src, PreContext&  prectx);
-  Declaration(const Declaration&   rhs)=delete;
-  Declaration(      Declaration&&  rhs) noexcept;
- ~Declaration();
 
 
-  Declaration&  operator=(Declaration&&  rhs) noexcept;
-
-  void  clear();
-
-  size_t  get_size() const;
+  const Value&  get_value() const;
 
   const std::string&  get_name() const;
 
-  void  reset(Variable*  var);
-  void  reset(const Parameter&  par, size_t  off=0);
+  void  reset(const Parameter&  para, size_t  off=0);
   void  reset(Function*  fn);
-
-  expression::FoldResult  fold(FoldContext&  ctx) const;
 
   void  print(FILE*  f=stdout) const;
 

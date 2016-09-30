@@ -70,19 +70,22 @@ CMPLR_OBJ =                                      \
   libcmplr/expression_operand__read_integer.o    \
   libcmplr/expression_element.o                  \
   libcmplr/expression_operator.o                 \
-  libcmplr/cmplr_type.o                          \
-  libcmplr/cmplr_type__make.o                    \
-  libcmplr/cmplr_type__is.o                      \
-  libcmplr/cmplr_type__compile.o                 \
+  libcmplr/typesystem_element.o                  \
+  libcmplr/typesystem_fundamental.o              \
+  libcmplr/typesystem_array.o                    \
+  libcmplr/typesystem_pointer.o                  \
+  libcmplr/typesystem_struct.o                   \
+  libcmplr/typesystem_union.o                    \
+  libcmplr/typesystem_enum.o                     \
+  libcmplr/typesystem__make.o                    \
+  libcmplr/typesystem__is.o                      \
+  libcmplr/typesystem__compile.o                 \
+  libcmplr/cmplr_value.o                         \
   libcmplr/cmplr_parameter.o                     \
   libcmplr/cmplr_signature.o                     \
   libcmplr/cmplr_function.o                      \
-  libcmplr/cmplr_initializer.o                   \
-  libcmplr/cmplr_variable.o                      \
-  libcmplr/cmplr_constant.o                      \
   libcmplr/cmplr_declaration.o                   \
   libcmplr/cmplr_declaration__read.o             \
-  libcmplr/cmplr_foldcontext.o                   \
   libcmplr/cmplr_precontext.o                    \
   libcmplr/cmplr_context.o                       \
   libcmplr/cmplr_block.o                         \
@@ -93,11 +96,11 @@ CMPLR_OBJ =                                      \
   libcmplr/cmplr_statement__read_ctrl.o          \
 
 
-all: $(OBJ) assvm assvm_as
+all: $(OBJ) assvm assvm_as assvm_test_type
 
 
 clean:
-	rm -f $(OBJ) $(CMPLR_OBJ) assvm assvm_as
+	rm -f $(OBJ) $(CMPLR_OBJ) assvm assvm_as assvm_test_type
 
 
 objects: $(OBJ) $(CMPLR_OBJ)
@@ -110,6 +113,9 @@ assvm: $(OBJ) $(CMPLR_OBJ) assvm.cpp
 
 assvm_as: $(OBJ) assvm_as.cpp
 	$(CXX) -o $@ assvm_as.cpp $(OBJ) ../*.o ../libpp/*.o $(CXXFLAGS) $(LDFLAGS)
+
+assvm_test_type: $(CMPLR_OBJ) assvm_test_type.cpp
+	$(CXX) -o $@ assvm_test_type.cpp $(CMPLR_OBJ) ../*.o ../libpp/*.o $(CXXFLAGS) $(LDFLAGS)
 
 
 

@@ -2,11 +2,9 @@
 #define CMPLR_SIGNATURE_HPP_INCLUDED
 
 
-#include"cmplr_type.hpp"
+#include"typesystem_element.hpp"
 #include"cmplr_parameter.hpp"
 #include<string>
-
-
 
 
 struct
@@ -16,7 +14,7 @@ Signature
 
   std::string  name;
 
-  ParameterList  parameter_list;
+  std::vector<Parameter>  parameter_list;
 
   Signature();
   Signature(const mkf::Node&  src);

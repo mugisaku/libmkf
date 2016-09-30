@@ -4,7 +4,8 @@
 
 #include"expression_operand.hpp"
 #include"expression_element.hpp"
-#include"cmplr_type.hpp"
+#include"typesystem_element.hpp"
+#include"cmplr_value.hpp"
 #include"mkf_node.hpp"
 #include<list>
 
@@ -45,13 +46,11 @@ Node
 
   void  print(FILE*  f=stdout) const;
 
-  FoldResult  fold(FoldContext&  ctx) const;
+  Value  get_value(PreContext&  prectx) const;
 
   Type  compile(Context&  ctx) const;
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
-
-  static NodeList  read_list(const mkf::Node&  src, PreContext&  prectx);
 
 };
 

@@ -39,7 +39,7 @@ Block
   std::list<Declaration>  declaration_list;
   std::list<Statement>      statement_list;
 
-  std::unique_ptr<expression::Node>  condition;
+  std::shared_ptr<expression::Node>  condition;
 
   Block(                                                                                         );
   Block(BlockKind  k                                                                             );

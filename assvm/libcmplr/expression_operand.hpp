@@ -4,9 +4,9 @@
 
 #include<string>
 #include"cmplr_declaration.hpp"
+#include"cmplr_value.hpp"
 #include"cmplr_context.hpp"
-#include"cmplr_type.hpp"
-#include"expression_foldresult.hpp"
+#include"typesystem_element.hpp"
 #include"mkf_node.hpp"
 
 
@@ -17,30 +17,14 @@ struct Node;
 }
 
 
-using NodeList = std::vector<expression::Node>;
-
-
 struct
 ArgumentList
 {
-  NodeList*  node_list;
+  ValueList*  value_list;
 
-  constexpr ArgumentList(NodeList*  ls): node_list(ls){}
-
-};
-
-
-struct
-ExpressionList
-{
-  NodeList*  node_list;
-
-  constexpr ExpressionList(NodeList*  ls): node_list(ls){}
+  constexpr ArgumentList(ValueList*  ls): value_list(ls){}
 
 };
-
-
-struct Initializer;
 
 
 namespace expression{
@@ -51,7 +35,9 @@ OperandKind
 {
   null,
 
-  initializer,
+  expression,
+
+  value_list,
 
   nullptr_,
   boolean,
@@ -94,11 +80,9 @@ Operand
     std::string*    id;
     std::u16string*  s;
 
-    Node*  nd;
+    Node*       nd;
 
-    NodeList*  ndls;
-
-    Initializer*  init;
+    ValueList*  vals;
 
   } data;
 
@@ -110,7 +94,8 @@ Operand
   Operand(nullptr_t  nul);
   Operand(bool  b);
   Operand(std::u16string*  s);
-  Operand(Initializer*  init);
+  Operand(Node*      nd);
+  Operand(ValueList*  vals);
   Operand(const ArgumentList&  args);
   Operand(const Subscript&  subsc);
   Operand(const mkf::Node&  src, PreContext&  prectx);
@@ -130,13 +115,14 @@ Operand
   void  reset(bool  b);
   void  reset(std::u16string*  s);
   void  reset(std::string*  id);
-  void  reset(Initializer*  init);
+  void  reset(Node*  nd);
+  void  reset(ValueList*  vals);
   void  reset(const ArgumentList&  args);
   void  reset(const Subscript&  subsc);
 
   void  print(FILE*  f=stdout) const;
 
-  FoldResult  fold(FoldContext&  ctx) const;
+  Value  get_value(PreContext&  prectx) const;
 
   Type  compile(Context&  ctx) const;
 

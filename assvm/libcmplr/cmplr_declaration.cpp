@@ -1,7 +1,5 @@
 #include"cmplr_declaration.hpp"
 #include"cmplr_function.hpp"
-#include"cmplr_variable.hpp"
-#include"cmplr_constant.hpp"
 
 
 
@@ -9,169 +7,35 @@
 Declaration::
 Declaration():
 storage_kind(StorageKind::null),
-kind(DeclarationKind::null),
 offset(0)
 {
 }
 
 
 Declaration::
-Declaration(const Parameter&  par, size_t  off):
-storage_kind(StorageKind::null),
-kind(DeclarationKind::null)
+Declaration(const Parameter&  para, size_t  off):
+storage_kind(StorageKind::null)
 {
-  reset(par,off);
+  reset(para,off);
 }
 
 
 Declaration::
 Declaration(const mkf::Node&  src, PreContext&  prectx):
 storage_kind(StorageKind::null),
-kind(DeclarationKind::null),
 offset(0)
 {
   read(src,prectx);
 }
 
 
+
+
+const Value&
 Declaration::
-Declaration(Declaration&&  rhs) noexcept:
-storage_kind(StorageKind::null),
-kind(DeclarationKind::null),
-offset(0)
+get_value() const
 {
-  *this = std::move(rhs);
-}
-
-
-Declaration::
-~Declaration()
-{
-  clear();
-}
-
-
-
-
-Declaration&
-Declaration::
-operator=(Declaration&&  rhs) noexcept
-{
-  clear();
-
-  storage_kind = rhs.storage_kind;
-
-  kind = rhs.kind                        ;
-         rhs.kind = DeclarationKind::null;
-
-  data = rhs.data;
-
-  offset = rhs.offset;
-
-
-  return *this;
-}
-
-
-void
-Declaration::
-clear()
-{
-    switch(kind)
-    {
-      case(DeclarationKind::function):
-        delete data.fn;
-        break;
-      case(DeclarationKind::variable):
-        delete data.var;
-        break;
-      case(DeclarationKind::constant):
-        delete data.con;
-        break;
-      case(DeclarationKind::parameter):
-        break;
-    }
-
-
-  kind = DeclarationKind::null;
-}
-
-
-
-
-size_t
-Declaration::
-get_size() const
-{
-    switch(kind)
-    {
-      case(DeclarationKind::function):
-        return data.fn->signature.type.get_size();
-        break;
-      case(DeclarationKind::variable):
-        return data.var->type.get_size();
-        break;
-      case(DeclarationKind::constant):
-        return data.con->type.get_size();
-        break;
-      case(DeclarationKind::parameter):
-        return data.par->type.get_size();
-        break;
-    }
-
-
-  return 0;
-}
-
-
-const std::string&
-Declaration::
-get_name() const
-{
-    switch(kind)
-    {
-      case(DeclarationKind::function):
-        return data.fn->signature.name;
-        break;
-      case(DeclarationKind::variable):
-        return data.var->name;
-        break;
-      case(DeclarationKind::constant):
-        return data.con->name;
-        break;
-      case(DeclarationKind::parameter):
-        return data.par->name;
-        break;
-    }
-
-
-  report;
-
-  printf("データがありません\n");
-
-  throw;
-}
-
-
-void
-Declaration::
-reset(Variable*  var)
-{
-  clear();
-
-    if(var->type.test_constant())
-    {
-      kind = DeclarationKind::constant;
-
-      data.con = nullptr;
-    }
-
-  else
-    {
-      kind = DeclarationKind::variable;
-
-      data.var = var;
-    }
+  return value;
 }
 
 
@@ -179,67 +43,127 @@ void
 Declaration::
 reset(Function*  fn)
 {
-  clear();
-
   storage_kind = StorageKind::global;
 
-  kind = DeclarationKind::function;
+  value.clear();
 
-  data.fn = fn;
+  new(&value) Value(fn);
 }
 
 
 void
 Declaration::
-reset(const Parameter&  par, size_t  off)
+reset(const Parameter&  para, size_t  off)
 {
-  clear();
-
   storage_kind = StorageKind::local;
 
-  kind = DeclarationKind::parameter;
+  value.clear();
+
+  value.kind = ValueKind::parameter;
 
   offset = off;
 
-  data.par = &par;
+  value.type = para.type;
+  name       = para.name;
 }
 
 
-expression::FoldResult
-Declaration::
-fold(FoldContext&  ctx) const
+
+
+namespace{
+void
+compile_local(const Declaration&  decl, Context&  ctx)
 {
-/*
-    if(object_kind == ObjectKind::constant)
-    {
-      return expression::FoldResult(data.i);
-    }
-*/
-
-
-  return expression::FoldResult();
+  ctx.push("  pshbp        ;//*********************************//\n");
+  ctx.push("  psh16u %6d;//ローカル変数%sのアドレスを読み出し//\n",decl.offset,decl.name.data());
+  ctx.push("  sub          ;//*********************************//\n");
 }
 
 
+Type
+compile_inconstant(const Declaration&  decl, Context&  ctx)
+{
+    switch(decl.storage_kind)
+    {
+      case(StorageKind::local):
+        compile_local(decl,ctx);
+        break;
+      case(StorageKind::local_static):
+        ctx.push("  psh16u _STATIC_%06z;//%s\n",decl.offset,decl.name.data());
+        break;
+      case(StorageKind::global):
+        ctx.push("  psh16u %s;\n",decl.name.data());
+        break;
+    }
+
+
+  return decl.get_value().type.make_reference();
+}
+
+
+void
+compile_inconstant_definition(const Declaration&  decl, Context&  ctx)
+{
+    switch(decl.storage_kind)
+    {
+      case(StorageKind::local):
+/*
+          if(initializer)
+          {
+            compile_local(decl,name,ctx);
+
+            auto  t = initializer.compile(ctx);
+
+              if(t == TypeKind::reference)
+              {
+                t = t.compile_dereference(ctx);
+              }
+
+
+            type.make_reference().compile_assign(ctx);
+          }
+*/
+        break;
+      case(StorageKind::local_static):
+        ctx.push_definition("_STATIC_%06z://%s\n",decl.offset,decl.name.data());
+//        ctx.push_definition("data i32 {%d};\n",i);
+        break;
+      case(StorageKind::global):
+        ctx.push_definition("%s:\n",decl.name.data());
+//        ctx.push_definition("data i32 {%d};\n",i);
+        break;
+    }
+}
+
+
+}
 
 
 Type
 Declaration::
 compile(Context&  ctx) const
 {
-    switch(kind)
+    switch(value.kind)
     {
-      case(DeclarationKind::function):
-        return data.fn->compile(ctx);
+      case(ValueKind::single):
+        return compile_inconstant(*this,ctx);
         break;
-      case(DeclarationKind::variable):
-        return data.var->compile(*this,ctx);
+      case(ValueKind::array):
         break;
-      case(DeclarationKind::constant):
-        return data.con->compile(*this,ctx);
+//      case(ValueKind::constant):
+//        ctx.push("  pshi32 %d;//constexpr\n",value.cdata.i);
+
+        return value.type;
         break;
-      case(DeclarationKind::parameter):
-        return data.par->compile(*this,ctx);
+      case(ValueKind::function):
+        return value.data.fn->compile(ctx);
+        break;
+      case(ValueKind::parameter):
+        ctx.push("  pshbp        ;//*************************//\n");
+        ctx.push_psh(offset,"//実引数%sのアドレス読み出し//\n",name.data());
+        ctx.push("  add          ;//*************************//\n");
+
+        return value.type.make_reference();
         break;
      }
 
@@ -252,18 +176,12 @@ void
 Declaration::
 compile_definition(Context&  ctx) const
 {
-    switch(kind)
+    switch(value.kind)
     {
-      case(DeclarationKind::function):
-        data.fn->compile_definition(ctx);
+      case(ValueKind::function):
+//        data.fn->compile_definition(ctx);
         break;
-      case(DeclarationKind::variable):
-        data.var->compile_definition(*this,ctx);
-        break;
-      case(DeclarationKind::constant):
-        data.con->compile_definition(*this,ctx);
-        break;
-      case(DeclarationKind::parameter):
+      case(ValueKind::parameter):
         break;
     }
 }
@@ -285,21 +203,9 @@ print(FILE*  f) const
     }
 
 
-    switch(kind)
-    {
-  case(DeclarationKind::function):
-      data.fn->print(f);
-      break;
-  case(DeclarationKind::variable):
-      data.var->print(f);
-      break;
-  case(DeclarationKind::constant):
-      data.con->print(f);
-      break;
-  case(DeclarationKind::parameter):
-      data.par->print(f);
-      break;
-    }
+  value.type.print(f);
+
+  fprintf(f,"  %s",name.data());
 }
 
 

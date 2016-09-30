@@ -4,9 +4,6 @@
 
 #include<cstddef>
 #include"mkf_node.hpp"
-#include"mkf_cursor.hpp"
-#include"expression_node.hpp"
-#include"cmplr_declaration.hpp"
 #include"cmplr_branchnode.hpp"
 
 
@@ -17,7 +14,13 @@
 
 struct Block;
 struct PreContext;
-struct Initializer;
+struct Declaration;
+struct Value;
+
+
+namespace expression{
+struct Node;
+}
 
 
 enum class
@@ -43,9 +46,9 @@ StatementKind
 struct
 Print
 {
-  Initializer*  init;
+  Value*  v;
 
-  constexpr Print(Initializer*  init_): init(init_){}
+  constexpr Print(Value*  v_): v(v_){}
 
 };
 
@@ -53,9 +56,9 @@ Print
 struct
 Return
 {
-  Initializer*  init;
+  Value*  v;
 
-  constexpr Return(Initializer*  init_=nullptr): init(init_){}
+  constexpr Return(Value*  v_=nullptr): v(v_){}
 
 };
 
@@ -103,8 +106,9 @@ Statement
     std::string*            id;
     BranchNode*          brand;
 
-    expression::Node*     expr;
-    Initializer*          init;
+    expression::Node*  expr;
+
+    Value*  val;
 
   } data;
 
@@ -113,12 +117,13 @@ Statement
    Statement(const Block*  blk);
    Statement(Return  ret);
    Statement(const mkf::Node&  src, PreContext&  prectx);
-   Statement(const Statement&)=delete;
+   Statement(const Statement&   rhs);
    Statement(      Statement&&  rhs) noexcept;
   ~Statement();
 
 
-  Statement&  operator=(Statement&&  rhs);
+  Statement&  operator=(const Statement&   rhs);
+  Statement&  operator=(      Statement&&  rhs);
 
   operator bool() const;
 

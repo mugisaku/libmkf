@@ -18,7 +18,7 @@ BranchNode
 {
   int  index_base;
 
-  std::vector<const Block*>  block_list;
+  std::vector<Block*>  block_list;
 
   void  push(Block&  blk);
 

@@ -3,7 +3,6 @@
 
 
 #include"../assvm_instruction.hpp"
-#include"cmplr_foldcontext.hpp"
 #include"cmplr_precontext.hpp"
 
 
@@ -20,7 +19,7 @@ Entry
 
 
 struct
-Context: public FoldContext
+Context: public PreContext
 {
   std::string  current_content;
 

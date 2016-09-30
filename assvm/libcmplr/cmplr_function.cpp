@@ -59,7 +59,8 @@ compile(Context&  ctx) const
   ctx.push("  //********************//\n");
 
 
-  return Type(TypeKind::function,signature.type.duplicate());
+//  return Type(TypeKind::function,signature.type.duplicate());
+  return Type();
 }
 
 
@@ -67,8 +68,8 @@ void
 Function::
 compile_definition(Context&  ctx) const
 {
-  auto  f = ctx.function       ;
-            ctx.function = this;
+  auto  f = ctx.const_function       ;
+            ctx.const_function = this;
 
   ctx.block_stack.clear();
 
@@ -91,7 +92,8 @@ compile_definition(Context&  ctx) const
 
   ctx.current_content.clear();
 
-  ctx.function = f;
+
+  ctx.const_function = f;
 }
 
 
@@ -105,7 +107,7 @@ print(FILE*  f) const
 
     for(auto&  decl: block->declaration_list)
     {
-        if(decl.kind == DeclarationKind::parameter)
+        if(decl.get_value().kind == ValueKind::parameter)
         {
           decl.print(f);
 
@@ -121,7 +123,7 @@ print(FILE*  f) const
     for(auto&  decl: block->declaration_list)
     {
         if((decl.storage_kind == StorageKind::local) &&
-           (decl.kind         == DeclarationKind::variable))
+           (decl.get_value().kind != ValueKind::parameter))
         {
           decl.print(f);
 

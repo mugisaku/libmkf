@@ -1,47 +1,6 @@
 #include"cmplr_parameter.hpp"
-#include"cmplr_declaration.hpp"
-#include"cmplr_context.hpp"
 
 
-
-
-Parameter::
-Parameter()
-{
-}
-
-
-Parameter::
-Parameter(const mkf::Node&  src)
-{
-  read(src);
-}
-
-
-
-
-Type
-Parameter::
-compile(const Declaration&  decl, Context&  ctx) const
-{
-  ctx.push("  pshbp        ;//*************************//\n");
-  ctx.push_psh(decl.offset,"//実引数%sのアドレス読み出し//\n",name.data());
-  ctx.push("  add          ;//*************************//\n");
-
-  return type.make_reference();
-}
-
-
-
-
-void
-Parameter::
-print(FILE*  f) const
-{
-  type.print(f);
-
-  fprintf(f,"  %s",name.data());
-}
 
 
 void
@@ -68,18 +27,17 @@ read(const mkf::Node&  src)
 
       cur.advance();
     }
+}
 
 
-    switch(type.get_kind())
-    {
-  case(TypeKind::int32):
-  case(TypeKind::pointer):
-  case(TypeKind::reference):
-      break;
-  default:
-      printf("引数として渡せるのはint型,ポインタ型,参照型だけです");
-      throw;
-    }
+
+void
+Parameter::
+print(FILE*  f) const
+{
+  type.print(f);
+
+  fprintf(f,"  %s",name.data());
 }
 
 

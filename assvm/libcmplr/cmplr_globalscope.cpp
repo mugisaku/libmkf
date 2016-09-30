@@ -53,7 +53,6 @@ read(const mkf::Node&  src)
   PreContext  prectx(*this);
 
   prectx.function = nullptr;
-  prectx.block    = nullptr;
 
     while(!cur.test_ended())
     {
