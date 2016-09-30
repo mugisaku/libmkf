@@ -12,14 +12,6 @@ local_object_size(0)
 }
 
 
-Function::
-Function(const mkf::Node&  src, PreContext&  prectx):
-local_object_size(0)
-{
-  read(src,prectx);
-}
-
-
 
 
 Block&
@@ -46,10 +38,10 @@ compile(Context&  ctx) const
   ctx.push("  //関数の呼び出し始め//\n");
   ctx.push("  //******************//\n");
 
-  ctx.push("  psh16u %s;\n",signature.name.data());
+  ctx.push("  psh16u %s;\n",name.data());
   ctx.push("  cal      ;\n");
   ctx.push("  pshsp    ;\n");
-  ctx.push("  psh8u %3d;\n",4*signature.parameter_list.size());
+  ctx.push("  psh8u %3d;\n",4*parameter_list.size());
   ctx.push("  add      ;\n");
   ctx.push("  updsp    ;\n");
   ctx.push("  pshtm    ;\n");
@@ -73,7 +65,7 @@ compile_definition(Context&  ctx) const
 
   ctx.block_stack.clear();
 
-  ctx.push("%s:\n",signature.name.data());
+  ctx.push("%s:\n",name.data());
 
     if(local_object_size)
     {
@@ -101,7 +93,34 @@ void
 Function::
 print(FILE*  f) const
 {
-  signature.print(f);
+  fprintf(f,"function  %s: ",name.data());
+
+  type.print(f);
+
+  fprintf(f,"(");
+
+    if(parameter_list.size())
+    {
+      auto  it = parameter_list.cbegin();
+
+        for(;;)
+        {
+          auto&  p = *it++;
+
+          p.print(f);
+
+            if(it == parameter_list.cend())
+            {
+              break;
+            }
+
+
+          fprintf(f,",");
+        }
+    }
+
+
+  fprintf(f,")\n");
 
   fprintf(f,"//parameters\n");
 
@@ -158,9 +177,21 @@ read(const mkf::Node&  src, PreContext&  prectx)
     {
       auto&  nd = cur.get();
 
-        if(nd == "signature")
+        if(nd == "type")
         {
-          signature.read(nd);
+          type.read(nd);
+        }
+
+      else
+        if(nd == "identifier")
+        {
+          nd.collect_characters(name);
+        }
+
+      else
+        if(nd == "parameter")
+        {
+          parameter_list.emplace_back(nd);
         }
 
       else
@@ -170,7 +201,7 @@ read(const mkf::Node&  src, PreContext&  prectx)
 
           blk->function = this;
 
-          auto&  prmls = signature.parameter_list;
+          auto&  prmls = parameter_list;
 
           size_t  offset = 0;
 

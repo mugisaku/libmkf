@@ -45,9 +45,11 @@ reset(Function*  fn)
 {
   storage_kind = StorageKind::global;
 
-  value.clear();
+  value.~Value();
 
   new(&value) Value(fn);
+
+  name = fn->name;
 }
 
 
@@ -176,14 +178,7 @@ void
 Declaration::
 compile_definition(Context&  ctx) const
 {
-    switch(value.kind)
-    {
-      case(ValueKind::function):
-//        data.fn->compile_definition(ctx);
-        break;
-      case(ValueKind::parameter):
-        break;
-    }
+  value.compile_definition(ctx);
 }
 
 
@@ -203,9 +198,9 @@ print(FILE*  f) const
     }
 
 
-  value.type.print(f);
+  fprintf(f,"  %s = ",name.data());
 
-  fprintf(f,"  %s",name.data());
+  value.print(f);
 }
 
 

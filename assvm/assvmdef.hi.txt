@@ -31,7 +31,7 @@ control_statement =
 
 
 
-print_statement = 'print':literal;
+print_statement = 'print':value;
 
 
 enum_declaration = 'enum':"{":enumerator:{",":enumerator}:"}";
@@ -83,9 +83,7 @@ subscript = "[":[expression]:"]";
 
 
 
-function_declaration = 'function':signature:block;
-
-signature = type:identifier:"(":[parameter:{",":parameter}]:")";
+function_declaration = 'function':identifier:":":type:"(":[parameter:{",":parameter}]:")":block;
 
 parameter = type:[identifier];
 

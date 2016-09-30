@@ -362,7 +362,7 @@ get_value(PreContext&  prectx) const
         if(!decl)
         {
           printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
-                 prectx.function->signature.name.data(),data.id->data());
+                 prectx.function->name.data(),data.id->data());
 
           throw;
         }
@@ -418,7 +418,7 @@ compile(Context&  ctx) const
         if(!decl)
         {
           printf("関数%s内において、識別子%sが指すオブジェクトが見つかりません\n",
-                 ctx.function->signature.name.data(),data.id->data());
+                 ctx.function->name.data(),data.id->data());
 
           throw;
         }

@@ -21,7 +21,11 @@ read(const mkf::Node&  src, PreContext&  prectx)
 
         if(nd == "function_declaration")
         {
-          reset(new Function(nd,prectx));
+          auto  fn = new Function;
+
+          fn->read(nd,prectx);
+
+          reset(fn);
         }
 
       else

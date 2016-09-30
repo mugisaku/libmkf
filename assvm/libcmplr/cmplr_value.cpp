@@ -200,6 +200,23 @@ compile(Context&  ctx) const
 }
 
 
+void
+Value::
+compile_definition(Context&  ctx) const
+{
+    switch(kind)
+    {
+  case(ValueKind::single):
+      break;
+  case(ValueKind::array):
+      break;
+  case(ValueKind::function):
+      data.fn->compile_definition(ctx);
+      break;
+    }
+}
+
+
 
 
 void

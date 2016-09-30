@@ -82,7 +82,6 @@ CMPLR_OBJ =                                      \
   libcmplr/typesystem__compile.o                 \
   libcmplr/cmplr_value.o                         \
   libcmplr/cmplr_parameter.o                     \
-  libcmplr/cmplr_signature.o                     \
   libcmplr/cmplr_function.o                      \
   libcmplr/cmplr_declaration.o                   \
   libcmplr/cmplr_declaration__read.o             \

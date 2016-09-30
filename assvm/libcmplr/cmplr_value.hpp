@@ -81,6 +81,7 @@ Value
   void  print(FILE*  f=stdout) const;
 
   Value  compile(Context&  ctx) const;
+  void  compile_definition(Context&  ctx) const;
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
 

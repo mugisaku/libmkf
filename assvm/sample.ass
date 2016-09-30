@@ -18,16 +18,14 @@ xorshift()
 
 
 function
-int
-add(int  a, int  b)
+add: int(int  a, int  b)
 {
   return a+b;
 }
 
 
 function
-void
-main()
+main: void()
 {
   int8[4]  i = {1,2,3,4};
 

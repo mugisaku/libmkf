@@ -84,7 +84,7 @@ void
 Block::
 compile_push_do_begin(Context&  ctx) const
 {
-  auto  name = function->signature.name.data();
+  auto  name = function->name.data();
 
   ctx.push("  psh16u _FUNC%s_DO%04d_BEGIN;\n",name,index);
 }
@@ -94,7 +94,7 @@ void
 Block::
 compile_push_do_end(Context&  ctx) const
 {
-  auto  name = function->signature.name.data();
+  auto  name = function->name.data();
 
   ctx.push("  psh16u _FUNC%s_DO%04d_END;\n",name,index);
 }
@@ -108,7 +108,7 @@ compile(Context&  ctx) const
 
   ctx.block_stack.emplace_back(this);
 
-  auto  name = function->signature.name.data();
+  auto  name = function->name.data();
 
     switch(kind)
     {

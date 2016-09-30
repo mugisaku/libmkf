@@ -2,9 +2,9 @@
 #define CMPLR_FUNCTION_HPP_INCLUDED
 
 
+#include"cmplr_parameter.hpp"
 #include"cmplr_statement.hpp"
 #include"cmplr_declaration.hpp"
-#include"cmplr_signature.hpp"
 #include"cmplr_block.hpp"
 #include<memory>
 
@@ -37,7 +37,11 @@ struct PreContext;
 struct
 Function
 {
-  Signature  signature;
+  std::string  name;
+
+  Type  type;
+
+  std::vector<Parameter>  parameter_list;
 
   std::list<Block>  block_list;
 
@@ -46,7 +50,6 @@ Function
   std::shared_ptr<Block>  block;
 
   Function();
-  Function(const mkf::Node&  src, PreContext&  prectx);
 
 
   Block&  make_block(BlockKind  k, int  count, const mkf::Node&  src, PreContext&  prectx);
