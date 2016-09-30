@@ -45,9 +45,12 @@ Enum
 
   std::vector<Enumerator>  enumerator_list;
 
-  Enum(                                                                               );
-  Enum(                    std::string&&  name_, std::initializer_list<Enumerator>  ls);
-  Enum(FundamentalKind  k, std::string&&  name_, std::initializer_list<Enumerator>  ls);
+  Enum(                                        );
+  Enum(                    std::string&&  name_);
+  Enum(FundamentalKind  k, std::string&&  name_);
+
+  void  append(std::string&&  name_             );
+  void  append(std::string&&  name_, int   value);
 
   void  snprint(char*&  s, size_t&  n) const;
 

@@ -25,10 +25,12 @@ StructMember
 
   size_t  offset;
 
-  StructMember(Element&&  type_, std::string&&  name_);
+  StructMember(Element&&  type_, std::string&&  name_, size_t  offset_=0);
 
   StructMember(const StructMember&   rhs) noexcept;
   StructMember(      StructMember&&  rhs) noexcept;
+
+  size_t  get_tail_offset() const;
 
 };
 

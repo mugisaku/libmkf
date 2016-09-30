@@ -15,55 +15,47 @@ base(FundamentalKind::int32)
 
 
 Enum::
-Enum(std::string&&  name_, std::initializer_list<Enumerator>  ls):
+Enum(std::string&&  name_):
 base(FundamentalKind::int32),
-name(std::move(name_)),
-enumerator_list(ls.size())
+name(std::move(name_))
 {
-  auto  src =              ls.begin();
-  auto  dst = enumerator_list.begin();
-
-  int  v = 0;
-
-    for(int  i = 0;  i < ls.size();  ++i)
-    {
-      auto&  src_e = *src++;
-      auto&  dst_e = *dst++;
-
-      dst_e.name = std::move(src_e.name);
-
-      dst_e.set_value(src_e.value_defined? src_e.value:v);
-
-      v = dst_e.value+1;
-    }
 }
 
 
 Enum::
-Enum(FundamentalKind  k, std::string&&  name_, std::initializer_list<Enumerator>  ls):
+Enum(FundamentalKind  k, std::string&&  name_):
 base(k),
-name(std::move(name_)),
-enumerator_list(ls.size())
+name(std::move(name_))
 {
-  auto  src =              ls.begin();
-  auto  dst = enumerator_list.begin();
+}
 
-  int  v = 0;
 
-    for(int  i = 0;  i < ls.size();  ++i)
+
+
+void
+Enum::
+append(std::string&&  name_)
+{
+    if(enumerator_list.size())
     {
-      auto&  src_e = *src++;
-      auto&  dst_e = *dst++;
+      int  v = enumerator_list.back().value+1;
 
-      dst_e.name = std::move(src_e.name);
+      enumerator_list.emplace_back(std::move(name_),v);
+    }
 
-      dst_e.set_value(src_e.value_defined? src_e.value:v);
-
-      v = dst_e.value+1;
+  else
+    {
+      enumerator_list.emplace_back(std::move(name_),0);
     }
 }
 
 
+void
+Enum::
+append(std::string&&  name_, int   value)
+{
+  enumerator_list.emplace_back(std::move(name_),value);
+}
 
 
 void

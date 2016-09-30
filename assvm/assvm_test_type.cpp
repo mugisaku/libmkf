@@ -33,16 +33,17 @@ main(int  argc, char**  argv)
   Struct  u("test_struct");
 
   u.append({I8(),"t3"});
-  u.append({I16(),"t2"});
-  u.append({I8(),"t3"});
-  u.append({Type(I8()).make_array(56),"t3"});
+  u.append({I32(),"t1"});
   u.append({I32(),"t1"});
   u.append({I8(),"t3"});
-  u.append({I16(),"t2"});
-  u.append({I16(),"t2"});
+  u.append({Char(),"t3"});
+  u.append({I8(),"t3"});
+  u.append({Char(),"t3"});
   u.append({I8(),"t3"});
   u.append({I8(),"t3"});
-  u.append({I32(),"t1"});
+  u.append({I8(),"t3"});
+  u.append({I8(),"t3"});
+  u.append({I8(),"t3"});
 
   u.snprint(s,n);
 

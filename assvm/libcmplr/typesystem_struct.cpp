@@ -9,11 +9,12 @@ namespace typesystem{
 
 
 StructMember::
-StructMember(Element&&  type_, std::string&&  name_):
+StructMember(Element&&  type_, std::string&&  name_, size_t  offset_):
 type(new Type(std::move(type_))),
 name(std::move(name_)),
-offset(0)
+offset(offset_)
 {
+  offset += (offset%type->get_alignment_size());
 }
 
 
@@ -23,6 +24,7 @@ name(rhs.name),
 type(rhs.type? new Element(*rhs.type):nullptr),
 offset(rhs.offset)
 {
+  offset += (offset%type->get_alignment_size());
 }
 
 
@@ -32,6 +34,17 @@ name(std::move(rhs.name)),
 type(std::move(rhs.type)),
 offset(rhs.offset)
 {
+  offset += (offset%type->get_alignment_size());
+}
+
+
+
+
+size_t
+StructMember::
+get_tail_offset() const
+{
+  return offset+type->get_size();
 }
 
 
@@ -60,15 +73,16 @@ void
 Struct::
 append(StructMember&&  member)
 {
-  auto  malsz = member.type->get_alignment_size();
+  alignment_size = std::max(alignment_size,member.type->get_alignment_size());
 
-  member.offset = size+(size%malsz);
-
-  size = member.offset+member.type->get_size();
-
-  alignment_size = std::max(alignment_size,malsz);
+  member.offset = (member_list.size()? member_list.back().get_tail_offset():0);
 
   member_list.emplace_back(std::move(member));
+
+
+  auto  tail_offset = member_list.back().get_tail_offset();
+
+  size = (tail_offset+(alignment_size-1))/alignment_size*alignment_size;
 }
 
 
