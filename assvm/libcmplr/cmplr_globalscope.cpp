@@ -28,7 +28,11 @@ compile()
 
     for(auto&  decl: declaration_list)
     {
-      decl.compile_definition(ctx);
+        if((decl == StorageKind::global) ||
+           (decl == StorageKind::local_static))
+        {
+          decl.compile_definition(ctx);
+        }
     }
 
 

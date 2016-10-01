@@ -283,6 +283,15 @@ create_tree(std::list<Node*>&&  ls)
 
 
 
+namespace{
+Value
+get_operand_value(const Value&  src, PreContext&  prectx)
+{
+  return src;
+}
+}
+
+
 Value
 Node::
 get_value(PreContext&  prectx) const
@@ -293,7 +302,7 @@ get_value(PreContext&  prectx) const
       return left->get_value(prectx);
       break;
   case(ElementKind::operand):
-      return element.data.operand.get_value(prectx);
+      return get_operand_value(element.data.operand,prectx);
       break;
   case(ElementKind::unary_operator):
       {
@@ -326,7 +335,7 @@ compile(Context&  ctx) const
       return left->compile(ctx);
       break;
   case(ElementKind::operand):
-      return element.data.operand.compile(ctx);
+//      return element.data.operand.compile(ctx);
       break;
   case(ElementKind::unary_operator):
       {
@@ -406,9 +415,9 @@ read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls
         }
 
       else
-        if(nd == "operand")
+        if(nd == "value")
         {
-          ls.emplace_back(Operand(nd,prectx));
+          ls.emplace_back(Value(nd,prectx));
         }
 
 

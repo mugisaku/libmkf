@@ -70,7 +70,7 @@ Element
 
 public:
   Element(ElementKind  k=ElementKind::null);
-  Element(const Fundamental&  ft);
+  Element(bool  c, FundamentalKind  k);
   Element(Array&&      arr);
   Element(Pointer&&    ptr, bool  ref=false);
   Element(Struct&&  str);
@@ -155,6 +155,30 @@ Element  make_type(const char*  s);
 
 using Type     = typesystem::Element    ;
 using TypeKind = typesystem::ElementKind;
+
+
+Type  I8Type();
+Type  U8Type();
+Type  I16Type();
+Type  U16Type();
+Type  I32Type();
+Type  BoolType();
+Type  CharType();
+Type  VoidType();
+Type  ConstI8Type();
+Type  ConstU8Type();
+Type  ConstI16Type();
+Type  ConstU16Type();
+Type  ConstI32Type();
+Type  ConstBoolType();
+Type  ConstCharType();
+Type  ConstVoidType();
+Type  NullptrType();
+Type  StructType();
+Type  UnionType();
+Type  EnumType();
+
+
 
 
 #endif

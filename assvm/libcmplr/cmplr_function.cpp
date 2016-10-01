@@ -1,6 +1,7 @@
 #include"cmplr_function.hpp"
 #include"cmplr_block.hpp"
-#include"expression_operand.hpp"
+#include"cmplr_precontext.hpp"
+#include"cmplr_context.hpp"
 
 
 
@@ -60,8 +61,8 @@ void
 Function::
 compile_definition(Context&  ctx) const
 {
-  auto  f = ctx.const_function       ;
-            ctx.const_function = this;
+  auto  f = ctx.function       ;
+            ctx.function = const_cast<Function*>(this);
 
   ctx.block_stack.clear();
 
@@ -85,7 +86,7 @@ compile_definition(Context&  ctx) const
   ctx.current_content.clear();
 
 
-  ctx.const_function = f;
+  ctx.function = f;
 }
 
 

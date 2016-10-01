@@ -32,18 +32,18 @@ main(int  argc, char**  argv)
 
   Struct  u("test_struct");
 
-  u.append({I8(),"t3"});
-  u.append({I32(),"t1"});
-  u.append({I32(),"t1"});
-  u.append({I8(),"t3"});
-  u.append({Char(),"t3"});
-  u.append({I8(),"t3"});
-  u.append({Char(),"t3"});
-  u.append({I8(),"t3"});
-  u.append({I8(),"t3"});
-  u.append({I8(),"t3"});
-  u.append({I8(),"t3"});
-  u.append({I8(),"t3"});
+  u.append({I8Type(),"t3"});
+  u.append({I32Type(),"t1"});
+  u.append({I32Type(),"t1"});
+  u.append({I8Type(),"t3"});
+  u.append({CharType(),"t3"});
+  u.append({I8Type(),"t3"});
+  u.append({CharType(),"t3"});
+  u.append({I8Type(),"t3"});
+  u.append({I8Type(),"t3"});
+  u.append({I8Type(),"t3"});
+  u.append({I8Type(),"t3"});
+  u.append({I8Type(),"t3"});
 
   u.snprint(s,n);
 

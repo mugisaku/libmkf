@@ -2,8 +2,8 @@
 #define EXPRESSION_ELEMENT_HPP_INCLUDED
 
 
-#include"expression_operand.hpp"
 #include"expression_operator.hpp"
+#include"cmplr_value.hpp"
 #include<cstdint>
 
 
@@ -51,10 +51,10 @@ Element
   union Data{
    Operator  operator_;
 
-   Operand  operand;
+   Value  operand;
 
    Data(                        ){}
-   Data(Operand&&              o): operand(std::move(o)){}
+   Data(Value&&                o): operand(std::move(o)){}
    Data(const UnaryOperator&   o): operator_(o){}
    Data(const BinaryOperator&  o): operator_(o){}
    ~Data(){}
@@ -63,7 +63,7 @@ Element
 
 
   Element();
-  Element(Operand&&  o);
+  Element(Value&&  o);
   Element(const UnaryOperator&  o);
   Element(const BinaryOperator&  o);
   Element(const Element&  rhs);

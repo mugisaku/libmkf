@@ -1,4 +1,4 @@
-#include"expression_operand.hpp"
+#include"cmplr_value.hpp"
 #include<cstdlib>
 
 
@@ -59,7 +59,7 @@ read_binary_literal(const mkf::Node&  base)
 
 
 uint32_t
-expression::Operand::
+Value::
 read_integer_literal(const mkf::Node&  base)
 {
   mkf::Cursor  cur(base);

@@ -1,5 +1,4 @@
 #include"expression_operator.hpp"
-#include"expression_operand.hpp"
 #include"expression_node.hpp"
 #include"cmplr_context.hpp"
 #include"../assvm_instruction.hpp"
@@ -44,7 +43,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
         }
 
 
-      return Type(typesystem::I32());
+      return I32Type();
     }
 
 
@@ -73,7 +72,7 @@ compile(const Node&  l, const UnaryOperator&   op, Context&  ctx)
     }
 
 
-  return Type(typesystem::I32());
+  return I32Type();
 }
 
 

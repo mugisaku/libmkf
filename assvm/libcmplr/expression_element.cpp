@@ -16,7 +16,7 @@ kind(ElementKind::null)
 
 
 Element::
-Element(Operand&&  o):
+Element(Value&&  o):
 kind(ElementKind::operand),
 data(std::move(o))
 {}
@@ -71,7 +71,7 @@ operator=(const Element&   rhs)
 
     if(kind == ElementKind::operand)
     {
-      new(&data.operand) Operand(rhs.data.operand);
+      new(&data.operand) Value(rhs.data.operand);
     }
 
   else
@@ -92,7 +92,7 @@ operator=(Element&&  rhs) noexcept
 
     if(kind == ElementKind::operand)
     {
-      new(&data.operand) Operand(std::move(rhs.data.operand));
+      new(&data.operand) Value(std::move(rhs.data.operand));
     }
 
   else
@@ -249,7 +249,7 @@ clear()
     switch(kind)
     {
       case(ElementKind::operand):
-        data.operand.~Operand();
+        data.operand.~Value();
         break;
     }
 

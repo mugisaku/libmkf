@@ -16,7 +16,6 @@ struct Context;
 namespace expression{
 
 
-struct Operand;
 struct Node;
 
 

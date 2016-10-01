@@ -15,10 +15,11 @@ kind(k)
 
 
 Element::
-Element(const Fundamental&  fdm):
+Element(bool  c, FundamentalKind  k):
 kind(ElementKind::fundamental)
 {
-  data.fdm = fdm;
+  data.fdm.constant = c;
+  data.fdm.kind     = k;
 }
 
 
@@ -409,6 +410,31 @@ read(const mkf::Node&  src)
 
 
 }
+
+
+
+
+Type  I8Type(){return Type(false,typesystem::FundamentalKind::int8);}
+Type  U8Type(){return Type(false,typesystem::FundamentalKind::uint8);}
+Type  I16Type(){return Type(false,typesystem::FundamentalKind::int16);}
+Type  U16Type(){return Type(false,typesystem::FundamentalKind::uint16);}
+Type  I32Type(){return Type(false,typesystem::FundamentalKind::int32);}
+Type  BoolType(){return Type(false,typesystem::FundamentalKind::bool_);}
+Type  CharType(){return Type(false,typesystem::FundamentalKind::char_);}
+Type  VoidType(){return Type(false,typesystem::FundamentalKind::void_);}
+Type  ConstI8Type(){return Type(true,typesystem::FundamentalKind::int8);}
+Type  ConstU8Type(){return Type(true,typesystem::FundamentalKind::uint8);}
+Type  ConstI16Type(){return Type(true,typesystem::FundamentalKind::int16);}
+Type  ConstU16Type(){return Type(true,typesystem::FundamentalKind::uint16);}
+Type  ConstI32Type(){return Type(true,typesystem::FundamentalKind::int32);}
+Type  ConstBoolType(){return Type(true,typesystem::FundamentalKind::bool_);}
+Type  ConstCharType(){return Type(true,typesystem::FundamentalKind::char_);}
+Type  ConstVoidType(){return Type(true,typesystem::FundamentalKind::void_);}
+Type  NullptrType(){return Type(true,typesystem::FundamentalKind::nullptr_);}
+Type  StructType(){return Type(typesystem::Struct());}
+Type  UnionType(){return Type(typesystem::Union());}
+Type  EnumType(){return Type(typesystem::Enum());}
+
 
 
 

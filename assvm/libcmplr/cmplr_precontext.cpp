@@ -46,6 +46,7 @@ append_declaration(Declaration&&  decl)
 
           ptr = &block->declaration_list.back();
 
+/*
             if(ptr->get_value().kind == ValueKind::single)
             {
               auto&  size = function->local_object_size;
@@ -71,6 +72,7 @@ append_declaration(Declaration&&  decl)
               ptr->offset = size                   ;
                             size += type.get_size();
             }
+*/
         }
     }
 

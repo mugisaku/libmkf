@@ -50,6 +50,8 @@ Declaration
   Declaration(const mkf::Node&  src, PreContext&  prectx);
 
 
+  bool  operator==(StorageKind  stkind) const;
+
   const Value&  get_value() const;
 
   const std::string&  get_name() const;
@@ -59,8 +61,8 @@ Declaration
 
   void  print(FILE*  f=stdout) const;
 
-  Type  compile(Context&  ctx) const;
-  void  compile_definition(Context&  ctx) const;
+  Value  compile(Context&  ctx) const;
+  void   compile_definition(Context&  ctx) const;
 
   void  read(const mkf::Node&  src, PreContext&  prectx);
 

@@ -1,4 +1,4 @@
-#include"expression_operand.hpp"
+#include"cmplr_value.hpp"
 #include"libpp/pp_utf8chunk.hpp"
 #include<cstdlib>
 
@@ -38,7 +38,7 @@ read_string_element(const mkf::Node&  base)
 
 
 char16_t
-expression::Operand::
+Value::
 read_character_literal(const mkf::Node&  base)
 {
   mkf::Cursor  cur(base);
@@ -62,7 +62,7 @@ read_character_literal(const mkf::Node&  base)
 
 
 std::u16string
-expression::Operand::
+Value::
 read_string_literal(const mkf::Node&  base)
 {
   std::u16string  s;

@@ -120,27 +120,27 @@ make(int  n, const char*  str)
     switch(n)
     {
       case(3):
-        if(std::strcmp(str,"int") == 0){return Type(I32());}
+        if(std::strcmp(str,"int") == 0){return I32Type();}
         break;
       case(4):
-             if(std::strcmp(str,"void") == 0){return Type(Void());}
-        else if(std::strcmp(str,"int8") == 0){return Type(I8());}
-        else if(std::strcmp(str,"char") == 0){return Type(Char());}
-        else if(std::strcmp(str,"bool") == 0){return Type(Bool());}
-        else if(std::strcmp(str,"enum") == 0){return Type(Enum());}
+             if(std::strcmp(str,"void") == 0){return VoidType();}
+        else if(std::strcmp(str,"int8") == 0){return I8Type();}
+        else if(std::strcmp(str,"char") == 0){return CharType();}
+        else if(std::strcmp(str,"bool") == 0){return BoolType();}
+        else if(std::strcmp(str,"enum") == 0){return EnumType();}
         break;
       case(5):
-             if(std::strcmp(str,"uint8") == 0){return Type(U8());}
-        else if(std::strcmp(str,"int16") == 0){return Type(I16());}
-        else if(std::strcmp(str,"int32") == 0){return Type(I32());}
-        else if(std::strcmp(str,"union") == 0){return Type(Union());}
+             if(std::strcmp(str,"uint8") == 0){return U8Type();}
+        else if(std::strcmp(str,"int16") == 0){return I16Type();}
+        else if(std::strcmp(str,"int32") == 0){return I32Type();}
+        else if(std::strcmp(str,"union") == 0){return UnionType();}
         break;
       case(6):
-             if(std::strcmp(str,"uint16") == 0){return Type(U16());}
-        else if(std::strcmp(str,"struct") == 0){return Type(Struct());}
+             if(std::strcmp(str,"uint16") == 0){return U16Type();}
+        else if(std::strcmp(str,"struct") == 0){return StructType();}
         break;
       case(7):
-          if(std::strcmp(str,"nullptr") == 0){return Type(Nullptr());}
+          if(std::strcmp(str,"nullptr") == 0){return NullptrType();}
         break;
     }
 
