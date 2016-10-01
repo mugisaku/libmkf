@@ -115,7 +115,6 @@ Statement
 
    Statement();
    Statement(const Block*  blk);
-   Statement(Return  ret);
    Statement(const mkf::Node&  src, PreContext&  prectx);
    Statement(const Statement&   rhs);
    Statement(      Statement&&  rhs) noexcept;
@@ -130,6 +129,7 @@ Statement
   void  clear();
 
   void  reset(expression::Node*  expr);
+  void  reset(Return  ret);
   void  reset(BranchNode*  brand);
   void  reset(const Block*  blk);
   void  reset(const Declaration*  decl);

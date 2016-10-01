@@ -34,6 +34,7 @@ Value::Value(std::u16string*         s): kind(ValueKind::null){reset(s);}
 Value::Value(std::string*           id): kind(ValueKind::null){reset(id);}
 Value::Value(expression::Node*      nd): kind(ValueKind::null){reset(nd);}
 Value::Value(ValueList*             ls): kind(ValueKind::null){reset(ls);}
+Value::Value(Function*              fn): kind(ValueKind::null){reset(fn);}
 Value::Value(const ArgumentList&  args): kind(ValueKind::null){reset(args);}
 Value::Value(const Subscript&    subsc): kind(ValueKind::null){reset(subsc);}
 

@@ -22,14 +22,6 @@ kind(StatementKind::null)
 
 
 Statement::
-Statement(Return  ret):
-kind(StatementKind::return_)
-{
-  data.val = ret.v;
-}
-
-
-Statement::
 Statement(const mkf::Node&  src, PreContext&  prectx):
 kind(StatementKind::null)
 {
@@ -169,6 +161,18 @@ reset(expression::Node*  expr)
 
 void
 Statement::
+reset(Return  ret)
+{
+  clear();
+
+  kind = StatementKind::return_;
+
+  data.val = ret.v;
+}
+
+
+void
+Statement::
 reset(BranchNode*  brand)
 {
   clear();
@@ -263,6 +267,7 @@ compile(Context&  ctx) const
         data.decl->compile_definition(ctx);
         break;
       case(StatementKind::print):
+/*
           if(data.expr)
           {
             auto  t = data.expr->compile(ctx);
@@ -280,6 +285,7 @@ compile(Context&  ctx) const
           {
             ctx.push("  pop;\n");
           }
+*/
         break;
       case(StatementKind::halt):
         ctx.push("  hlt;\n");
@@ -314,6 +320,7 @@ compile(Context&  ctx) const
         break;
         break;
       case(StatementKind::return_):
+/*
           if(data.expr)
           {
             auto  t = data.expr->compile(ctx);
@@ -326,6 +333,7 @@ compile(Context&  ctx) const
 
             ctx.push("  ret;\n");
           }
+*/
         break;
       case(StatementKind::expression):
         data.expr->compile(ctx);

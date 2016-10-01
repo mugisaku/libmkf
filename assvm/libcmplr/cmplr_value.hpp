@@ -110,7 +110,8 @@ Value
   Value(std::u16string*  s);
   Value(std::string*  id);
   Value(expression::Node*  nd);
-  Value(ValueList*  vals);
+  Value(ValueList*  ls);
+  Value(Function*  fn);
   Value(const ArgumentList&  args);
   Value(const Subscript&  subsc);
   Value(const mkf::Node&  src, PreContext&  prectx);
@@ -134,7 +135,8 @@ Value
   void  reset(std::u16string*  s);
   void  reset(std::string*  id);
   void  reset(expression::Node*  nd);
-  void  reset(ValueList*  vals);
+  void  reset(ValueList*  ls);
+  void  reset(Function*  fn);
   void  reset(const ArgumentList&  args);
   void  reset(const Subscript&  subsc);
 

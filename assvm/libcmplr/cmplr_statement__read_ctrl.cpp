@@ -171,17 +171,19 @@ read_return_statement(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
-  kind = StatementKind::return_;
-
     while(!cur.test_ended())
     {
       auto&  nd = cur.get();
 
         if(nd == "value")
         {
-          data.val = new Value(nd,prectx);
+          reset(Return(new Value(nd,prectx)));
+        }
 
-          kind = StatementKind::return_;
+      else
+        if(nd == "expression")
+        {
+          reset(Return(new Value(new expression::Node(nd,prectx))));
         }
 
 

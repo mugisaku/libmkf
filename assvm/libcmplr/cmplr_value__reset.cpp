@@ -166,6 +166,20 @@ reset(ValueList*  ls)
 
 void
 Value::
+reset(Function*  fn)
+{
+  clear();
+
+  type = Type(fn);
+
+  kind = ValueKind::function;
+
+  data.fn = fn;
+}
+
+
+void
+Value::
 reset(const ArgumentList&  args)
 {
   clear();

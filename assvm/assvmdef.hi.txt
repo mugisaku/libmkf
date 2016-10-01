@@ -1,4 +1,4 @@
-global_scope = {declaration|";"};
+global_scope = (declaration|";"):{declaration|";"};
 
 
 statement =
@@ -31,11 +31,11 @@ control_statement =
 
 
 
-print_statement = 'print':value;
+print_statement = 'print':(expression|value);
 
 
 enum_declaration = 'enum':"{":enumerator:{",":enumerator}:"}";
-enumerator = identifier:["=":expression];
+enumerator = identifier:["=":(expression|value)];
 
 
 
@@ -43,7 +43,7 @@ enumerator = identifier:["=":expression];
 break_statement    =    'break':[";"];
 continue_statement = 'continue':[";"];
 label_statement    = identifier:":";
-return_statement   = 'return':[value]:[";"];
+return_statement   = 'return':[expression|value]:[";"];
 
 
 
@@ -55,7 +55,7 @@ do_statement = 'do':block;
 
 if_statement = 'if':conditional_block:{'else':'if':conditional_block}:['else':block];
 
-conditional_block = "(":expression:")":block;
+conditional_block = "(":(expression|value):")":block;
 
 block = "{":{statement}:"}";
 
@@ -76,7 +76,7 @@ parameter = type:[identifier];
 
 
 
-object_declaration = ['static']:['const']:type:identifier:["=":value];
+object_declaration = ['static']:['const']:type:identifier:["=":(expression|value)];
 
 
 value = (
@@ -88,8 +88,7 @@ value = (
             identifier|
        integer_literal|
      character_literal|
-        string_literal|
-            expression):[subscript|argument_list];
+        string_literal):[subscript|argument_list];
 
 
 type = type_kind:{"*"|array_size}:["&"];
@@ -110,11 +109,11 @@ type_kind =
 
 
 
-array_size = "[":[expression]:"]";
-subscript  = "[":[expression]:"]";
+array_size = "[":[expression|value]:"]";
+subscript  = "[":[expression|value]:"]";
 
-argument_list = "(":[value:{",":value}]:")";
-   value_list = "{":[value:{",":value}]:"}";
+argument_list = "(":[(expression|value):{",":(expression|value)}]:")";
+   value_list = "{":[(expression|value):{",":(expression|value)}]:"}";
 
 
 
