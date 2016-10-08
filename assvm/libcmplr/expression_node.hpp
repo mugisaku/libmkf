@@ -45,7 +45,7 @@ Node
 
   void  print(FILE*  f=stdout) const;
 
-  Value  get_value(PreContext&  prectx) const;
+  Value  make_value(PreContext&  prectx) const;
 
   Type  compile(Context&  ctx) const;
 

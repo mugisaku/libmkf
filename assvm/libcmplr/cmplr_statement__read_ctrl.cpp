@@ -57,7 +57,7 @@ namespace{
 Block*
 read_block(Function*  fn, BlockKind  k, int  n, const mkf::Node&  src, PreContext&  prectx)
 {
-  expression::Node*  cond = nullptr;
+  Literal*  cond = nullptr;
 
   mkf::Cursor  cur(src);
 
@@ -67,7 +67,13 @@ read_block(Function*  fn, BlockKind  k, int  n, const mkf::Node&  src, PreContex
 
         if(nd == "expression")
         {
-          cond = new expression::Node(nd,prectx);
+          cond = new Literal(new expression::Node(nd,prectx));
+        }
+
+      else
+        if(nd == "literal_object")
+        {
+          cond = new Literal(nd,prectx);
         }
 
       else
@@ -175,15 +181,15 @@ read_return_statement(const mkf::Node&  src, PreContext&  prectx)
     {
       auto&  nd = cur.get();
 
-        if(nd == "value")
+        if(nd == "literal_object")
         {
-          reset(Return(new Value(nd,prectx)));
+          reset(Return(new Literal(nd,prectx)));
         }
 
       else
         if(nd == "expression")
         {
-          reset(Return(new Value(new expression::Node(nd,prectx))));
+          reset(Return(new Literal(new expression::Node(nd,prectx))));
         }
 
 

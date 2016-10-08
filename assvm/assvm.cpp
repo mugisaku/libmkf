@@ -174,7 +174,7 @@ fprintf(fs.out,"*/\n");
 
       fflush(fs.out);
 
-      execute(std::move(s),disp_flag,&fs);
+//      execute(std::move(s),disp_flag,&fs);
     }
 
 

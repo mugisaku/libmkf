@@ -13,8 +13,7 @@ offset(0)
 
 
 Declaration::
-Declaration(const Parameter&  para, size_t  off):
-storage_kind(StorageKind::null)
+Declaration(const Parameter&  para, size_t  off)
 {
   reset(para,off);
 }
@@ -31,14 +30,22 @@ offset(0)
 
 
 
-bool  Declaration::operator==(StorageKind  stkind) const{return storage_kind == stkind;}
-
-
-const Value&
+bool
 Declaration::
-get_value() const
+operator==(StorageKind  stkind) const
 {
-  return value;
+  return storage_kind == stkind;
+}
+
+
+
+
+void
+Declaration::
+reset(Type&&  typ, Literal&&  lit)
+{
+  type    = std::move(typ);
+  literal = std::move(lit);
 }
 
 
@@ -46,11 +53,9 @@ void
 Declaration::
 reset(Function*  fn)
 {
-  storage_kind = StorageKind::global;
+  type = FunctionType();
 
-  value.~Value();
-
-  new(&value) Value(fn);
+  literal.reset(fn);
 
   name = fn->name;
 }
@@ -60,19 +65,24 @@ void
 Declaration::
 reset(const Parameter&  para, size_t  off)
 {
-  storage_kind = StorageKind::local;
-
-  value.clear();
-
-  value.kind = ValueKind::parameter;
+  storage_kind = StorageKind::parameter;
 
   offset = off;
 
-  value.type = para.type;
-  name       = para.name;
+  type = Type(para.type);
+
+  name = para.name;
 }
 
 
+
+
+Value
+Declaration::
+make_value() const
+{
+  return Value();
+}
 
 
 void
@@ -89,9 +99,11 @@ print(FILE*  f) const
     }
 
 
+  type.print(f);
+
   fprintf(f,"  %s = ",name.data());
 
-  value.print(f);
+  literal.print(f);
 }
 
 

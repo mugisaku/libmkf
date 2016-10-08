@@ -127,7 +127,7 @@ print(FILE*  f) const
 
     for(auto&  decl: block->declaration_list)
     {
-        if(decl.get_value().kind == ValueKind::parameter)
+        if(decl == StorageKind::parameter)
         {
           decl.print(f);
 
@@ -142,8 +142,7 @@ print(FILE*  f) const
 
     for(auto&  decl: block->declaration_list)
     {
-        if((decl.storage_kind == StorageKind::local) &&
-           (decl.get_value().kind != ValueKind::parameter))
+        if(decl == StorageKind::local)
         {
           decl.print(f);
 

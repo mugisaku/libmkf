@@ -22,7 +22,7 @@ kind(k)
 
 
 Block::
-Block(BlockKind  k, const mkf::Node&  src, PreContext&  prectx, expression::Node*  cond):
+Block(BlockKind  k, const mkf::Node&  src, PreContext&  prectx, Literal*  cond):
 kind(k),
 condition(cond)
 {

@@ -15,7 +15,7 @@
 struct Block;
 struct PreContext;
 struct Declaration;
-struct Value;
+struct Literal;
 
 
 namespace expression{
@@ -46,9 +46,9 @@ StatementKind
 struct
 Print
 {
-  Value*  v;
+  Literal*  lit;
 
-  constexpr Print(Value*  v_): v(v_){}
+  constexpr Print(Literal*  l): lit(l){}
 
 };
 
@@ -56,9 +56,9 @@ Print
 struct
 Return
 {
-  Value*  v;
+  Literal*  lit;
 
-  constexpr Return(Value*  v_=nullptr): v(v_){}
+  constexpr Return(Literal*  l=nullptr): lit(l){}
 
 };
 
@@ -108,7 +108,7 @@ Statement
 
     expression::Node*  expr;
 
-    Value*  val;
+    Literal*  lit;
 
   } data;
 

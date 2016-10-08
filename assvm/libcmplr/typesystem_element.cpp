@@ -64,14 +64,6 @@ kind(ElementKind::enum_)
 
 
 Element::
-Element(const Function*  fn):
-kind(ElementKind::function)
-{
-  data.fn = fn;
-}
-
-
-Element::
 Element(const Element&  rhs):
 kind(ElementKind::null)
 {
@@ -125,9 +117,6 @@ operator=(const Element&  rhs)
   case(ElementKind::enum_):
       new(&data) Enum(rhs.data.enu);
       break;
-  case(ElementKind::function):
-      data.fn = rhs.data.fn;
-      break;
     }
 
 
@@ -164,9 +153,6 @@ operator=(Element&&  rhs) noexcept
       break;
   case(ElementKind::enum_):
       new(&data) Enum(std::move(rhs.data.enu));
-      break;
-  case(ElementKind::function):
-      data.fn = rhs.data.fn;
       break;
     }
 
@@ -333,6 +319,8 @@ void
 Element::
 snprint(char*&  s, size_t&  n) const
 {
+  *s = 0;
+
     switch(kind)
     {
   case(ElementKind::fundamental):
@@ -357,6 +345,14 @@ snprint(char*&  s, size_t&  n) const
   case(ElementKind::union_):
       data.uni.snprint(s,n);
       break;
+  case(ElementKind::function):
+    {
+      int  res = snprintf(s,n,"function");
+
+      s += res;
+      n -= res;
+    }
+      break;
     }
 }
 
@@ -365,7 +361,7 @@ std::string
 Element::
 to_string() const
 {
-  char  buf[256];
+  char  buf[1024];
 
   auto  s = buf;
   auto  n = sizeof(buf);
@@ -380,7 +376,7 @@ void
 Element::
 print(FILE*  f) const
 {
-  char  buf[256];
+  char  buf[1024];
 
   auto  s = buf;
   auto  n = sizeof(buf);
@@ -434,6 +430,7 @@ Type  NullptrType(){return Type(true,typesystem::FundamentalKind::nullptr_);}
 Type  StructType(){return Type(typesystem::Struct());}
 Type  UnionType(){return Type(typesystem::Union());}
 Type  EnumType(){return Type(typesystem::Enum());}
+Type  FunctionType(){return Type(typesystem::ElementKind::function);}
 
 
 

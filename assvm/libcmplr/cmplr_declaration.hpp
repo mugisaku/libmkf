@@ -5,7 +5,7 @@
 #include<string>
 #include<vector>
 #include"typesystem_element.hpp"
-#include"cmplr_value.hpp"
+#include"cmplr_literal.hpp"
 
 
 
@@ -30,6 +30,7 @@ StorageKind
   local,
   local_static,
   alias,
+  parameter,
 
 };
 
@@ -43,7 +44,10 @@ Declaration
 
   std::string  name;
 
-  Value  value;
+  Type  type;
+
+  Literal  literal;
+
 
   Declaration();
   Declaration(const Parameter&  para, size_t  off=0);
@@ -52,14 +56,15 @@ Declaration
 
   bool  operator==(StorageKind  stkind) const;
 
-  const Value&  get_value() const;
-
   const std::string&  get_name() const;
 
+  void  reset(Type&&  typ, Literal&&  lit);
   void  reset(const Parameter&  para, size_t  off=0);
   void  reset(Function*  fn);
 
   void  print(FILE*  f=stdout) const;
+
+  Value  make_value() const;
 
   Value  compile(Context&  ctx) const;
   void   compile_definition(Context&  ctx) const;

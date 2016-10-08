@@ -4,6 +4,7 @@
 
 #include"expression_operator.hpp"
 #include"cmplr_value.hpp"
+#include"cmplr_literal.hpp"
 #include<cstdint>
 
 
@@ -51,10 +52,10 @@ Element
   union Data{
    Operator  operator_;
 
-   Value  operand;
+   Literal  operand;
 
    Data(                        ){}
-   Data(Value&&                o): operand(std::move(o)){}
+   Data(Literal&&              o): operand(std::move(o)){}
    Data(const UnaryOperator&   o): operator_(o){}
    Data(const BinaryOperator&  o): operator_(o){}
    ~Data(){}
@@ -63,7 +64,7 @@ Element
 
 
   Element();
-  Element(Value&&  o);
+  Element(Literal&&  o);
   Element(const UnaryOperator&  o);
   Element(const BinaryOperator&  o);
   Element(const Element&  rhs);

@@ -9,8 +9,6 @@ void
 Declaration::
 read(const mkf::Node&  src, PreContext&  prectx)
 {
-  value.clear();
-
   mkf::Cursor  cur(src);
 
   storage_kind = prectx.function? StorageKind::local
@@ -61,7 +59,7 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "type")
         {
-          value.type.read(nd);
+          type.read(nd);
         }
 
       else
@@ -71,9 +69,15 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
         }
 
       else
-        if(nd == "value")
+        if(nd == "expression")
         {
-          value.read(nd,prectx);
+          literal.reset(new expression::Node(nd,prectx));
+        }
+
+      else
+        if(nd == "literal_object")
+        {
+          literal.read(nd,prectx);
         }
 
       else

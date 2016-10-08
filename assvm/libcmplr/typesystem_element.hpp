@@ -61,8 +61,6 @@ Element
     Union        uni;
     Enum         enu;
 
-    const Function*  fn;
-
      Data(){};
     ~Data(){};
 
@@ -76,7 +74,6 @@ public:
   Element(Struct&&  str);
   Element(Union&&  uni);
   Element(Enum&&  enu);
-  Element(const Function*  fn);
   Element(const Element&   rhs)         ;
   Element(      Element&&  rhs) noexcept;
  ~Element(                    );
@@ -177,6 +174,7 @@ Type  NullptrType();
 Type  StructType();
 Type  UnionType();
 Type  EnumType();
+Type  FunctionType();
 
 
 

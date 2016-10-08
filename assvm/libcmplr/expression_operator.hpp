@@ -81,8 +81,8 @@ BinaryOperator(const char*  s): Operator(s){}
 Type  compile(const Node&  l                , const UnaryOperator&   op, Context&  ctx);
 Type  compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context&  ctx);
 
-Value  get_value(const Node&  l                , const UnaryOperator&   op, PreContext&  prectx);
-Value  get_value(const Node&  l, const Node&  r, const BinaryOperator&  op, PreContext&  prectx);
+Value  make_value(const Node&  l                , const UnaryOperator&   op, PreContext&  prectx);
+Value  make_value(const Node&  l, const Node&  r, const BinaryOperator&  op, PreContext&  prectx);
 
 
 }

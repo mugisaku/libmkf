@@ -77,7 +77,7 @@ operator=(const Statement&  rhs)
     break;
   case(StatementKind::return_):
   case(StatementKind::print):
-      data.val = new Value(*rhs.data.val);
+      data.lit = new Literal(*rhs.data.lit);
       break;
   case(StatementKind::expression):
       data.expr = new expression::Node(*rhs.data.expr);
@@ -131,7 +131,7 @@ clear()
         break;
       case(StatementKind::return_):
       case(StatementKind::print):
-        delete data.val;
+        delete data.lit;
         break;
       case(StatementKind::expression):
         delete data.expr;
@@ -167,7 +167,7 @@ reset(Return  ret)
 
   kind = StatementKind::return_;
 
-  data.val = ret.v;
+  data.lit = ret.lit;
 }
 
 
@@ -235,7 +235,7 @@ reset(const Print&  prn)
 
   kind = StatementKind::print;
 
-  data.val = prn.v;
+  data.lit = prn.lit;
 }
 
 
@@ -369,9 +369,9 @@ print(FILE*  f) const
       case(StatementKind::print):
         fprintf(f,"print ");
 
-          if(data.val)
+          if(data.lit)
           {
-            data.val->print(f);
+            data.lit->print(f);
           }
         break;
       case(StatementKind::break_):
@@ -383,9 +383,9 @@ print(FILE*  f) const
       case(StatementKind::return_):
         fprintf(f,"return ");
 
-          if(data.val)
+          if(data.lit)
           {
-            data.val->print(f);
+            data.lit->print(f);
           }
         break;
       case(StatementKind::expression):

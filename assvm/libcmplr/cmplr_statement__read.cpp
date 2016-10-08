@@ -71,9 +71,15 @@ read_print_statement(const mkf::Node&  src, PreContext&  prectx)
     {
       auto&  nd = cur.get();
 
-        if(nd == "value")
+        if(nd == "expression")
         {
-          reset(Print(new Value(nd,prectx)));
+          reset(Print(new Literal(new expression::Node(nd,prectx))));
+        }
+
+      else
+        if(nd == "literal_object")
+        {
+          reset(Print(new Literal(nd,prectx)));
         }
 
 

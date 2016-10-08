@@ -166,7 +166,7 @@ Type
 Element::
 make_reference() const
 {
-  return Type(Pointer(duplicate()),true);
+  return((kind == ElementKind::reference)? *this:Type(Pointer(duplicate()),true));
 }
 
 

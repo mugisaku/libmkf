@@ -39,11 +39,11 @@ Block
   std::list<Declaration>  declaration_list;
   std::list<Statement>      statement_list;
 
-  std::shared_ptr<expression::Node>  condition;
+  std::shared_ptr<Literal>  condition;
 
-  Block(                                                                                         );
-  Block(BlockKind  k                                                                             );
-  Block(BlockKind  k, const mkf::Node&  src, PreContext&  prectx, expression::Node*  cond=nullptr);
+  Block(                                                                                );
+  Block(BlockKind  k                                                                    );
+  Block(BlockKind  k, const mkf::Node&  src, PreContext&  prectx, Literal*  cond=nullptr);
 
   void  print(FILE*  f=stdout) const;
 

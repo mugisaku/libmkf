@@ -1,4 +1,4 @@
-#include"cmplr_value.hpp"
+#include"cmplr_literal.hpp"
 #include"cmplr_function.hpp"
 #include"expression_node.hpp"
 #include"cmplr_precontext.hpp"
@@ -7,198 +7,180 @@
 
 
 void
-Value::
+Literal::
 reset(int8_t  i)
 {
   clear();
 
-  kind = ValueKind::integer;
-
-  type = ConstI8Type();
+  kind = LiteralKind::integer;
 
   data.i = i;
 }
 
 
 void
-Value::
+Literal::
 reset(uint8_t  i)
 {
   clear();
 
-  kind = ValueKind::integer;
-
-  type = ConstU8Type();
+  kind = LiteralKind::integer;
 
   data.i = i;
 }
 
 
 void
-Value::
+Literal::
 reset(int16_t  i)
 {
   clear();
 
-  kind = ValueKind::integer;
-
-  type = ConstI16Type();
+  kind = LiteralKind::integer;
 
   data.i = i;
 }
 
 
 void
-Value::
+Literal::
 reset(uint16_t  i)
 {
   clear();
 
-  kind = ValueKind::integer;
-
-  type = ConstU16Type();
+  kind = LiteralKind::integer;
 
   data.i = i;
 }
 
 
 void
-Value::
+Literal::
 reset(int32_t  i)
 {
   clear();
 
-  kind = ValueKind::integer;
-
-  type = ConstI32Type();
+  kind = LiteralKind::integer;
 
   data.i = i;
 }
 
 
 void
-Value::
+Literal::
 reset(char16_t  c)
 {
   clear();
 
-  kind = ValueKind::character;
-
-  type = ConstCharType();
+  kind = LiteralKind::character;
 
   data.c = c;
 }
 
 
 void
-Value::
+Literal::
 reset(std::string*  id)
 {
   clear();
 
-  kind = ValueKind::identifier;
+  kind = LiteralKind::identifier;
 
   data.id = id;
 }
 
 
 void
-Value::
+Literal::
 reset(nullptr_t  nul)
 {
   clear();
 
-  type = NullptrType();
-
-  kind = ValueKind::nullptr_;
+  kind = LiteralKind::nullptr_;
 }
 
 
 void
-Value::
+Literal::
 reset(bool  b)
 {
   clear();
 
-  kind = ValueKind::boolean;
-
-  type = ConstBoolType();
+  kind = LiteralKind::boolean;
 
   data.b = b;
 }
 
 
 void
-Value::
+Literal::
 reset(std::u16string*  s)
 {
   clear();
 
-  kind = ValueKind::string;
+  kind = LiteralKind::string;
 
   data.s = s;
 }
 
 
 void
-Value::
+Literal::
 reset(expression::Node*  nd)
 {
   clear();
 
-  kind = ValueKind::expression;
+  kind = LiteralKind::expression;
 
   data.nd = nd;
 }
 
 
 void
-Value::
-reset(ValueList*  ls)
+Literal::
+reset(Array*  arr)
 {
   clear();
 
-  kind = ValueKind::value_list;
+  kind = LiteralKind::array;
 
-  data.ls = ls;
+  data.arr = arr;
 }
 
 
 void
-Value::
+Literal::
 reset(Function*  fn)
 {
   clear();
 
-  type = Type(fn);
-
-  kind = ValueKind::function;
+  kind = LiteralKind::function;
 
   data.fn = fn;
 }
 
 
 void
-Value::
+Literal::
 reset(const ArgumentList&  args)
 {
   clear();
 
-  kind = ValueKind::argument_list;
+  kind = LiteralKind::argument_list;
 
-  data.ls = args.value_list;
+  data.arr = args.arr;
 }
 
 
 void
-Value::
+Literal::
 reset(const Subscript&  subsc)
 {
   clear();
 
-  kind = ValueKind::subscript;
+  kind = LiteralKind::subscript;
 
-  data.nd = subsc.nd;
+  data.lit = subsc.lit;
 }
 
 

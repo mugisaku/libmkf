@@ -31,11 +31,11 @@ control_statement =
 
 
 
-print_statement = 'print':(expression|value);
+print_statement = 'print':(expression|literal_object);
 
 
 enum_declaration = 'enum':"{":enumerator:{",":enumerator}:"}";
-enumerator = identifier:["=":(expression|value)];
+enumerator = identifier:["=":(expression|literal_object)];
 
 
 
@@ -43,7 +43,7 @@ enumerator = identifier:["=":(expression|value)];
 break_statement    =    'break':[";"];
 continue_statement = 'continue':[";"];
 label_statement    = identifier:":";
-return_statement   = 'return':[expression|value]:[";"];
+return_statement   = 'return':[expression|literal_object]:[";"];
 
 
 
@@ -55,7 +55,7 @@ do_statement = 'do':block;
 
 if_statement = 'if':conditional_block:{'else':'if':conditional_block}:['else':block];
 
-conditional_block = "(":(expression|value):")":block;
+conditional_block = "(":(expression|literal_object):")":block;
 
 block = "{":{statement}:"}";
 
@@ -64,7 +64,7 @@ block = "{":{statement}:"}";
 
 expression = unary_operand:{binary_operator:unary_operand};
 
-unary_operand = {unary_operator}:value;
+unary_operand = {unary_operator}:literal_object;
 
 
 
@@ -76,16 +76,16 @@ parameter = type:[identifier];
 
 
 
-object_declaration = ['static']:['const']:type:identifier:["=":(expression|value)];
+object_declaration = ['static']:['const']:type:identifier:["=":(expression|literal_object)];
 
 
-value = (
+literal_object = (
              'nullptr'|
                 'true'|
                'false'|
   ("(":expression:")")|
-            value_list|
             identifier|
+         array_literal|
        integer_literal|
      character_literal|
         string_literal):[subscript|argument_list];
@@ -109,11 +109,11 @@ type_kind =
 
 
 
-array_size = "[":[expression|value]:"]";
-subscript  = "[":[expression|value]:"]";
+array_size = "[":[expression|literal_object]:"]";
+subscript  = "[":[expression|literal_object]:"]";
 
-argument_list = "(":[(expression|value):{",":(expression|value)}]:")";
-   value_list = "{":[(expression|value):{",":(expression|value)}]:"}";
+argument_list = "(":[(expression|literal_object):{",":(expression|literal_object)}]:")";
+array_literal = "{":[(expression|literal_object):{",":(expression|literal_object)}]:"}";
 
 
 

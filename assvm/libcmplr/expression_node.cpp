@@ -294,28 +294,28 @@ get_operand_value(const Value&  src, PreContext&  prectx)
 
 Value
 Node::
-get_value(PreContext&  prectx) const
+make_value(PreContext&  prectx) const
 {
     switch(element.kind)
     {
   case(ElementKind::null):
-      return left->get_value(prectx);
+      return left->make_value(prectx);
       break;
   case(ElementKind::operand):
-      return get_operand_value(element.data.operand,prectx);
+      return element.data.operand.make_value(prectx);
       break;
   case(ElementKind::unary_operator):
       {
         UnaryOperator  op(element.data.operator_);
 
-        return expression::get_value(*left,op,prectx);
+        return expression::make_value(*left,op,prectx);
       }
       break;
   case(ElementKind::binary_operator):
       {
         BinaryOperator  op(element.data.operator_);
 
-        return expression::get_value(*left,*right,op,prectx);
+        return expression::make_value(*left,*right,op,prectx);
       }
       break;
     }
@@ -415,9 +415,9 @@ read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls
         }
 
       else
-        if(nd == "value")
+        if(nd == "literal_object")
         {
-          ls.emplace_back(Value(nd,prectx));
+          ls.emplace_back(Literal(nd,prectx));
         }
 
 
