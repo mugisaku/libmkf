@@ -3,6 +3,7 @@
 
 
 #include"typesystem_element.hpp"
+#include"cmplr_constant.hpp"
 #include"cmplr_value.hpp"
 #include"mkf_node.hpp"
 #include<vector>
@@ -142,6 +143,8 @@ Literal
 
 
   void  print(FILE*  f=stdout) const;
+
+  Constant  make_constant(PreContext&  prectx) const;
 
   Value  make_value(PreContext&  prectx) const;
 

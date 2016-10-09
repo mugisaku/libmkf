@@ -292,6 +292,39 @@ get_operand_value(const Value&  src, PreContext&  prectx)
 }
 
 
+Constant
+Node::
+make_constant(PreContext&  prectx) const
+{
+    switch(element.kind)
+    {
+  case(ElementKind::null):
+      return left->make_constant(prectx);
+      break;
+  case(ElementKind::operand):
+      return element.data.operand.make_constant(prectx);
+      break;
+  case(ElementKind::unary_operator):
+      {
+        UnaryOperator  op(element.data.operator_);
+
+        return expression::make_constant(*left,op,prectx);
+      }
+      break;
+  case(ElementKind::binary_operator):
+      {
+        BinaryOperator  op(element.data.operator_);
+
+        return expression::make_constant(*left,*right,op,prectx);
+      }
+      break;
+    }
+
+
+  throw Constant::Error();
+}
+
+
 Value
 Node::
 make_value(PreContext&  prectx) const
@@ -400,6 +433,37 @@ namespace{
 using ElementList = std::vector<Element>;
 
 
+Subscript
+read_subscript(const mkf::Node&  src, PreContext&  prectx)
+{
+  Literal*  lit = nullptr;
+
+  mkf::Cursor  cur(src);
+
+    while(!cur.test_ended())
+    {
+      auto&  nd = cur.get();
+
+        if(nd == "literal_object")
+        {
+          lit = new Literal(nd,prectx);
+        }
+
+      else
+        if(nd == "expression")
+        {
+          lit = new Literal(new expression::Node(nd,prectx));
+        }
+
+
+      cur.advance();
+    }
+
+
+  return Subscript(lit);
+}
+
+
 void
 read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls)
 {
@@ -418,6 +482,24 @@ read_unary_operand(const mkf::Node&  base, PreContext&  prectx, ElementList&  ls
         if(nd == "literal_object")
         {
           ls.emplace_back(Literal(nd,prectx));
+        }
+
+      else
+        if(nd == "argument_list")
+        {
+          auto  arr = new Array(Literal::read_list(nd,prectx));
+
+          ls.emplace_back(BinaryOperator('(',')'));
+
+          ls.emplace_back(ArgumentList(arr));
+        }
+
+      else
+        if(nd == "subscript")
+        {
+          ls.emplace_back(BinaryOperator('[',']'));
+
+          ls.emplace_back(read_subscript(nd,prectx));
         }
 
 

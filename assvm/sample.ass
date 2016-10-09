@@ -27,7 +27,9 @@ add: int(int  a, int  b)
 function
 main: void()
 {
-  int8[4]  i = {1,2,3,4};
+  const int8[4]  i = {1,2+8,3,4};
+
+  const int  x = (1+2+32+4);
 
   char[6]  s = "あいうえお";
 

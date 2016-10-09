@@ -64,7 +64,7 @@ block = "{":{statement}:"}";
 
 expression = unary_operand:{binary_operator:unary_operand};
 
-unary_operand = {unary_operator}:literal_object;
+unary_operand = {unary_operator}:literal_object:[subscript|argument_list];
 
 
 
@@ -79,7 +79,7 @@ parameter = type:[identifier];
 object_declaration = ['static']:['const']:type:identifier:["=":(expression|literal_object)];
 
 
-literal_object = (
+literal_object =
              'nullptr'|
                 'true'|
                'false'|
@@ -88,7 +88,7 @@ literal_object = (
          array_literal|
        integer_literal|
      character_literal|
-        string_literal):[subscript|argument_list];
+        string_literal;
 
 
 type = type_kind:{"*"|array_size}:["&"];

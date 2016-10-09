@@ -168,6 +168,67 @@ clear()
 
 
 
+Constant
+Literal::
+make_constant(PreContext&  prectx) const
+{
+    switch(kind)
+    {
+  case(LiteralKind::identifier):
+      {
+        auto  decl = prectx.find_declaration(*data.id);
+
+          if(!decl)
+          {
+            printf("%sが指すオブジェクトが見つかりません\n",data.id->data());
+
+            throw;
+          }
+
+
+        return decl->literal.make_constant(prectx);
+      }
+      break;
+  case(LiteralKind::string):
+      return Constant(*data.s);
+      break;
+  case(LiteralKind::expression):
+      return data.nd->make_constant(prectx);
+      break;
+  case(LiteralKind::array):
+    {
+      Constant  cs;
+
+        for(auto&  lit: *data.arr)
+        {
+          cs.push(lit.make_constant(prectx));
+        }
+
+
+      return std::move(cs);
+    }
+     break;
+  case(LiteralKind::argument_list):
+      break;
+  case(LiteralKind::subscript):
+      break;
+  case(LiteralKind::function):
+      break;
+  case(LiteralKind::integer):
+      return Constant(data.i);
+      break;
+  case(LiteralKind::character):
+      return Constant(data.c);
+      break;
+    }
+
+
+  throw Constant::Error();
+}
+
+
+
+
 Value
 Literal::
 make_value(PreContext&  prectx) const
@@ -427,39 +488,6 @@ print(FILE*  f) const
 
 
 
-namespace{
-Subscript
-read_subscript(const mkf::Node&  src, PreContext&  prectx)
-{
-  Literal*  lit = nullptr;
-
-  mkf::Cursor  cur(src);
-
-    while(!cur.test_ended())
-    {
-      auto&  nd = cur.get();
-
-        if(nd == "literal_object")
-        {
-          lit = new Literal(nd,prectx);
-        }
-
-      else
-        if(nd == "expression")
-        {
-          lit = new Literal(new expression::Node(nd,prectx));
-        }
-
-
-      cur.advance();
-    }
-
-
-  return Subscript(lit);
-}
-}
-
-
 void
 Literal::
 read(const mkf::Node&  src, PreContext&  prectx)
@@ -526,21 +554,6 @@ read(const mkf::Node&  src, PreContext&  prectx)
         if(nd == "array_literal")
         {
           reset(new Array(read_list(nd,prectx)));
-        }
-
-      else
-        if(nd == "argument_list")
-        {
-          auto  arr = new Array(read_list(nd,prectx));
-
-
-          reset(ArgumentList(arr));
-        }
-
-      else
-        if(nd == "subscript")
-        {
-          reset(read_subscript(nd,prectx));
         }
 
 

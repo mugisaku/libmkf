@@ -3,6 +3,7 @@
 
 
 #include<cstring>
+#include"cmplr_constant.hpp"
 #include"cmplr_value.hpp"
 #include"typesystem_element.hpp"
 
@@ -83,6 +84,9 @@ Type  compile(const Node&  l, const Node&  r, const BinaryOperator&  op, Context
 
 Value  make_value(const Node&  l                , const UnaryOperator&   op, PreContext&  prectx);
 Value  make_value(const Node&  l, const Node&  r, const BinaryOperator&  op, PreContext&  prectx);
+
+Constant  make_constant(const Node&  l                , const UnaryOperator&   op, PreContext&  prectx);
+Constant  make_constant(const Node&  l, const Node&  r, const BinaryOperator&  op, PreContext&  prectx);
 
 
 }

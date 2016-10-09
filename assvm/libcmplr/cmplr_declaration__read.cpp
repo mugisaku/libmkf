@@ -47,6 +47,8 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
 {
   mkf::Cursor  cur(src);
 
+  bool  constant = false;
+
     while(!cur.test_ended())
     {
       auto&  nd = cur.get();
@@ -65,7 +67,7 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
       else
         if(nd == "const")
         {
-//          type.set_constant();
+          constant = true;
         }
 
       else
@@ -88,6 +90,27 @@ read_object_declaration(const mkf::Node&  src, PreContext&  prectx)
 
 
       cur.advance();
+    }
+
+
+    if(constant)
+    {
+        try
+        {
+          auto  cs = literal.make_constant(prectx);
+
+          cs.print();
+
+          printf("\n定数化できました\n");
+        }
+
+
+        catch(Constant::Error&  err)
+        {
+          printf("定数化できませんでした\n");
+
+          throw;
+        }
     }
 }
 

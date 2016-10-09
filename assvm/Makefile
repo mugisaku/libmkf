@@ -68,6 +68,7 @@ CMPLR_OBJ =                                      \
   libcmplr/expression_element.o                  \
   libcmplr/expression_operator.o                 \
   libcmplr/expression_operator__make_value.o     \
+  libcmplr/expression_operator__make_constant.o  \
   libcmplr/typesystem_element.o                  \
   libcmplr/typesystem_fundamental.o              \
   libcmplr/typesystem_array.o                    \
@@ -78,6 +79,7 @@ CMPLR_OBJ =                                      \
   libcmplr/typesystem__make.o                    \
   libcmplr/typesystem__is.o                      \
   libcmplr/typesystem__compile.o                 \
+  libcmplr/cmplr_constant.o                      \
   libcmplr/cmplr_value.o                         \
   libcmplr/cmplr_literal.o                       \
   libcmplr/cmplr_literal__reset.o                \
